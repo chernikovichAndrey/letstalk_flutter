@@ -5,5 +5,7 @@ extension BuildContextExt on BuildContext {
   double get w => MediaQuery.sizeOf(this).width;
   double get h => MediaQuery.sizeOf(this).height;
   ThemeData get theme => Theme.of(this);
+  TextTheme get text => Theme.of(this).textTheme;
+  ColorScheme get color => Theme.of(this).colorScheme;
   S get s => S.of(this);
 }

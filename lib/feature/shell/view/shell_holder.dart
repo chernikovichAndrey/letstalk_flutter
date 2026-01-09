@@ -12,11 +12,8 @@ class ShellHolder extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Scaffold(
-        body: Container(
-          color: Colors.black,
-          child: SafeArea(
-            child: child,
-          ),
+        body: SafeArea(
+          child: child,
         ),
       ),
     );

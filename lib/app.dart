@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:lets_talk/app/config/app_theme.dart';
 import 'package:lets_talk/app/router/app_router.dart';
 
 import 'common/l10n/generated/l10n.dart';
@@ -20,6 +21,9 @@ class _AppState extends State<App> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router.config,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

@@ -14,5 +14,5 @@ final List<BoxShadow> kShadow = [
     offset: Offset(0, 0),
   ),
 ];
-const kSplashColor = Color(0xFF121212);
-const kButtonColor = Color(0xFF636AE8);
+
+const mainColor = Color(0xFF121212);

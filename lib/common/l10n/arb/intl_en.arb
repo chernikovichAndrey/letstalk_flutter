@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "noConnection": "No internet connection",
+  "noConnectionMessage": "Please check your internet connection and try again.",
+  "retry": "Retry",
+  "exit": "Exit",
+  "connectFriends": "Connect\nfriends\neasily &\nquickly",
+  "stayConnected": "LetsTalk is the perfect way to stay connected with friends and family.",
+  "enterPhoneNumber": "Enter your phone number",
+  "selectCountryError": "Please select country and enter phone number",
+  "signUpWithPhone": "Sign up with phone",
+  "calls": "Calls",
+  "chats": "Chats",
+  "contacts": "Contacts",
+  "settings": "Settings",
+  "logout": "Logout"
+}

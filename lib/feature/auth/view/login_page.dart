@@ -1,6 +1,8 @@
 import 'package:fl_country_code_picker/fl_country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/l10n/generated/l10n.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
@@ -56,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Connect\nfriends\neasily &\nquickly',
+                      context.s.connectFriends,
                       style: theme.textTheme.displayMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -65,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'LetsTalk is the perfect way to stay connected with friends and family.',
+                      context.s.stayConnected,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white70,
                       ),
@@ -126,8 +128,8 @@ class _LoginPageState extends State<LoginPage> {
                             child: TextField(
                               controller: phoneController,
                               keyboardType: TextInputType.phone,
-                              decoration: const InputDecoration(
-                                hintText: 'Enter your phone number',
+                              decoration: InputDecoration(
+                                hintText: context.s.enterPhoneNumber,
                                 border: InputBorder.none,
                                 hintStyle: TextStyle(color: Colors.grey),
                               ),
@@ -152,20 +154,20 @@ class _LoginPageState extends State<LoginPage> {
                              );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please select country and enter phone number')),
+                              SnackBar(content: Text(context.s.selectCountryError)),
                             );
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFA000), // Amber/Orange
+                          backgroundColor: const Color(0xFFFFA000),
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          'Sign up with phone',
+                        child: Text(
+                          context.s.signUpWithPhone,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

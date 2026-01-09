@@ -38,6 +38,7 @@ class _AppState extends State<App> {
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.system,
         localizationsDelegates: [
+          S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,

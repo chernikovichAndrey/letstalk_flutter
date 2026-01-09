@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/l10n/generated/l10n.dart';
 
 class BottomNavigationShell extends StatelessWidget {
   const BottomNavigationShell({required this.child, super.key});
@@ -15,22 +17,22 @@ class BottomNavigationShell extends StatelessWidget {
         currentIndex: _calculateSelectedIndex(context),
         onTap: (int idx) => _onItemTapped(idx, context),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.contacts),
-            label: 'Contacts',
+            icon: const Icon(Icons.contacts),
+            label: context.s.contacts,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.call),
-            label: 'Calls',
+            icon: const Icon(Icons.call),
+            label: context.s.calls,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chats',
+            icon: const Icon(Icons.chat),
+            label: context.s.chats,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: const Icon(Icons.settings),
+            label: context.s.settings,
           ),
         ],
       ),

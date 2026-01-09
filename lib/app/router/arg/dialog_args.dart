@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/arg/router_args.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/l10n/generated/l10n.dart';
 
 class DialogArgs extends RouterArgs {
   const DialogArgs._({
@@ -14,10 +16,10 @@ class DialogArgs extends RouterArgs {
 
   factory DialogArgs.noConnection({required BuildContext context}) =>
       DialogArgs._(
-        title: 'No internet connection',
-        message: 'Please check your internet connection and try again.',
-        confirmText: 'Retry',
-        cancelText: 'Exit',
+        title: context.s.noConnection,
+        message: context.s.noConnectionMessage,
+        confirmText: context.s.retry,
+        cancelText: context.s.exit,
         onConfirm: (context) {
           context.pop(true);
         },

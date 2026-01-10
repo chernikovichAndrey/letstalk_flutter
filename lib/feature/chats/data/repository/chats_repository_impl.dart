@@ -48,6 +48,14 @@ class ChatsRepositoryImpl implements ChatsRepository {
   }
 
   @override
+  Future<void> markAsRead(int chatId, int messageId) async {
+    await _apiService.post(
+      '${ApiConstants.messages}/$chatId/read',
+      data: {'message_id': messageId},
+    );
+  }
+
+  @override
   Future<ChatDetailsResponse> getChatDetails(int chatId) async {
     final response = await _apiService.get(
       '${ApiConstants.chats}/$chatId',

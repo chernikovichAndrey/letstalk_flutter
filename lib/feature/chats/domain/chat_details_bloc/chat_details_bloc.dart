@@ -28,10 +28,23 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     try {
       final user = await _profileRepository.getProfile();
       final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
-      final messages = await _chatsRepository.getMessages(
+      var messages = await _chatsRepository.getMessages(
         event.chatId,
         limit: _limit,
       );
+
+      if (messages.isNotEmpty) {
+        try {
+          final maxMessageId = messages
+              .map((e) => e.id)
+              .reduce((value, element) => value > element ? value : element);
+          await _chatsRepository.markAsRead(event.chatId, maxMessageId);
+          messages = messages
+              .map((m) =>
+                  m.id <= maxMessageId && !m.read ? m.copyWith(read: true) : m)
+              .toList();
+        } catch (_) {}
+      }
 
       emit(
         state.copyWith(

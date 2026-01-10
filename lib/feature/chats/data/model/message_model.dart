@@ -28,6 +28,26 @@ class Message {
       createdAt: json['created_at'] as String? ?? '',
     );
   }
+
+  Message copyWith({
+    int? id,
+    int? chatId,
+    int? fromUserId,
+    String? fromPhone,
+    String? text,
+    bool? read,
+    String? createdAt,
+  }) {
+    return Message(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
+      fromUserId: fromUserId ?? this.fromUserId,
+      fromPhone: fromPhone ?? this.fromPhone,
+      text: text ?? this.text,
+      read: read ?? this.read,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }
 
 class MessagesResponse {

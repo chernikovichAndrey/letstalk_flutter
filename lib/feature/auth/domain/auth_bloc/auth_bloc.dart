@@ -39,8 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final currentState = state;
       if (currentState is AuthCodeSent) {
         try {
-          final token = await authRepository.verifyCode(currentState.phone, event.code);
-          await authRepository.saveToken(token);
+          await authRepository.verifyCode(currentState.phone, event.code);
           emit(AuthAuthenticated());
         } catch (e) {
           emit(AuthError(e.toString()));

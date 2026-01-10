@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_details_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
 
 class ChatDetailsPage extends StatefulWidget {
@@ -57,7 +58,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               if (state.status == ChatDetailsStatus.initial ||
                   (state.status == ChatDetailsStatus.loading &&
                       state.messages.isEmpty)) {
-                return const Center(child: CircularProgressIndicator());
+                return const ChatDetailsSkeleton();
               }
               if (state.status == ChatDetailsStatus.failure &&
                   state.messages.isEmpty) {

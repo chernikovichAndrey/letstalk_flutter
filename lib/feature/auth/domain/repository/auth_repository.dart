@@ -1,3 +1,3 @@
 abstract class AuthRepository {
-  Future<void> login(String countryCode, String phoneNumber);
+  Future<void> sendPhone(String countryCode, String phoneNumber);
 }

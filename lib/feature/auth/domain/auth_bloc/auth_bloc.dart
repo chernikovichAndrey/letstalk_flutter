@@ -11,7 +11,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.authRepository) : super(AuthUnauthenticated()) {
     on<AuthLogin>((event, emit) async {
       try {
-        await authRepository.login(event.countryCode, event.phoneNumber);
+        await authRepository.sendPhone(event.countryCode, event.phoneNumber);
         emit(AuthAuthenticated());
       } catch (e) {
         // In a real app we would emit an error state

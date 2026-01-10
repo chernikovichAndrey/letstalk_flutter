@@ -1,6 +1,7 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/feature/auth/view/widgets/auth_button.dart';
 import 'package:lets_talk/feature/auth/view/widgets/phone_input_field.dart';
 
 class LoginCard extends StatelessWidget {
@@ -41,27 +42,9 @@ class LoginCard extends StatelessWidget {
             onInit: onInit,
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: onLoginPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFA000),
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                context.s.signUpWithPhone,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          AuthButton(
+            text: context.s.signUpWithPhone,
+            onPressed: onLoginPressed,
           ),
         ],
       ),

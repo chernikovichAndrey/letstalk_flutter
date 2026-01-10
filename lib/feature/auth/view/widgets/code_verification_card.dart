@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/feature/auth/view/widgets/auth_button.dart';
 import 'package:pinput/pinput.dart';
 
 class CodeVerificationCard extends StatelessWidget {
@@ -65,28 +66,9 @@ class CodeVerificationCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: onVerifyPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFA000),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                context.s.verify,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
-              ),
-            ),
+          AuthButton(
+            text: context.s.verify,
+            onPressed: onVerifyPressed,
           ),
         ],
       ),

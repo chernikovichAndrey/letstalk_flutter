@@ -22,15 +22,15 @@ class AppRouter {
       buildRoute(Routes.login),
       
       // Shell for main tabs
-      ShellRoute(
-        builder: (context, state, child) {
-          return BottomNavigationShell(child: child);
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return BottomNavigationShell(navigationShell: navigationShell);
         },
-        routes: [
-          buildRoute(Routes.contacts),
-          buildRoute(Routes.calls),
-          buildRoute(Routes.chats),
-          buildRoute(Routes.settings),
+        branches: [
+          StatefulShellBranch(routes: [buildRoute(Routes.contacts)]),
+          StatefulShellBranch(routes: [buildRoute(Routes.calls)]),
+          StatefulShellBranch(routes: [buildRoute(Routes.chats)]),
+          StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
         ],
       ),
 

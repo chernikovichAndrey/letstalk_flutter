@@ -14,6 +14,20 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
     on<ChatsSearch>(_onSearch);
+    on<ChatUpdated>(_onChatUpdated);
+  }
+
+  Future<void> _onChatUpdated(ChatUpdated event, Emitter<ChatsState> emit) async {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      try {
+        final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
+        final updatedChats = currentState.chats.map((chat) {
+          return chat.id == event.chatId ? chatDetails.chat : chat;
+        }).toList();
+        emit(ChatsLoaded(updatedChats));
+      } catch (_) {}
+    }
   }
 
   Future<void> _onLoad(ChatsLoad event, Emitter<ChatsState> emit) async {

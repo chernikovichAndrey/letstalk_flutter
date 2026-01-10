@@ -80,13 +80,16 @@ class _ChatsPageState extends State<ChatsPage> {
                             final chat = state.chats[index];
                             return ChatListItem(
                               chat: chat,
-                              onTap: () {
-                                context.push(
+                              onTap: () async {
+                                await context.push(
                                   Routes.chatDetails.path.replaceFirst(':id', chat.id.toString()),
                                   extra: {
                                     'title': chat.title ?? context.s.noTitle
                                   }
                                 );
+                                if (context.mounted) {
+                                  context.read<ChatsBloc>().add(ChatUpdated(chat.id));
+                                }
                               },
                             );
                           }, childCount: state.chats.length),

@@ -15,3 +15,9 @@ class ChatsSearch extends ChatsEvent {
 
   ChatsSearch(this.query);
 }
+
+class ChatUpdated extends ChatsEvent {
+  final int chatId;
+
+  ChatUpdated(this.chatId);
+}

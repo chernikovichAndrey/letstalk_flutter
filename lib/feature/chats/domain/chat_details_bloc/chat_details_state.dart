@@ -7,7 +7,7 @@ class ChatDetailsState {
   final List<Message> messages;
   final bool hasReachedMax;
   final String? errorMessage;
-  final int? currentUserId;
+  final UserModel? currentUser;
   final Chat? chat;
   final List<ChatMember> members;
 
@@ -16,7 +16,7 @@ class ChatDetailsState {
     this.messages = const [],
     this.hasReachedMax = false,
     this.errorMessage,
-    this.currentUserId,
+    this.currentUser,
     this.chat,
     this.members = const [],
   });
@@ -26,7 +26,7 @@ class ChatDetailsState {
     List<Message>? messages,
     bool? hasReachedMax,
     String? errorMessage,
-    int? currentUserId,
+    UserModel? currentUser,
     Chat? chat,
     List<ChatMember>? members,
   }) {
@@ -35,7 +35,7 @@ class ChatDetailsState {
       messages: messages ?? this.messages,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       errorMessage: errorMessage,
-      currentUserId: currentUserId ?? this.currentUserId,
+      currentUser: currentUser ?? this.currentUser,
       chat: chat ?? this.chat,
       members: members ?? this.members,
     );

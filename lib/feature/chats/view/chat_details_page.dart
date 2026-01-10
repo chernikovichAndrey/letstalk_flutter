@@ -84,8 +84,8 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   }
                   final message = state.messages[index];
                   final isMe =
-                      state.currentUserId != null &&
-                      message.fromUserId == state.currentUserId;
+                      state.currentUser?.id != null &&
+                      message.fromUserId == state.currentUser?.id;
                   return MessageBubble(message: message, isMe: isMe);
                 },
               );

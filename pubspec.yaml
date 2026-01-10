@@ -19,7 +19,7 @@ dependencies:
   logger: ^2.6.2
   dio: ^5.9.0
   web_socket_channel: ^3.0.1
-  fl_country_code_picker: ^0.1.9+1
+  country_code_picker: ^3.4.1
 
 dev_dependencies:
   flutter_test:

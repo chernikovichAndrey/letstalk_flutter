@@ -1,4 +1,4 @@
-import 'package:fl_country_code_picker/fl_country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -13,45 +13,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final countryPicker = const FlCountryCodePicker();
   CountryCode? countryCode;
   final TextEditingController phoneController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    phoneController.addListener(_onPhoneChanged);
   }
 
   @override
   void dispose() {
-    phoneController.removeListener(_onPhoneChanged);
     phoneController.dispose();
     super.dispose();
-  }
-
-  void _onPhoneChanged() {
-    final text = phoneController.text;
-    if (countryCode == null && text.startsWith('+')) {
-      // Find the best matching country code
-      // We look for the longest dial code that matches the start of the text
-      CountryCode? bestMatch;
-      for (final code in countryPicker.countryCodes) {
-        if (text.startsWith(code.dialCode)) {
-          if (bestMatch == null ||
-              code.dialCode.length > bestMatch.dialCode.length) {
-            bestMatch = code;
-          }
-        }
-      }
-
-      if (bestMatch != null) {
-        setState(() {
-          countryCode = bestMatch;
-          phoneController.text = text.substring(bestMatch!.dialCode.length);
-        });
-      }
-    }
   }
 
   @override
@@ -106,6 +79,18 @@ class _LoginPageState extends State<LoginPage> {
                   setState(() {
                     countryCode = code;
                   });
+                },
+                initialCountryCode: View.of(context).platformDispatcher.locale.countryCode,
+                onInit: (code) {
+                  if (countryCode == null && code != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          countryCode = code;
+                        });
+                      }
+                    });
+                  }
                 },
                 onLoginPressed: () {
                   final code = countryCode?.dialCode;

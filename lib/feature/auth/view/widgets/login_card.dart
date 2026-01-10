@@ -1,4 +1,4 @@
-import 'package:fl_country_code_picker/fl_country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/auth/view/widgets/phone_input_field.dart';
@@ -10,17 +10,21 @@ class LoginCard extends StatelessWidget {
     required this.countryCode,
     required this.onCountryCodeChanged,
     required this.onLoginPressed,
+    this.initialCountryCode,
+    this.onInit,
   });
 
   final TextEditingController phoneController;
   final CountryCode? countryCode;
   final ValueChanged<CountryCode> onCountryCodeChanged;
   final VoidCallback onLoginPressed;
+  final String? initialCountryCode;
+  final ValueChanged<CountryCode?>? onInit;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(24),
+      margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -33,6 +37,8 @@ class LoginCard extends StatelessWidget {
             controller: phoneController,
             countryCode: countryCode,
             onCountryCodeChanged: onCountryCodeChanged,
+            initialCountryCode: initialCountryCode,
+            onInit: onInit,
           ),
           const SizedBox(height: 24),
           SizedBox(

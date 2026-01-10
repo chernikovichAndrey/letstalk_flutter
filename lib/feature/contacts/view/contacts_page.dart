@@ -10,6 +10,7 @@ import 'package:lets_talk/common/widget/c_search_bar.dart';
 import 'package:lets_talk/common/widget/c_skeleton.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
+import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
 
 class ContactsPage extends StatelessWidget {
   const ContactsPage({super.key});
@@ -18,92 +19,70 @@ class ContactsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ContactsBloc(ContactsRepositoryImpl())..add(ContactsLoad()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.s.contacts),
-          centerTitle: true,
-        ),
-        body: BlocBuilder<ContactsBloc, ContactsState>(
-          builder: (context, state) {
-            if (state is ContactsLoading) {
-              return ListView.builder(
-                itemCount: 15,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      children: [
-                        const CSkeleton(width: 48, height: 48, radius: 24),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const CSkeleton(width: 140, height: 16, radius: 4),
-                              const SizedBox(height: 8),
-                              const CSkeleton(width: 100, height: 14, radius: 4),
-                              const SizedBox(height: 8),
-                            ],
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(context.s.contacts),
+            centerTitle: true,
+          ),
+          body: BlocBuilder<ContactsBloc, ContactsState>(
+            builder: (context, state) {
+              if (state is ContactsLoading) {
+                return ContactsSceleton();
+              }
+              return CRefreshableScrollView(
+                onRefresh: () => _onRefresh(context),
+                slivers: [
+                  if (state is ContactsLoaded) ...[
+                    SliverToBoxAdapter(
+                      child: CSearchBar(
+                        hintText: context.s.search,
+                        onChanged: (value) {
+                          context.read<ContactsBloc>().add(ContactsSearch(value));
+                        },
+                      ),
+                    ),
+                    if (state.contacts.isEmpty)
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Text(
+                            context.s.noContacts,
+                            style: context.text.titleMedium?.copyWith(
+                              color: context.color.onSurface.withValues(alpha: 0.6),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }
-
-            return CRefreshableScrollView(
-              onRefresh: () => _onRefresh(context),
-              slivers: [
-                if (state is ContactsLoaded) ...[
-                  SliverToBoxAdapter(
-                    child: CSearchBar(
-                      hintText: context.s.search,
-                      onChanged: (value) {
-                        context.read<ContactsBloc>().add(ContactsSearch(value));
-                      },
-                    ),
-                  ),
-                  if (state.contacts.isEmpty)
+                      )
+                    else
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final contact = state.contacts[index];
+                            return CListTile(
+                              leading: CAvatar(
+                                imageUrl: contact.imageUrl.isNotEmpty ? contact.imageUrl : null,
+                                name: contact.fullName,
+                              ),
+                              title: contact.fullName,
+                              subtitle: contact.phone.isNotEmpty ? contact.phone : null,
+                            );
+                          },
+                          childCount: state.contacts.length,
+                        ),
+                      ),
+                  ] else if (state is ContactsError)
                     SliverFillRemaining(
                       hasScrollBody: false,
-                      child: Center(
-                        child: Text(
-                          context.s.noContacts,
-                          style: context.text.titleMedium?.copyWith(
-                            color: context.color.onSurface.withValues(alpha: 0.6),
-                          ),
-                        ),
-                      ),
+                      child: Center(child: Text(state.message)),
                     )
                   else
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final contact = state.contacts[index];
-                          return CListTile(
-                            leading: CAvatar(
-                              imageUrl: contact.imageUrl.isNotEmpty ? contact.imageUrl : null,
-                              name: contact.fullName,
-                            ),
-                            title: contact.fullName,
-                            subtitle: contact.phone.isNotEmpty ? contact.phone : null,
-                          );
-                        },
-                        childCount: state.contacts.length,
-                      ),
-                    ),
-                ] else if (state is ContactsError)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: Text(state.message)),
-                  )
-                else
-                  const SliverToBoxAdapter(child: SizedBox.shrink()),
-              ],
-            );
-          },
+                    const SliverToBoxAdapter(child: SizedBox.shrink()),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

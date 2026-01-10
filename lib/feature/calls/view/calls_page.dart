@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
-import 'package:lets_talk/feature/calls/data/repository/calls_repository_impl.dart';
 import 'package:lets_talk/feature/calls/domain/calls_bloc/calls_bloc.dart';
 import 'package:lets_talk/feature/calls/view/widgets/call_list.dart';
 import 'package:lets_talk/feature/calls/view/widgets/call_list_skeleton.dart';
@@ -15,25 +13,14 @@ class CallsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CallsBloc(
-        CallsRepositoryImpl(ApiService()),
-      )..add(LoadCalls()),
-      child: const _CallsPageView(),
-    );
-  }
-}
-
-class _CallsPageView extends StatelessWidget {
-  const _CallsPageView();
-
-  @override
-  Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 0,
+          title: Text(context.s.calls),
+          toolbarHeight: 30,
+          centerTitle: true,
+          elevation: 0,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(52),
             child: Padding(

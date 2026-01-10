@@ -12,4 +12,14 @@ class ChatsRepositoryImpl implements ChatsRepository {
     final chatsResponse = ChatsResponse.fromJson(response.data);
     return chatsResponse.chats;
   }
+
+  @override
+  Future<List<Chat>> searchChats(String query) async {
+    final response = await _apiService.get(
+      ApiConstants.chatsSearch,
+      queryParameters: {'q': query},
+    );
+    final chatsResponse = ChatsResponse.fromJson(response.data);
+    return chatsResponse.chats;
+  }
 }

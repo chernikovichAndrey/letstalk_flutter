@@ -4,9 +4,7 @@ import 'package:lets_talk/feature/calls/data/model/call_model.dart';
 import 'package:lets_talk/feature/calls/domain/repository/calls_repository.dart';
 
 class CallsRepositoryImpl implements CallsRepository {
-  final ApiService _apiService;
-
-  CallsRepositoryImpl(this._apiService);
+  final ApiService _apiService = ApiService();
 
   @override
   Future<List<Call>> getCalls() async {

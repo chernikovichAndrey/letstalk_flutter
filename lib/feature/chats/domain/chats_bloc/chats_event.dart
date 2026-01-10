@@ -9,3 +9,9 @@ class ChatsRefresh extends ChatsEvent {
 
   ChatsRefresh([this.completer]);
 }
+
+class ChatsSearch extends ChatsEvent {
+  final String query;
+
+  ChatsSearch(this.query);
+}

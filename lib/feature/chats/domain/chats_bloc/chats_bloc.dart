@@ -13,6 +13,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ChatsBloc(this._chatsRepository) : super(ChatsInitial()) {
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
+    on<ChatsSearch>(_onSearch);
   }
 
   Future<void> _onLoad(ChatsLoad event, Emitter<ChatsState> emit) async {
@@ -33,6 +34,17 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(ChatsError(e.toString()));
     } finally {
       event.completer?.complete();
+    }
+  }
+
+  Future<void> _onSearch(ChatsSearch event, Emitter<ChatsState> emit) async {
+    try {
+      final chats = event.query.isEmpty
+          ? await _chatsRepository.getChats()
+          : await _chatsRepository.searchChats(event.query);
+      emit(ChatsLoaded(chats));
+    } catch (e) {
+      emit(ChatsError(e.toString()));
     }
   }
 }

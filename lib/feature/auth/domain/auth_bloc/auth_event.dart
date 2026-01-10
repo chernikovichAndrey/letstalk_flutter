@@ -3,11 +3,18 @@ part of 'auth_bloc.dart';
 @immutable
 sealed class AuthEvent {}
 
-class AuthLogin extends AuthEvent {
+class AuthSendCode extends AuthEvent {
   final String countryCode;
   final String phoneNumber;
 
-  AuthLogin({required this.countryCode, required this.phoneNumber});
+  AuthSendCode({required this.countryCode, required this.phoneNumber});
 }
+
+class AuthVerifyCode extends AuthEvent {
+  final String code;
+  AuthVerifyCode({required this.code});
+}
+
+class AuthCheckStatus extends AuthEvent {}
 
 class AuthLogout extends AuthEvent {}

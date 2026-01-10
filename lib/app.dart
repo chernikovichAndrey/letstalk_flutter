@@ -28,13 +28,13 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: AuthBloc(AuthRepositoryImpl()),
+    return BlocProvider(
+      create: (context) => AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
             router.config.go(Routes.contacts.path);
-          } else {
+          } else if (state is AuthUnauthenticated) {
             router.config.go(Routes.login.path);
           }
         },

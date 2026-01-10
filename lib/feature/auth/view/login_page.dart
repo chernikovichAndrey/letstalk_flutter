@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:lets_talk/feature/auth/view/widgets/code_verification_card.dart';
 import 'package:lets_talk/feature/auth/view/widgets/login_card.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   CountryCode? countryCode;
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
 
   @override
   void initState() {
@@ -24,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     phoneController.dispose();
+    codeController.dispose();
     super.dispose();
   }
 
@@ -72,39 +75,61 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const Spacer(flex: 3),
-              LoginCard(
-                phoneController: phoneController,
-                countryCode: countryCode,
-                onCountryCodeChanged: (code) {
-                  setState(() {
-                    countryCode = code;
-                  });
-                },
-                initialCountryCode: View.of(context).platformDispatcher.locale.countryCode,
-                onInit: (code) {
-                  if (countryCode == null && code != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          countryCode = code;
-                        });
-                      }
-                    });
-                  }
-                },
-                onLoginPressed: () {
-                  final code = countryCode?.dialCode;
-                  final phone = phoneController.text;
-
-                  if (code != null && phone.isNotEmpty) {
-                    context.read<AuthBloc>().add(
-                          AuthLogin(countryCode: code, phoneNumber: phone),
-                        );
-                  } else {
+              BlocConsumer<AuthBloc, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthError) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.s.selectCountryError)),
+                      SnackBar(content: Text(state.message)),
                     );
                   }
+                },
+                builder: (context, state) {
+                  if (state is AuthCodeSent) {
+                    return CodeVerificationCard(
+                      codeController: codeController,
+                      onVerifyPressed: () {
+                        final code = codeController.text;
+                        if (code.isNotEmpty) {
+                          context.read<AuthBloc>().add(AuthVerifyCode(code: code));
+                        }
+                      },
+                    );
+                  }
+                  return LoginCard(
+                    phoneController: phoneController,
+                    countryCode: countryCode,
+                    onCountryCodeChanged: (code) {
+                      setState(() {
+                        countryCode = code;
+                      });
+                    },
+                    initialCountryCode: View.of(context).platformDispatcher.locale.countryCode,
+                    onInit: (code) {
+                      if (countryCode == null && code != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            setState(() {
+                              countryCode = code;
+                            });
+                          }
+                        });
+                      }
+                    },
+                    onLoginPressed: () {
+                      final code = countryCode?.dialCode;
+                      final phone = phoneController.text;
+
+                      if (code != null && phone.isNotEmpty) {
+                        context.read<AuthBloc>().add(
+                              AuthSendCode(countryCode: code, phoneNumber: phone),
+                            );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(context.s.selectCountryError)),
+                        );
+                      }
+                    },
+                  );
                 },
               ),
             ],

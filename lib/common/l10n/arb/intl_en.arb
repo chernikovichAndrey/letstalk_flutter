@@ -7,6 +7,8 @@
   "connectFriends": "Connect\nfriends\neasily &\nquickly",
   "stayConnected": "LetsTalk is the perfect way to stay connected with friends and family.",
   "enterPhoneNumber": "Enter your phone number",
+  "enterCode": "Enter Code",
+  "verify": "Verify",
   "selectCountryError": "Please select country and enter phone number",
   "signUpWithPhone": "Sign up with phone",
   "calls": "Calls",

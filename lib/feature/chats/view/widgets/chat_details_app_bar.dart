@@ -4,10 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
 class ChatDetailsAppBar extends StatelessWidget {
-  const ChatDetailsAppBar();
+  const ChatDetailsAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.white : Colors.black;
+    // For the top gradient, we want a subtle tint.
+    // In dark mode: white tint looks like "glass reflection"
+    // In light mode: black tint looks like "shadow" or "smoked glass"
+    final gradientColors = isDark
+        ? [
+            Colors.white.withOpacity(0.05),
+            Colors.white.withOpacity(0.45),
+          ]
+        : [
+            Colors.black.withOpacity(0.05),
+            Colors.black.withOpacity(0.45),
+          ];
+
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
@@ -32,10 +47,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.05),
-                          Colors.white.withValues(alpha: 0.45),
-                        ],
+                        colors: gradientColors,
                       ),
                     ),
                   ),
@@ -63,18 +75,18 @@ class ChatDetailsAppBar extends StatelessWidget {
                           child: Container(
                             height: 50,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: baseColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(25),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.3),
+                                color: baseColor.withOpacity(0.3),
                                 width: 1.5,
                               ),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 'Chat Name',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: baseColor,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),

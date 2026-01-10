@@ -14,6 +14,9 @@ class GlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.white : Colors.black;
+
     return ClipOval(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -21,10 +24,10 @@ class GlassButton extends StatelessWidget {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: baseColor.withOpacity(0.2),
             shape: BoxShape.circle,
             border: Border.all(
-              color: Colors.white.withOpacity(0.3),
+              color: baseColor.withOpacity(0.3),
               width: 1.5,
             ),
           ),
@@ -34,7 +37,7 @@ class GlassButton extends StatelessWidget {
               onTap: onTap,
               child: Icon(
                 icon,
-                color: Colors.white,
+                color: baseColor,
                 size: 24,
               ),
             ),

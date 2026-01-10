@@ -78,7 +78,7 @@ class MessageBubble extends StatelessWidget {
                 color: textColor,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

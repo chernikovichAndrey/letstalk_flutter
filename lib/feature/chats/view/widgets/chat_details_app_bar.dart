@@ -13,13 +13,13 @@ class ChatDetailsAppBar extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final baseColor = isDark ? Colors.white : Colors.black;
     final gradientColors = [
-      baseColor.withValues(alpha: 0.2),
-      baseColor.withValues(alpha: 0.6),
+      baseColor.withValues(alpha: 0.05),
+      baseColor.withValues(alpha: 0.05),
     ];
 
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
+        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
         child: Stack(
           children: [
             Positioned.fill(
@@ -34,7 +34,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                 },
                 blendMode: BlendMode.dstIn,
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -68,7 +68,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: baseColor.withOpacity(0.2),
+                            color: baseColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Center(

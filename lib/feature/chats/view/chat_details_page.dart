@@ -5,6 +5,7 @@ import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bl
 import 'package:lets_talk/feature/chats/view/widgets/chat_details_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message_input.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;
@@ -51,6 +52,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
@@ -70,6 +72,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 controller: _scrollController,
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top + 60,
+                  bottom: MediaQuery.of(context).padding.bottom + 80,
                 ),
                 itemCount: state.hasReachedMax
                     ? state.messages.length
@@ -97,6 +100,12 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
             left: 0,
             right: 0,
             child: ChatDetailsAppBar(widget.chatTitle),
+          ),
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: MessageInput(),
           ),
         ],
       ),

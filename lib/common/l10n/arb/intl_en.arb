@@ -31,6 +31,7 @@
   "noCalls": "No calls",
   "noChats": "No chats found",
   "noTitle": "No Title",
-  "search": "Search"
+  "search": "Search",
+  "messageInputHint": "Message"
 
 }

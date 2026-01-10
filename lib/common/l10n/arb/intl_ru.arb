@@ -24,5 +24,6 @@
   "noCalls": "Нет звонков",
   "noChats": "Чаты не найдены",
   "noTitle": "Без названия",
-  "search": "Поиск"
+  "search": "Поиск",
+  "messageInputHint": "Сообщение"
 }

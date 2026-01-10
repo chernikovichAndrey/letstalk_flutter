@@ -16,3 +16,13 @@ class ChatDetailsSendMessage extends ChatDetailsEvent {
   final String text;
   ChatDetailsSendMessage(this.text);
 }
+
+class ChatDetailsNewMessageReceived extends ChatDetailsEvent {
+  final Message message;
+  ChatDetailsNewMessageReceived(this.message);
+}
+
+class ChatDetailsErrorReceived extends ChatDetailsEvent {
+  final String error;
+  ChatDetailsErrorReceived(this.error);
+}

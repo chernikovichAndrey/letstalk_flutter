@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
@@ -12,6 +16,8 @@ part 'chat_details_state.dart';
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final ChatsRepository _chatsRepository;
   final ProfileRepository _profileRepository;
+  final WebSocketService _wsService = WebSocketService();
+  StreamSubscription? _wsSubscription;
   static const int _limit = 20;
 
   ChatDetailsBloc(this._chatsRepository, this._profileRepository)
@@ -19,6 +25,50 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
     on<ChatDetailsSendMessage>(_onSendMessage);
+    on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
+    on<ChatDetailsErrorReceived>(_onErrorReceived);
+
+    _subscribeToWebSocket();
+  }
+
+  void _onErrorReceived(
+    ChatDetailsErrorReceived event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        status: ChatDetailsStatus.failure,
+        errorMessage: event.error,
+      ),
+    );
+  }
+
+  void _subscribeToWebSocket() {
+    _wsSubscription = _wsService.stream.listen((message) {
+      try {
+        if (message is String) {
+          final decoded = jsonDecode(message);
+          switch (decoded['type']) {
+            case 'message_sent':
+              final msg = Message.fromJson(decoded['message']);
+              add(ChatDetailsNewMessageReceived(msg));
+            default:
+              return;
+          }
+        }
+      } catch (e) {
+        // Handle parse error or ignore
+      }
+    });
+  }
+
+  void _onNewMessageReceived(
+    ChatDetailsNewMessageReceived event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    if (state.chat?.id == event.message.chatId) {
+      emit(state.copyWith(messages: [event.message, ...state.messages]));
+    }
   }
 
   Future<void> _onSendMessage(
@@ -60,8 +110,11 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
               .reduce((value, element) => value > element ? value : element);
           await _chatsRepository.markAsRead(event.chatId, maxMessageId);
           messages = messages
-              .map((m) =>
-                  m.id <= maxMessageId && !m.read ? m.copyWith(read: true) : m)
+              .map(
+                (m) => m.id <= maxMessageId && !m.read
+                    ? m.copyWith(read: true)
+                    : m,
+              )
               .toList();
         } catch (_) {}
       }
@@ -118,5 +171,11 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _wsSubscription?.cancel();
+    return super.close();
   }
 }

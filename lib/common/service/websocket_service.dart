@@ -13,13 +13,14 @@ class WebSocketService {
   WebSocketService._internal();
 
   WebSocketChannel? _channel;
+  Stream<dynamic>? _broadcastStream;
   final Logger _logger = Logger();
 
   Stream<dynamic> get stream {
     if (_channel == null) {
       throw Exception('WebSocket connection not established');
     }
-    return _channel!.stream;
+    return _broadcastStream!;
   }
 
   void connect(String url, {Iterable<String>? protocols}) {
@@ -30,6 +31,7 @@ class WebSocketService {
         Uri.parse(url),
         protocols: protocols,
       );
+      _broadcastStream = _channel!.stream.asBroadcastStream();
       _logger.i('WebSocket connected to $url');
     } catch (e) {
       _logger.e('WebSocket connection error: $e');
@@ -47,6 +49,7 @@ class WebSocketService {
         closeReason,
       );
       _channel = null;
+      _broadcastStream = null;
       _logger.i('WebSocket disconnected');
     }
   }

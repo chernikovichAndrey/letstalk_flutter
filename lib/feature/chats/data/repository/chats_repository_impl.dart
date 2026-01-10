@@ -6,7 +6,8 @@ import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 
 class ChatsRepositoryImpl implements ChatsRepository {
-  final ApiService _apiService = ApiService();
+  final _apiService = ApiService();
+  final _wsService = WebSocketService();
 
   @override
   Future<List<Chat>> getChats() async {
@@ -50,10 +51,11 @@ class ChatsRepositoryImpl implements ChatsRepository {
 
   @override
   Future<void> markAsRead(int chatId, int messageId) async {
-    await _apiService.post(
-      '${ApiConstants.messages}/$chatId/read',
-      data: {'message_id': messageId},
-    );
+    _wsService.send({
+      "type": "read_message",
+      "chat_id": chatId,
+      "message_id": messageId
+    });
   }
 
   @override

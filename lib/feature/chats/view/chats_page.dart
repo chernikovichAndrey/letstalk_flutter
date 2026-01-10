@@ -83,6 +83,9 @@ class _ChatsPageState extends State<ChatsPage> {
                               onTap: () {
                                 context.push(
                                   Routes.chatDetails.path.replaceFirst(':id', chat.id.toString()),
+                                  extra: {
+                                    'title': chat.title ?? context.s.noTitle
+                                  }
                                 );
                               },
                             );

@@ -8,6 +8,8 @@ class ChatDetailsState {
   final bool hasReachedMax;
   final String? errorMessage;
   final int? currentUserId;
+  final Chat? chat;
+  final List<ChatMember> members;
 
   const ChatDetailsState({
     this.status = ChatDetailsStatus.initial,
@@ -15,6 +17,8 @@ class ChatDetailsState {
     this.hasReachedMax = false,
     this.errorMessage,
     this.currentUserId,
+    this.chat,
+    this.members = const [],
   });
 
   ChatDetailsState copyWith({
@@ -23,6 +27,8 @@ class ChatDetailsState {
     bool? hasReachedMax,
     String? errorMessage,
     int? currentUserId,
+    Chat? chat,
+    List<ChatMember>? members,
   }) {
     return ChatDetailsState(
       status: status ?? this.status,
@@ -30,6 +36,8 @@ class ChatDetailsState {
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       errorMessage: errorMessage,
       currentUserId: currentUserId ?? this.currentUserId,
+      chat: chat ?? this.chat,
+      members: members ?? this.members,
     );
   }
 }

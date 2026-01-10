@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 
@@ -18,9 +19,13 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     emit(state.copyWith(status: ChatDetailsStatus.loading));
     try {
       final userId = 5;
+      final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
       final messages = await _chatsRepository.getMessages(event.chatId, limit: _limit);
+      
       emit(state.copyWith(
         status: ChatDetailsStatus.success,
+        chat: chatDetails.chat,
+        members: chatDetails.members,
         messages: messages.reversed.toList(),
         hasReachedMax: messages.length < _limit,
         currentUserId: userId,

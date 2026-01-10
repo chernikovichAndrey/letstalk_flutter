@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
@@ -6,7 +7,13 @@ import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;
-  const ChatDetailsPage({super.key, required this.chatId});
+  final String chatTitle;
+
+  const ChatDetailsPage({
+    super.key,
+    required this.chatId,
+    required this.chatTitle,
+  });
 
   @override
   State<ChatDetailsPage> createState() => _ChatDetailsPageState();
@@ -48,31 +55,38 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
           BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
             builder: (context, state) {
               if (state.status == ChatDetailsStatus.initial ||
-                  (state.status == ChatDetailsStatus.loading && state.messages.isEmpty)) {
+                  (state.status == ChatDetailsStatus.loading &&
+                      state.messages.isEmpty)) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (state.status == ChatDetailsStatus.failure && state.messages.isEmpty) {
+              if (state.status == ChatDetailsStatus.failure &&
+                  state.messages.isEmpty) {
                 return Center(child: Text(state.errorMessage ?? 'Error'));
               }
 
               return ListView.builder(
                 reverse: true,
                 controller: _scrollController,
-                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 60),
-                itemCount: state.hasReachedMax ? state.messages.length : state.messages.length + 1,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 60,
+                ),
+                itemCount: state.hasReachedMax
+                    ? state.messages.length
+                    : state.messages.length + 1,
                 itemBuilder: (context, index) {
                   if (index >= state.messages.length) {
-                    return const Center(child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    ));
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CupertinoActivityIndicator(),
+                      ),
+                    );
                   }
                   final message = state.messages[index];
-                  final isMe = state.currentUserId != null && message.fromUserId == state.currentUserId;
-                  return MessageBubble(
-                    message: message,
-                    isMe: isMe,
-                  );
+                  final isMe =
+                      state.currentUserId != null &&
+                      message.fromUserId == state.currentUserId;
+                  return MessageBubble(message: message, isMe: isMe);
                 },
               );
             },
@@ -81,7 +95,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
             top: 0,
             left: 0,
             right: 0,
-            child: ChatDetailsAppBar(),
+            child: ChatDetailsAppBar(widget.chatTitle),
           ),
         ],
       ),

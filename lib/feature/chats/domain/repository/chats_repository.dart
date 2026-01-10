@@ -5,4 +5,5 @@ abstract class ChatsRepository {
   Future<List<Chat>> getChats();
   Future<List<Chat>> searchChats(String query);
   Future<List<Message>> getMessages(int chatId, {int limit, int? fromMessageId, int? toMessageId});
+  Future<ChatDetailsResponse> getChatDetails(int chatId);
 }

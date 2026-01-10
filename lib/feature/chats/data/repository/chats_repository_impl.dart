@@ -46,4 +46,12 @@ class ChatsRepositoryImpl implements ChatsRepository {
     final messagesResponse = MessagesResponse.fromJson(response.data);
     return messagesResponse.messages;
   }
+
+  @override
+  Future<ChatDetailsResponse> getChatDetails(int chatId) async {
+    final response = await _apiService.get(
+      '${ApiConstants.chats}/$chatId',
+    );
+    return ChatDetailsResponse.fromJson(response.data);
+  }
 }

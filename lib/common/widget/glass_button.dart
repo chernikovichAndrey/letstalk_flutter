@@ -26,10 +26,6 @@ class GlassButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: baseColor.withOpacity(0.2),
             shape: BoxShape.circle,
-            border: Border.all(
-              color: baseColor.withOpacity(0.3),
-              width: 1.5,
-            ),
           ),
           child: Material(
             color: Colors.transparent,

@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
 class ChatDetailsAppBar extends StatelessWidget {
-  const ChatDetailsAppBar({super.key});
+  final String chatTitle;
+
+  const ChatDetailsAppBar(this.chatTitle, {super.key});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final baseColor = isDark ? Colors.white : Colors.black;
-    // For the top gradient, we want a subtle tint.
-    // In dark mode: white tint looks like "glass reflection"
-    // In light mode: black tint looks like "shadow" or "smoked glass"
     final gradientColors = isDark
         ? [
             Colors.white.withOpacity(0.05),
@@ -67,31 +66,26 @@ class ChatDetailsAppBar extends StatelessWidget {
                       onTap: () => Navigator.of(context).pop(),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: baseColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: baseColor.withOpacity(0.3),
-                                width: 1.5,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: baseColor.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Center(
+                            child: Text(
+                              chatTitle,
+                              style: TextStyle(
+                                color: baseColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Chat Name',
-                                style: TextStyle(
-                                  color: baseColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),

@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 20),
                         Text(
                           subtitle,
                           style: theme.textTheme.bodyLarge?.copyWith(

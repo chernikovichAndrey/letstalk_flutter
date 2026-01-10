@@ -31,11 +31,11 @@ class CodeVerificationCard extends StatelessWidget {
     );
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -65,7 +65,7 @@ class CodeVerificationCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 12),
           AuthButton(
             text: context.s.verify,
             onPressed: onVerifyPressed,

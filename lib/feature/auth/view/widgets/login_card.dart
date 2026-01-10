@@ -41,7 +41,7 @@ class LoginCard extends StatelessWidget {
             initialCountryCode: initialCountryCode,
             onInit: onInit,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
           AuthButton(
             text: context.s.signUpWithPhone,
             onPressed: onLoginPressed,

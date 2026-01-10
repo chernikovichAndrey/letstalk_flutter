@@ -62,15 +62,16 @@ class MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
-            bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
+            topLeft: const Radius.circular(12),
+            topRight: const Radius.circular(12),
+            bottomLeft: isMe ? const Radius.circular(12) : const Radius.circular(4),
+            bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(12),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
+        child: Wrap(
+          alignment: WrapAlignment.end,
+          crossAxisAlignment: WrapCrossAlignment.end,
+          spacing: 8,
           children: [
             Text(
               message.text ?? '',
@@ -78,7 +79,6 @@ class MessageBubble extends StatelessWidget {
                 color: textColor,
               ),
             ),
-            const SizedBox(height: 1),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -86,7 +86,7 @@ class MessageBubble extends StatelessWidget {
                   time,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: timeColor,
-                    fontSize: 10,
+                    fontSize: 9,
                   ),
                 ),
                 if (isMe) ...[

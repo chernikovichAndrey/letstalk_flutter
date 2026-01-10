@@ -15,5 +15,7 @@
   "chats": "Чаты",
   "contacts": "Контакты",
   "settings": "Настройки",
-  "logout": "Выйти"
+  "logout": "Выйти",
+  "verificationTitle": "Подтверждение вашего\nличного аккаунта\nLetsTalk",
+  "verificationSubtitle": "Введите 6-значный номер, отправленный на {phone}"
 }

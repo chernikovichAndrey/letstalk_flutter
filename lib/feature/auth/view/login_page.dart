@@ -46,94 +46,115 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(flex: 2),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.s.connectFriends,
-                      style: theme.textTheme.displayMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        height: 1.1,
-                      ),
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+          builder: (context, state) {
+            final String title;
+            final String subtitle;
+            final bool isCodeSent = state is AuthCodeSent;
+
+            if (state is AuthCodeSent) {
+              title = context.s.verificationTitle;
+              subtitle = context.s.verificationSubtitle(state.phone);
+            } else {
+              title = context.s.connectFriends;
+              subtitle = context.s.stayConnected;
+            }
+
+            return SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Spacer(flex: 2),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: theme.textTheme.displayMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: Colors.white70,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      context.s.stayConnected,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(flex: 3),
-              BlocConsumer<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state is AuthCodeSent) {
-                    return CodeVerificationCard(
+                  ),
+                  const Spacer(flex: 3),
+                  if (isCodeSent)
+                    CodeVerificationCard(
                       codeController: codeController,
                       onVerifyPressed: () {
                         final code = codeController.text;
                         if (code.isNotEmpty) {
-                          context.read<AuthBloc>().add(AuthVerifyCode(code: code));
+                          context
+                              .read<AuthBloc>()
+                              .add(AuthVerifyCode(code: code));
                         }
                       },
-                    );
-                  }
-                  return LoginCard(
-                    phoneController: phoneController,
-                    countryCode: countryCode,
-                    onCountryCodeChanged: (code) {
-                      setState(() {
-                        countryCode = code;
-                      });
-                    },
-                    initialCountryCode: View.of(context).platformDispatcher.locale.countryCode,
-                    onInit: (code) {
-                      if (countryCode == null && code != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted) {
-                            setState(() {
-                              countryCode = code;
-                            });
-                          }
+                    )
+                  else
+                    LoginCard(
+                      phoneController: phoneController,
+                      countryCode: countryCode,
+                      onCountryCodeChanged: (code) {
+                        setState(() {
+                          countryCode = code;
                         });
-                      }
-                    },
-                    onLoginPressed: () {
-                      final code = countryCode?.dialCode;
-                      final phone = phoneController.text;
+                      },
+                      initialCountryCode:
+                          View.of(context).platformDispatcher.locale.countryCode,
+                      onInit: (code) {
+                        if (countryCode == null && code != null) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              setState(() {
+                                countryCode = code;
+                              });
+                            }
+                          });
+                        }
+                      },
+                      onLoginPressed: () {
+                        final code = countryCode?.dialCode;
+                        final phone = phoneController.text;
 
-                      if (code != null && phone.isNotEmpty) {
-                        context.read<AuthBloc>().add(
-                              AuthSendCode(countryCode: code, phoneNumber: phone),
-                            );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(context.s.selectCountryError)),
-                        );
-                      }
-                    },
-                  );
-                },
+                        if (code != null && phone.isNotEmpty) {
+                          context.read<AuthBloc>().add(
+                                AuthSendCode(
+                                  countryCode: code,
+                                  phoneNumber: phone,
+                                ),
+                              );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(context.s.selectCountryError),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

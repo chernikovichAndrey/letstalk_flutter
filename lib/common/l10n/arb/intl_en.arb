@@ -15,5 +15,14 @@
   "chats": "Chats",
   "contacts": "Contacts",
   "settings": "Settings",
-  "logout": "Logout"
+  "logout": "Logout",
+  "verificationTitle": "Verification your\npersonal LetsTalk\naccount",
+  "verificationSubtitle": "Enter a 6 digit number that was sent to {phone}",
+  "@verificationSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -16,7 +16,7 @@
   "contacts": "Contacts",
   "settings": "Settings",
   "logout": "Logout",
-  "verificationTitle": "Verification your\npersonal LetsTalk\naccount",
+  "verificationTitle": "Verification your\npersonal Lets Talk\naccount",
   "verificationSubtitle": "Enter a 6 digit number that was sent to {phone}",
   "@verificationSubtitle": {
     "placeholders": {

@@ -39,16 +39,15 @@ class _LoginPageState extends State<LoginPage> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
             }
           },
           builder: (context, state) {
             final String title;
             final String subtitle;
             final bool isCodeSent = state is AuthCodeSent;
-
             if (state is AuthCodeSent) {
               title = context.s.verificationTitle;
               subtitle = context.s.verificationSubtitle(state.phone);
@@ -56,23 +55,21 @@ class _LoginPageState extends State<LoginPage> {
               title = context.s.connectFriends;
               subtitle = context.s.stayConnected;
             }
-
             return SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Spacer(flex: 2),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
-                          style: theme.textTheme.displayMedium?.copyWith(
+                          style: theme.textTheme.displaySmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            height: 1.1,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -93,9 +90,9 @@ class _LoginPageState extends State<LoginPage> {
                       onVerifyPressed: () {
                         final code = codeController.text;
                         if (code.isNotEmpty) {
-                          context
-                              .read<AuthBloc>()
-                              .add(AuthVerifyCode(code: code));
+                          context.read<AuthBloc>().add(
+                            AuthVerifyCode(code: code),
+                          );
                         }
                       },
                     )
@@ -108,8 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                           countryCode = code;
                         });
                       },
-                      initialCountryCode:
-                          View.of(context).platformDispatcher.locale.countryCode,
+                      initialCountryCode: View.of(
+                        context,
+                      ).platformDispatcher.locale.countryCode,
                       onInit: (code) {
                         if (countryCode == null && code != null) {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -127,11 +125,8 @@ class _LoginPageState extends State<LoginPage> {
 
                         if (code != null && phone.isNotEmpty) {
                           context.read<AuthBloc>().add(
-                                AuthSendCode(
-                                  countryCode: code,
-                                  phoneNumber: phone,
-                                ),
-                              );
+                            AuthSendCode(countryCode: code, phoneNumber: phone),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

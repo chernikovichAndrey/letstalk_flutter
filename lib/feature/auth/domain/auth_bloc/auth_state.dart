@@ -19,7 +19,10 @@ final class AuthCodeSent extends AuthState {
   });
 }
 
-final class AuthAuthenticated extends AuthState {}
+final class AuthAuthenticated extends AuthState {
+  final String? token;
+  AuthAuthenticated({this.token});
+}
 
 final class AuthError extends AuthState {
   final String message;

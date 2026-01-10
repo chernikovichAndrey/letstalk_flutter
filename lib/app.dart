@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lets_talk/app/config/app_theme.dart';
+import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/app_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/auth/data/repository/auth_repository_impl.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 
@@ -24,6 +26,8 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     router = AppRouter();
+    final wsUrl = Env.wsUrl;
+    WebSocketService().connect(wsUrl);
   }
 
   @override
@@ -33,8 +37,12 @@ class _AppState extends State<App> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
+            if (state.token != null) {
+              WebSocketService().authenticate(state.token!);
+            }
             router.config.go(Routes.contacts.path);
           } else if (state is AuthUnauthenticated) {
+            WebSocketService().disconnect();
             router.config.go(Routes.login.path);
           }
         },

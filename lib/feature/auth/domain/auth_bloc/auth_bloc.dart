@@ -15,7 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
          final token = await authRepository.getToken();
          FlutterNativeSplash.remove();
          if (token != null) {
-           emit(AuthAuthenticated());
+           emit(AuthAuthenticated(token: token));
          } else {
            emit(AuthUnauthenticated());
          }
@@ -41,8 +41,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final currentState = state;
       if (currentState is AuthCodeSent) {
         try {
-          await authRepository.verifyCode(currentState.phone, event.code);
-          emit(AuthAuthenticated());
+          final token = await authRepository.verifyCode(currentState.phone, event.code);
+          emit(AuthAuthenticated(token: token));
         } catch (e) {
           emit(AuthError(e.toString()));
           emit(currentState);

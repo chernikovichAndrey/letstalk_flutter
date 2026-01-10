@@ -20,11 +20,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController codeController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     phoneController.dispose();
     codeController.dispose();

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:meta/meta.dart';
 
@@ -12,6 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheckStatus>((event, emit) async {
        try {
          final token = await authRepository.getToken();
+         FlutterNativeSplash.remove();
          if (token != null) {
            emit(AuthAuthenticated());
          } else {

@@ -11,10 +11,13 @@ class AppRouter {
   AppRouter();
 
   late final config = GoRouter(
-    initialLocation: Routes.login.path,
+    initialLocation: Routes.splash.path,
     navigatorKey: navigatorKey,
     debugLogDiagnostics: true,
     routes: [
+      // Splash route
+      buildRoute(Routes.splash),
+      
       // Login route (outside shell)
       buildRoute(Routes.login),
       

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lets_talk/app.dart';
-
-import 'common/observer/custom_bloc_observer.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // @pragma('vm:entry-point')
 // Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -11,8 +10,8 @@ import 'common/observer/custom_bloc_observer.dart';
 
 void main() async {
   await dotenv.load(fileName: '.env');
-  // WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const App());
 }

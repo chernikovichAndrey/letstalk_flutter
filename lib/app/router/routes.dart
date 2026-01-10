@@ -1,6 +1,7 @@
 import 'package:lets_talk/app/router/route_type.dart';
 
 enum Routes {
+  splash(path: _Paths.splash, type: RouteType.page),
   login(path: _Paths.login, type: RouteType.page),
   contacts(path: _Paths.contacts, type: RouteType.page),
   calls(path: _Paths.calls, type: RouteType.page),
@@ -25,6 +26,7 @@ enum Routes {
 }
 
 abstract class _Paths {
+  static const String splash = '/splash';
   static const String dialog = '/alert';
   static const String login = '/login';
   static const String contacts = '/contacts';

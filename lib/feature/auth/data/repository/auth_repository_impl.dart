@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +15,7 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<void> sendPhone(String countryCode, String phoneNumber) async {
     await _apiService.post(
-      '/login/code',
+      ApiConstants.loginCode,
       data: {
         'phone': '$countryCode$phoneNumber',
       },
@@ -27,7 +28,7 @@ class AuthRepositoryImpl extends AuthRepository {
     final formattedPlatform = Platform.operatingSystem;
 
     final response = await _apiService.post(
-      '/login',
+      ApiConstants.login,
       data: {
         'phone': phone,
         'confirm_code': code,

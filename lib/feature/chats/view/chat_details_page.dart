@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+
+class ChatDetailsPage extends StatefulWidget {
+  final int chatId;
+  const ChatDetailsPage({super.key, required this.chatId});
+
+  @override
+  State<ChatDetailsPage> createState() => _ChatDetailsPageState();
+}
+
+class _ChatDetailsPageState extends State<ChatDetailsPage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<ChatDetailsBloc>().add(ChatDetailsLoadMore(widget.chatId));
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Chat')),
+      body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+        builder: (context, state) {
+          if (state.status == ChatDetailsStatus.initial ||
+              (state.status == ChatDetailsStatus.loading && state.messages.isEmpty)) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.status == ChatDetailsStatus.failure && state.messages.isEmpty) {
+            return Center(child: Text(state.errorMessage ?? 'Error'));
+          }
+
+          return ListView.builder(
+            reverse: true,
+            controller: _scrollController,
+            itemCount: state.hasReachedMax ? state.messages.length : state.messages.length + 1,
+            itemBuilder: (context, index) {
+              if (index >= state.messages.length) {
+                return const Center(child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                ));
+              }
+              final message = state.messages[index];
+              return ListTile(
+                title: Text(message.text ?? ''),
+                subtitle: Text(message.createdAt),
+                // Simple representation for now
+                trailing: message.read ? const Icon(Icons.done_all, size: 16) : const Icon(Icons.done, size: 16),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}

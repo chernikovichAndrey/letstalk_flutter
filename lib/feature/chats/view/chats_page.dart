@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
 import 'package:lets_talk/common/widget/c_search_bar.dart';
@@ -79,7 +81,9 @@ class _ChatsPageState extends State<ChatsPage> {
                             return ChatListItem(
                               chat: chat,
                               onTap: () {
-                                // TODO: Navigate to chat details
+                                context.push(
+                                  Routes.chatDetails.path.replaceFirst(':id', chat.id.toString()),
+                                );
                               },
                             );
                           }, childCount: state.chats.length),

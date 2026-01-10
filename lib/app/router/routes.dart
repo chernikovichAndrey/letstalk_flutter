@@ -7,6 +7,7 @@ enum Routes {
   calls(path: _Paths.calls, type: RouteType.page),
   chats(path: _Paths.chats, type: RouteType.page),
   settings(path: _Paths.settings, type: RouteType.page),
+  chatDetails(path: _Paths.chatDetails, type: RouteType.page),
   // dialogs
   dialog(path: _Paths.dialog, type: RouteType.dialog);
 
@@ -33,4 +34,5 @@ abstract class _Paths {
   static const String calls = '/calls';
   static const String chats = '/chats';
   static const String settings = '/settings';
+  static const String chatDetails = '/chat_details/:id';
 }

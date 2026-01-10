@@ -19,10 +19,6 @@ class WebSocketService {
     if (_channel == null) {
       throw Exception('WebSocket connection not established');
     }
-    _channel!.stream.listen((data) {
-      _logger.i('WebSocket stream listen: $data');
-
-    });
     return _channel!.stream;
   }
 

@@ -17,6 +17,7 @@ extension RoutesExt on Routes {
       Routes.calls => const CallsPageScope(),
       Routes.chats => const ChatsPageScope(),
       Routes.settings => const SettingsPage(),
+      Routes.chatDetails => const SizedBox(),
       Routes.dialog => const CAlertDialog(),
     };
   }

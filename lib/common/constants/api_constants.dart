@@ -5,4 +5,5 @@ class ApiConstants {
   static const String contacts = '/profile/contacts';
   static const String chats = '/chats';
   static const String chatsSearch = '/chats/search';
+  static const String messages = '/messages';
 }

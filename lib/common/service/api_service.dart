@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -19,8 +20,15 @@ class ApiService {
 
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
+        onRequest: (options, handler) async {
           _logger.i('Request: ${options.method} ${options.path}');
+          
+          final prefs = await SharedPreferences.getInstance();
+          final token = prefs.getString('auth_token');
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+
           _logger.d('Headers: ${options.headers}');
           if (options.data != null) {
             _logger.d('Data: ${options.data}');

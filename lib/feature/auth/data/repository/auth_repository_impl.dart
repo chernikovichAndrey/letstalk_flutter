@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -84,5 +85,10 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<void> deleteToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+  }
+
+  @override
+  Future<int?> getUserId() async {
+
   }
 }

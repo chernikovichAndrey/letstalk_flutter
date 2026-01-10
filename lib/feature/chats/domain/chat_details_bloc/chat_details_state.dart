@@ -7,12 +7,14 @@ class ChatDetailsState {
   final List<Message> messages;
   final bool hasReachedMax;
   final String? errorMessage;
+  final int? currentUserId;
 
   const ChatDetailsState({
     this.status = ChatDetailsStatus.initial,
     this.messages = const [],
     this.hasReachedMax = false,
     this.errorMessage,
+    this.currentUserId,
   });
 
   ChatDetailsState copyWith({
@@ -20,12 +22,14 @@ class ChatDetailsState {
     List<Message>? messages,
     bool? hasReachedMax,
     String? errorMessage,
+    int? currentUserId,
   }) {
     return ChatDetailsState(
       status: status ?? this.status,
       messages: messages ?? this.messages,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       errorMessage: errorMessage,
+      currentUserId: currentUserId ?? this.currentUserId,
     );
   }
 }

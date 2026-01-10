@@ -17,11 +17,13 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   Future<void> _onLoad(ChatDetailsLoad event, Emitter<ChatDetailsState> emit) async {
     emit(state.copyWith(status: ChatDetailsStatus.loading));
     try {
+      final userId = 5;
       final messages = await _chatsRepository.getMessages(event.chatId, limit: _limit);
       emit(state.copyWith(
         status: ChatDetailsStatus.success,
         messages: messages.reversed.toList(),
         hasReachedMax: messages.length < _limit,
+        currentUserId: userId,
       ));
     } catch (e) {
       emit(state.copyWith(

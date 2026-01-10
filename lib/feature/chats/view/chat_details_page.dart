@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/widget/gradient_background.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;
@@ -42,9 +44,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Chat')),
-      body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
-        builder: (context, state) {
-          if (state.status == ChatDetailsStatus.initial ||
+      body: GradientBackground(
+        child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+          builder: (context, state) {
+            if (state.status == ChatDetailsStatus.initial ||
               (state.status == ChatDetailsStatus.loading && state.messages.isEmpty)) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -64,15 +67,15 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 ));
               }
               final message = state.messages[index];
-              return ListTile(
-                title: Text(message.text ?? ''),
-                subtitle: Text(message.createdAt),
-                // Simple representation for now
-                trailing: message.read ? const Icon(Icons.done_all, size: 16) : const Icon(Icons.done, size: 16),
+              final isMe = state.currentUserId != null && message.fromUserId == state.currentUserId;
+              return MessageBubble(
+                message: message,
+                isMe: isMe,
               );
             },
           );
         },
+      ),
       ),
     );
   }

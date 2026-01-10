@@ -1,0 +1,63 @@
+class Chat {
+  final int id;
+  final String type;
+  final String? title;
+  final String? avatar;
+  final int createdBy;
+  final int? lastMessageId;
+  final String? lastMessageText;
+  final String? lastMessageAt;
+  final int unreadCount;
+  final int membersCount;
+  final String? role;
+
+  Chat({
+    required this.id,
+    required this.type,
+    this.title,
+    this.avatar,
+    required this.createdBy,
+    this.lastMessageId,
+    this.lastMessageText,
+    this.lastMessageAt,
+    required this.unreadCount,
+    required this.membersCount,
+    this.role,
+  });
+
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    return Chat(
+      id: int.tryParse(json['id'].toString()) ?? 0,
+      type: json['type'] as String? ?? '',
+      title: json['title'] as String?,
+      avatar: json['avatar'] as String?,
+      createdBy: int.tryParse(json['created_by'].toString()) ?? 0,
+      lastMessageId: int.tryParse(json['last_message_id'].toString()),
+      lastMessageText: json['last_message_text'] as String?,
+      lastMessageAt: json['last_message_at'] as String?,
+      unreadCount: int.tryParse(json['unread_count'].toString()) ?? 0,
+      membersCount: int.tryParse(json['members_count'].toString()) ?? 0,
+      role: json['role'] as String?,
+    );
+  }
+}
+
+class ChatsResponse {
+  final String status;
+  final List<Chat> chats;
+
+  ChatsResponse({
+    required this.status,
+    required this.chats,
+  });
+
+  factory ChatsResponse.fromJson(Map<String, dynamic> json) {
+    return ChatsResponse(
+      status: json['status'] as String? ?? '',
+      chats: (json['chats'] as List<dynamic>?)
+              ?.map((e) => Chat.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+}

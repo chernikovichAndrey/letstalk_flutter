@@ -28,6 +28,8 @@
   "noContacts": "No contacts",
   "allCalls": "All",
   "missedCalls": "Missed",
-  "noCalls": "No calls"
+  "noCalls": "No calls",
+  "noChats": "No chats found",
+  "noTitle": "No Title"
 
 }

@@ -21,5 +21,7 @@
   "noContacts": "Нет контактов",
   "allCalls": "Все",
   "missedCalls": "Пропущенные",
-  "noCalls": "Нет звонков"
+  "noCalls": "Нет звонков",
+  "noChats": "Чаты не найдены",
+  "noTitle": "Без названия"
 }

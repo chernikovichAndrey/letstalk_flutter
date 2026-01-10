@@ -24,5 +24,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "noContacts": "No contacts"
+
 }

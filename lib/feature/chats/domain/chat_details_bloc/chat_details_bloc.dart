@@ -7,7 +7,7 @@ part 'chat_details_state.dart';
 
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final ChatsRepository _chatsRepository;
-  static const int _limit = 500;
+  static const int _limit = 20;
 
   ChatDetailsBloc(this._chatsRepository) : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
@@ -40,7 +40,8 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       final lastMessageId = state.messages.isNotEmpty ? state.messages.last.id : null;
       final messages = await _chatsRepository.getMessages(
         event.chatId,
-        fromMessageId: lastMessageId,
+        limit: _limit,
+        toMessageId: lastMessageId,
       );
       emit(state.copyWith(
         status: ChatDetailsStatus.success,

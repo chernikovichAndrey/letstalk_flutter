@@ -25,10 +25,18 @@ class ChatsRepositoryImpl implements ChatsRepository {
   }
 
   @override
-  Future<List<Message>> getMessages(int chatId, {int? limit, int? fromMessageId}) async {
+  Future<List<Message>> getMessages(
+    int chatId, {
+    int? limit,
+    int? fromMessageId,
+    int? toMessageId,
+  }) async {
     final queryParameters = {'limit': limit};
     if (fromMessageId != null) {
       queryParameters['from_message_id'] = fromMessageId;
+    }
+    if (toMessageId != null) {
+      queryParameters['to_message_id'] = toMessageId;
     }
 
     final response = await _apiService.get(

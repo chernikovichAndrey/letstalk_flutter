@@ -1,0 +1,94 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:lets_talk/common/widget/c_avatar.dart';
+import 'package:lets_talk/feature/calls/data/model/call_model.dart';
+
+class CallListItem extends StatelessWidget {
+  final Call call;
+  final VoidCallback onDelete;
+
+  const CallListItem({
+    super.key,
+    required this.call,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isMissed = call.status == 'missed';
+
+    return Dismissible(
+      key: ValueKey(call.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 16),
+        child: const Icon(
+          CupertinoIcons.delete,
+          color: Colors.white,
+        ),
+      ),
+      onDismissed: (_) => onDelete(),
+      child: ListTile(
+        leading: CAvatar(
+          name: call.peer.name,
+          radius: 24,
+        ),
+        title: Text(
+          call.peer.name,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: isMissed ? Colors.red : null,
+          ),
+        ),
+        subtitle: Row(
+          children: [
+            Icon(
+              _getDirectionIcon(),
+              size: 14,
+              color: Colors.grey,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '${call.direction} • ${_formatDate(call.endedAt)}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _formatTime(call.endedAt),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(CupertinoIcons.info, color: Colors.blue),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getDirectionIcon() {
+    if (call.status == 'missed') return CupertinoIcons.phone_down_circle;
+    if (call.direction == 'outgoing') return CupertinoIcons.phone_arrow_up_right;
+    return CupertinoIcons.phone_arrow_down_left;
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
+  String _formatTime(DateTime date) {
+    return DateFormat('HH:mm').format(date);
+  }
+}

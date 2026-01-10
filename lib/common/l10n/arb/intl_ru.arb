@@ -18,5 +18,8 @@
   "logout": "Выйти",
   "verificationTitle": "Подтверждение вашего\nличного аккаунта\nLets Talk",
   "verificationSubtitle": "Введите 6-значный номер, отправленный на {phone}",
-  "noContacts": "Нет контактов"
+  "noContacts": "Нет контактов",
+  "allCalls": "Все",
+  "missedCalls": "Пропущенные",
+  "noCalls": "Нет звонков"
 }

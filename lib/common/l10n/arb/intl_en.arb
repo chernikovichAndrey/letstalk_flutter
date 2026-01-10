@@ -25,6 +25,9 @@
       }
     }
   },
-  "noContacts": "No contacts"
+  "noContacts": "No contacts",
+  "allCalls": "All",
+  "missedCalls": "Missed",
+  "noCalls": "No calls"
 
 }

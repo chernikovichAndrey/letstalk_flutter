@@ -1,5 +1,6 @@
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
+import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
@@ -53,6 +54,11 @@ class ChatsRepositoryImpl implements ChatsRepository {
       '${ApiConstants.messages}/$chatId/read',
       data: {'message_id': messageId},
     );
+  }
+
+  @override
+  Future<void> sendMessage(int chatId, String text) async {
+    WebSocketService().sendMessage(chatId, text);
   }
 
   @override

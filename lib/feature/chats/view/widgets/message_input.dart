@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 
 class MessageInput extends StatefulWidget {
   const MessageInput({super.key});
@@ -79,7 +81,15 @@ class _MessageInputState extends State<MessageInput> {
                     ),
                     suffixIcon: _showSendButton
                         ? IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              final text = _controller.text.trim();
+                              if (text.isNotEmpty) {
+                                context
+                                    .read<ChatDetailsBloc>()
+                                    .add(ChatDetailsSendMessage(text));
+                                _controller.clear();
+                              }
+                            },
                             icon: const Icon(Icons.send),
                             color: theme.primaryColor,
                           )

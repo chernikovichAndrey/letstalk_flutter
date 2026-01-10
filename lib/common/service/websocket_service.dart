@@ -66,6 +66,14 @@ class WebSocketService {
     }
   }
 
+  void sendMessage(int chatId, String text) {
+    send({
+      'type': 'message',
+      'chat_id': chatId,
+      'text': text,
+    });
+  }
+
   void authenticate(String token) {
     send({
       'type': 'auth',

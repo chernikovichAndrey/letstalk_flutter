@@ -6,5 +6,6 @@ abstract class ChatsRepository {
   Future<List<Chat>> searchChats(String query);
   Future<List<Message>> getMessages(int chatId, {int limit, int? fromMessageId, int? toMessageId});
   Future<void> markAsRead(int chatId, int messageId);
+  Future<void> sendMessage(int chatId, String text);
   Future<ChatDetailsResponse> getChatDetails(int chatId);
 }

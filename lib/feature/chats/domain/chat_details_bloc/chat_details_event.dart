@@ -11,3 +11,8 @@ class ChatDetailsLoadMore extends ChatDetailsEvent {
   final int chatId;
   ChatDetailsLoadMore(this.chatId);
 }
+
+class ChatDetailsSendMessage extends ChatDetailsEvent {
+  final String text;
+  ChatDetailsSendMessage(this.text);
+}

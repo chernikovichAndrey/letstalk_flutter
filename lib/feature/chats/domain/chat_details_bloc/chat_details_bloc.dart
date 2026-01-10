@@ -18,6 +18,26 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
+    on<ChatDetailsSendMessage>(_onSendMessage);
+  }
+
+  Future<void> _onSendMessage(
+    ChatDetailsSendMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    final chatId = state.chat?.id;
+    if (chatId == null) return;
+
+    try {
+      await _chatsRepository.sendMessage(chatId, event.text);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   Future<void> _onLoad(

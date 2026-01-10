@@ -8,8 +8,15 @@ final class AuthInitial extends AuthState {}
 final class AuthUnauthenticated extends AuthState {}
 
 final class AuthCodeSent extends AuthState {
-  final String phone;
-  AuthCodeSent({required this.phone});
+  final String countryCode;
+  final String phoneNumber;
+
+  String get phone => '$countryCode$phoneNumber';
+
+  AuthCodeSent({
+    required this.countryCode,
+    required this.phoneNumber,
+  });
 }
 
 final class AuthAuthenticated extends AuthState {}

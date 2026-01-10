@@ -25,7 +25,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSendCode>((event, emit) async {
       try {
         await authRepository.sendPhone(event.countryCode, event.phoneNumber);
-        emit(AuthCodeSent(phone: '${event.countryCode}${event.phoneNumber}'));
+        emit(AuthCodeSent(
+          countryCode: event.countryCode,
+          phoneNumber: event.phoneNumber,
+        ));
       } catch (e) {
         emit(AuthError(e.toString()));
         emit(AuthUnauthenticated());

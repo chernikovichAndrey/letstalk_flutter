@@ -61,8 +61,8 @@ class CTextField extends StatelessWidget {
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.05),
+                ? Colors.grey.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.2),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

@@ -7,7 +7,6 @@ class CListTile extends StatelessWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
   final bool isDestructive;
-  final bool showDivider;
 
   const CListTile({
     super.key,
@@ -17,7 +16,6 @@ class CListTile extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.isDestructive = false,
-    this.showDivider = true,
   });
 
   @override
@@ -74,14 +72,6 @@ class CListTile extends StatelessWidget {
                       ],
                     ],
                   ),
-                  if (showDivider) ...[
-                    const SizedBox(height: 8),
-                    Divider(
-                      height: 1,
-                      thickness: 0.5,
-                      color: theme.dividerColor.withValues(alpha: 0.5),
-                    ),
-                  ],
                 ],
               ),
             ),

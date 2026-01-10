@@ -8,8 +8,11 @@ class ContactsLoading extends ContactsState {}
 
 class ContactsLoaded extends ContactsState {
   final List<Contact> contacts;
+  final List<Contact> allContacts;
+  final String query;
 
-  ContactsLoaded(this.contacts);
+  ContactsLoaded(this.allContacts, {List<Contact>? contacts, this.query = ''})
+      : contacts = contacts ?? allContacts;
 }
 
 class ContactsError extends ContactsState {

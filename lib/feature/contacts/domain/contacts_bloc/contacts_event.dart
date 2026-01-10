@@ -9,3 +9,9 @@ class ContactsRefresh extends ContactsEvent {
 
   ContactsRefresh({this.completer});
 }
+
+class ContactsSearch extends ContactsEvent {
+  final String query;
+
+  ContactsSearch(this.query);
+}

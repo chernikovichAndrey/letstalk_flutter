@@ -30,6 +30,7 @@
   "missedCalls": "Missed",
   "noCalls": "No calls",
   "noChats": "No chats found",
-  "noTitle": "No Title"
+  "noTitle": "No Title",
+  "search": "Search"
 
 }

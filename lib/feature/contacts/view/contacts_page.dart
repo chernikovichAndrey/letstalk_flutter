@@ -6,6 +6,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/c_list_tile.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
+import 'package:lets_talk/common/widget/c_search_bar.dart';
 import 'package:lets_talk/common/widget/c_skeleton.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -42,11 +43,6 @@ class ContactsPage extends StatelessWidget {
                               const SizedBox(height: 8),
                               const CSkeleton(width: 100, height: 14, radius: 4),
                               const SizedBox(height: 8),
-                              Divider(
-                                height: 1,
-                                thickness: 0.5,
-                                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
-                              ),
                             ],
                           ),
                         ),
@@ -60,12 +56,15 @@ class ContactsPage extends StatelessWidget {
             return CRefreshableScrollView(
               onRefresh: () => _onRefresh(context),
               slivers: [
-                if (state is ContactsError)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: Text(state.message)),
-                  )
-                else if (state is ContactsLoaded)
+                if (state is ContactsLoaded) ...[
+                  SliverToBoxAdapter(
+                    child: CSearchBar(
+                      hintText: context.s.search,
+                      onChanged: (value) {
+                        context.read<ContactsBloc>().add(ContactsSearch(value));
+                      },
+                    ),
+                  ),
                   if (state.contacts.isEmpty)
                     SliverFillRemaining(
                       hasScrollBody: false,
@@ -94,7 +93,12 @@ class ContactsPage extends StatelessWidget {
                         },
                         childCount: state.contacts.length,
                       ),
-                    )
+                    ),
+                ] else if (state is ContactsError)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: Text(state.message)),
+                  )
                 else
                   const SliverToBoxAdapter(child: SizedBox.shrink()),
               ],

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/api_service.dart';
+import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
 import 'package:lets_talk/feature/calls/data/repository/calls_repository_impl.dart';
 import 'package:lets_talk/feature/calls/domain/calls_bloc/calls_bloc.dart';
 import 'package:lets_talk/feature/calls/view/widgets/call_list.dart';
@@ -73,7 +76,19 @@ class _CallsPageView extends StatelessWidget {
             if (state is CallsLoading) {
               return const CallListSkeleton();
             } else if (state is CallsError) {
-              return Center(child: Text(state.message));
+              return CRefreshableScrollView(
+                onRefresh: () async {
+                  final completer = Completer();
+                  context.read<CallsBloc>().add(RefreshCalls(completer: completer));
+                  return completer.future;
+                },
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: Text(state.message)),
+                  ),
+                ],
+              );
             } else if (state is CallsLoaded) {
               return TabBarView(
                 children: [

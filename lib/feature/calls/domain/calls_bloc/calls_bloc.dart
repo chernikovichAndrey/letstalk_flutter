@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:lets_talk/feature/calls/data/model/call_model.dart';
 import 'package:lets_talk/feature/calls/domain/repository/calls_repository.dart';
@@ -17,6 +19,17 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
         emit(CallsLoaded(calls));
       } catch (e) {
         emit(CallsError(e.toString()));
+      }
+    });
+
+    on<RefreshCalls>((event, emit) async {
+      try {
+        final calls = await callsRepository.getCalls();
+        emit(CallsLoaded(calls));
+      } catch (e) {
+        emit(CallsError(e.toString()));
+      } finally {
+        event.completer?.complete();
       }
     });
 

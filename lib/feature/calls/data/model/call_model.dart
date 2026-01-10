@@ -6,9 +6,9 @@ class Call {
   final String status; // 'ended', 'missed'
   final String direction; // 'outgoing', 'incoming'
   final CallPeer peer;
-  final DateTime startedAt;
+  final DateTime? startedAt;
   final DateTime? answeredAt;
-  final DateTime endedAt;
+  final DateTime? endedAt;
   final int? duration;
   final String? durationFormatted;
 
@@ -32,11 +32,15 @@ class Call {
       status: json['status'] as String,
       direction: json['direction'] as String,
       peer: CallPeer.fromJson(json['peer'] as Map<String, dynamic>),
-      startedAt: DateTime.parse(json['started_at'] as String),
+      startedAt: json['started_at'] != null
+          ? DateTime.parse(json['started_at'] as String)
+          : null,
       answeredAt: json['answered_at'] != null
           ? DateTime.parse(json['answered_at'] as String)
           : null,
-      endedAt: DateTime.parse(json['ended_at'] as String),
+      endedAt: json['ended_at'] != null
+          ? DateTime.parse(json['ended_at'] as String)
+          : null,
       duration: json['duration'] as int?,
       durationFormatted: json['duration_formatted'] as String?,
     );
@@ -49,9 +53,9 @@ class Call {
       'status': status,
       'direction': direction,
       'peer': peer.toJson(),
-      'started_at': startedAt.toIso8601String(),
+      'started_at': startedAt?.toIso8601String(),
       'answered_at': answeredAt?.toIso8601String(),
-      'ended_at': endedAt.toIso8601String(),
+      'ended_at': endedAt?.toIso8601String(),
       'duration': duration,
       'duration_formatted': durationFormatted,
     };

@@ -25,7 +25,7 @@ class Contact {
 
   factory Contact.fromJson(Map<String, dynamic> json) {
     return Contact(
-      id: json['id'] as int,
+      id: int.tryParse(json['id'].toString()) ?? 0,
       phone: json['phone'] as String? ?? '',
       firstName: json['first_name'] as String? ?? '',
       lastName: json['last_name'] as String? ?? '',
@@ -33,8 +33,10 @@ class Contact {
       email: json['email'] as String? ?? '',
       address: json['address'] as String? ?? '',
       imageUrl: json['image_url'] as String? ?? '',
-      isRegistered: (json['is_registered'] as int? ?? 0) == 1,
-      registeredUserId: json['registered_user_id'] as int?,
+      isRegistered: (int.tryParse(json['is_registered'].toString()) ?? 0) == 1,
+      registeredUserId: json['registered_user_id'] != null 
+          ? int.tryParse(json['registered_user_id'].toString()) 
+          : null,
     );
   }
 }
@@ -57,7 +59,7 @@ class ContactsResponse {
               ?.map((e) => Contact.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      count: json['count'] as int? ?? 0,
+      count: int.tryParse(json['count'].toString()) ?? 0,
     );
   }
 }

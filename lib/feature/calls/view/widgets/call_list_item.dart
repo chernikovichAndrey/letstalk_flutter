@@ -17,7 +17,6 @@ class CallListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isMissed = call.status == 'missed';
 
     return Dismissible(
       key: ValueKey(call.id),
@@ -41,10 +40,12 @@ class CallListItem extends StatelessWidget {
           call.peer.name,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
-            color: isMissed ? Colors.red : null,
+            color: Colors.black,
           ),
         ),
         subtitle: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               _getDirectionIcon(),
@@ -53,7 +54,9 @@ class CallListItem extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              '${call.direction} • ${_formatDate(call.endedAt)}',
+              call.direction == 'incoming' && call.durationFormatted != null
+                  ? '${call.direction} (${call.durationFormatted})'
+                  : call.direction,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: Colors.grey,
               ),
@@ -64,7 +67,7 @@ class CallListItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _formatTime(call.endedAt),
+              _formatDate(call.endedAt ?? call.startedAt),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.grey,
                 fontSize: 12,
@@ -84,11 +87,7 @@ class CallListItem extends StatelessWidget {
     return CupertinoIcons.phone_arrow_down_left;
   }
 
-  String _formatDate(DateTime date) {
-    return DateFormat('dd/MM/yyyy').format(date);
-  }
-
-  String _formatTime(DateTime date) {
-    return DateFormat('HH:mm').format(date);
+  String _formatDate(DateTime? date) {
+    return DateFormat('dd/MM/yyyy').format(date ?? DateTime.now());
   }
 }

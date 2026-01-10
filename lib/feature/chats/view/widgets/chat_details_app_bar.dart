@@ -12,22 +12,16 @@ class ChatDetailsAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final baseColor = isDark ? Colors.white : Colors.black;
-    final gradientColors = isDark
-        ? [
-            Colors.white.withOpacity(0.05),
-            Colors.white.withOpacity(0.45),
-          ]
-        : [
-            Colors.black.withOpacity(0.05),
-            Colors.black.withOpacity(0.45),
-          ];
+    final gradientColors = [
+      baseColor.withValues(alpha: 0.2),
+      baseColor.withValues(alpha: 0.6),
+    ];
 
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
         child: Stack(
           children: [
-            // Gradient Blur Background
             Positioned.fill(
               child: ShaderMask(
                 shaderCallback: (rect) {

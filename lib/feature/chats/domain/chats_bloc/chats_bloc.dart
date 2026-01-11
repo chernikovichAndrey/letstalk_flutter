@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 
@@ -9,12 +11,64 @@ part 'chats_state.dart';
 
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final ChatsRepository _chatsRepository;
+  final WebSocketService _wsService = WebSocketService();
+  StreamSubscription? _wsSubscription;
 
   ChatsBloc(this._chatsRepository) : super(ChatsInitial()) {
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
     on<ChatsSearch>(_onSearch);
     on<ChatUpdated>(_onChatUpdated);
+    on<ChatTypingUpdated>(_onChatTypingUpdated);
+    _subscribeToWebSocket();
+  }
+
+  void _subscribeToWebSocket() {
+    _wsSubscription = _wsService.stream.listen((message) {
+      if (message is String) {
+        try {
+          final decoded = jsonDecode(message);
+          if (decoded['type'] == 'user_typing') {
+            add(ChatTypingUpdated(
+              chatId: decoded['chat_id'],
+              userId: decoded['user_id'],
+              isTyping: decoded['is_typing'],
+            ));
+          }
+        } catch (_) {}
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _wsSubscription?.cancel();
+    return super.close();
+  }
+
+  void _onChatTypingUpdated(
+    ChatTypingUpdated event,
+    Emitter<ChatsState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      final newTypingUsers = Map<int, Set<int>>.from(currentState.typingUsers);
+      final chatTyping = Set<int>.from(newTypingUsers[event.chatId] ?? {});
+
+      if (event.isTyping) {
+        chatTyping.add(event.userId);
+      } else {
+        chatTyping.remove(event.userId);
+      }
+
+      if (chatTyping.isEmpty) {
+        newTypingUsers.remove(event.chatId);
+      } else {
+        newTypingUsers[event.chatId] = chatTyping;
+      }
+
+      emit(ChatsLoaded(currentState.chats, typingUsers: newTypingUsers));
+    }
   }
 
   Future<void> _onChatUpdated(ChatUpdated event, Emitter<ChatsState> emit) async {
@@ -25,7 +79,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         final updatedChats = currentState.chats.map((chat) {
           return chat.id == event.chatId ? chatDetails.chat : chat;
         }).toList();
-        emit(ChatsLoaded(updatedChats));
+        emit(ChatsLoaded(updatedChats, typingUsers: currentState.typingUsers));
       } catch (_) {}
     }
   }

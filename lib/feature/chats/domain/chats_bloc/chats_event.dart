@@ -21,3 +21,15 @@ class ChatUpdated extends ChatsEvent {
 
   ChatUpdated(this.chatId);
 }
+
+class ChatTypingUpdated extends ChatsEvent {
+  final int chatId;
+  final int userId;
+  final bool isTyping;
+
+  ChatTypingUpdated({
+    required this.chatId,
+    required this.userId,
+    required this.isTyping,
+  });
+}

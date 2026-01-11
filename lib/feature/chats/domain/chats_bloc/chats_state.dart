@@ -8,8 +8,9 @@ class ChatsLoading extends ChatsState {}
 
 class ChatsLoaded extends ChatsState {
   final List<Chat> chats;
+  final Map<int, Set<int>> typingUsers;
 
-  ChatsLoaded(this.chats);
+  ChatsLoaded(this.chats, {this.typingUsers = const {}});
 }
 
 class ChatsError extends ChatsState {

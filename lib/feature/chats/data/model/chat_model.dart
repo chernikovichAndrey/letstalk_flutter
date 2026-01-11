@@ -95,19 +95,16 @@ class ChatsResponse {
 }
 
 class ChatDetailsResponse {
-  final String status;
   final Chat chat;
   final List<ChatMember> members;
 
   ChatDetailsResponse({
-    required this.status,
     required this.chat,
     required this.members,
   });
 
   factory ChatDetailsResponse.fromJson(Map<String, dynamic> json) {
     return ChatDetailsResponse(
-      status: json['status'] as String? ?? '',
       chat: Chat.fromJson(json['chat'] as Map<String, dynamic>),
       members: (json['members'] as List<dynamic>?)
               ?.map((e) => ChatMember.fromJson(e as Map<String, dynamic>))

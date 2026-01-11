@@ -78,14 +78,13 @@ class _ChatsPageState extends State<ChatsPage> {
                             index,
                           ) {
                             final chat = state.chats[index];
+                            final isTyping = state.typingUsers[chat.id]?.isNotEmpty ?? false;
                             return ChatListItem(
                               chat: chat,
+                              isTyping: isTyping,
                               onTap: () async {
                                 await context.push(
-                                  Routes.chatDetails.path.replaceFirst(':id', chat.id.toString()),
-                                  extra: {
-                                    'title': chat.title ?? context.s.noTitle
-                                  }
+                                  Routes.chatDetails.path.replaceFirst(':id', chat.id.toString())
                                 );
                                 if (context.mounted) {
                                   context.read<ChatsBloc>().add(ChatUpdated(chat.id));

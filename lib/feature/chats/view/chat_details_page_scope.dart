@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
+import 'package:lets_talk/feature/chats/data/repository/chat_details_repository_impl.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatDetailsPageScope extends StatelessWidget {
   final int chatId;
-  final String chatTitle;
 
-  const ChatDetailsPageScope({
-    super.key,
-    required this.chatId,
-    required this.chatTitle,
-  });
+  const ChatDetailsPageScope({super.key, required this.chatId});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +17,9 @@ class ChatDetailsPageScope extends StatelessWidget {
         if (state is ProfileLoaded) {
           return BlocProvider(
             create: (context) =>
-            ChatDetailsBloc(ChatsRepositoryImpl())
-              ..add(ChatDetailsLoad(chatId, state.user)),
-            child: ChatDetailsPage(chatId: chatId, chatTitle: chatTitle),
+                ChatDetailsBloc(ChatDetailsRepositoryImpl())
+                  ..add(ChatDetailsLoad(chatId, state.user)),
+            child: ChatDetailsPage(chatId: chatId),
           );
         }
         return Container();

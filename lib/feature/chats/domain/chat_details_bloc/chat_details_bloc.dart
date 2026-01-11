@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
-import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
+import 'package:lets_talk/feature/chats/domain/repository/chat_details_repository.dart';
 import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 
 part 'chat_details_event.dart';
@@ -13,20 +13,31 @@ part 'chat_details_event.dart';
 part 'chat_details_state.dart';
 
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
-  final ChatsRepository _chatsRepository;
+  final ChatDetailsRepository _chatDetailsRepository;
   final WebSocketService _wsService = WebSocketService();
   StreamSubscription? _wsSubscription;
   static const int _limit = 20;
 
-  ChatDetailsBloc(this._chatsRepository)
+  ChatDetailsBloc(this._chatDetailsRepository)
     : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
     on<ChatDetailsSendMessage>(_onSendMessage);
+    on<ChatDetailsSendTyping>(_onSendTyping);
     on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
     on<ChatDetailsErrorReceived>(_onErrorReceived);
 
     _subscribeToWebSocket();
+  }
+
+  Future<void> _onSendTyping(
+    ChatDetailsSendTyping event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    final chat = state.chat;
+    if (chat != null) {
+      await _chatDetailsRepository.sendTyping(chat.id, event.isTyping);
+    }
   }
 
   void _onErrorReceived(
@@ -77,7 +88,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     if (chatId == null) return;
 
     try {
-      await _chatsRepository.sendMessage(chatId, event.text);
+      await _chatDetailsRepository.sendMessage(chatId, event.text);
     } catch (e) {
       emit(
         state.copyWith(
@@ -94,8 +105,8 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   ) async {
     emit(state.copyWith(status: ChatDetailsStatus.loading));
     try {
-      final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
-      var messages = await _chatsRepository.getMessages(
+      final chatDetails = await _chatDetailsRepository.getChatDetails(event.chatId);
+      var messages = await _chatDetailsRepository.getMessages(
         event.chatId,
         limit: _limit,
       );
@@ -105,7 +116,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           final maxMessageId = messages
               .map((e) => e.id)
               .reduce((value, element) => value > element ? value : element);
-          await _chatsRepository.markAsRead(event.chatId, maxMessageId);
+          await _chatDetailsRepository.markAsRead(event.chatId, maxMessageId);
           messages = messages
               .map(
                 (m) => m.id <= maxMessageId && !m.read
@@ -148,7 +159,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       final lastMessageId = state.messages.isNotEmpty
           ? state.messages.last.id
           : null;
-      final messages = await _chatsRepository.getMessages(
+      final messages = await _chatDetailsRepository.getMessages(
         event.chatId,
         limit: _limit,
         toMessageId: lastMessageId,

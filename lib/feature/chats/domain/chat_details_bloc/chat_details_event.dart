@@ -18,6 +18,11 @@ class ChatDetailsSendMessage extends ChatDetailsEvent {
   ChatDetailsSendMessage(this.text);
 }
 
+class ChatDetailsSendTyping extends ChatDetailsEvent {
+  final bool isTyping;
+  ChatDetailsSendTyping(this.isTyping);
+}
+
 class ChatDetailsNewMessageReceived extends ChatDetailsEvent {
   final Message message;
   ChatDetailsNewMessageReceived(this.message);

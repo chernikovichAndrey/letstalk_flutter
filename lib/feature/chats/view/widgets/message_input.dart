@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,8 @@ class MessageInput extends StatefulWidget {
 class _MessageInputState extends State<MessageInput> {
   final TextEditingController _controller = TextEditingController();
   bool _showSendButton = false;
+  Timer? _typingTimer;
+  bool _isTyping = false;
 
   @override
   void initState() {
@@ -23,16 +26,39 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   void _onTextChanged() {
-    final shouldShow = _controller.text.trim().isNotEmpty;
+    final text = _controller.text.trim();
+    final shouldShow = text.isNotEmpty;
     if (_showSendButton != shouldShow) {
       setState(() {
         _showSendButton = shouldShow;
       });
     }
+
+    if (shouldShow) {
+      if (!_isTyping) {
+        _isTyping = true;
+        context.read<ChatDetailsBloc>().add(ChatDetailsSendTyping(true));
+      }
+
+      _typingTimer?.cancel();
+      _typingTimer = Timer(const Duration(seconds: 2), () {
+        _isTyping = false;
+        if (mounted) {
+          context.read<ChatDetailsBloc>().add(ChatDetailsSendTyping(false));
+        }
+      });
+    } else {
+      if (_isTyping) {
+        _isTyping = false;
+        _typingTimer?.cancel();
+        context.read<ChatDetailsBloc>().add(ChatDetailsSendTyping(false));
+      }
+    }
   }
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -88,6 +114,12 @@ class _MessageInputState extends State<MessageInput> {
                                     .read<ChatDetailsBloc>()
                                     .add(ChatDetailsSendMessage(text));
                                 _controller.clear();
+                                
+                                if (_isTyping) {
+                                  _isTyping = false;
+                                  _typingTimer?.cancel();
+                                  context.read<ChatDetailsBloc>().add(ChatDetailsSendTyping(false));
+                                }
                               }
                             },
                             icon: const Icon(Icons.send),

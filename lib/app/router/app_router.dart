@@ -55,11 +55,10 @@ class AppRouter {
     if (e == Routes.chatDetails) {
 
       final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
-      final data = state.extra! as Map<String,dynamic>;
       return CPage(
         type: e.type,
         key: state.pageKey,
-        child: ChatDetailsPageScope(chatId: id, chatTitle: data['title']),
+        child: ChatDetailsPageScope(chatId: id),
       );
     }
     return CPage(

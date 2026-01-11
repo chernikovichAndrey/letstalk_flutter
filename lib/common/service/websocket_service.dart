@@ -77,10 +77,26 @@ class WebSocketService {
     });
   }
 
+  void sendTyping(int chatId, bool isTyping) {
+    send({
+      "type": "typing",
+      "chat_id": chatId,
+      "is_typing": isTyping,
+    });
+  }
+
   void authenticate(String token) {
     send({
       'type': 'auth',
       'token': token,
+    });
+  }
+
+  void readMessage(int chatId, int messageId) {
+    send({
+      "type": "read_message",
+      "chat_id": chatId,
+      "message_id": messageId
     });
   }
 }

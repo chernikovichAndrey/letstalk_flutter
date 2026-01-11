@@ -5,11 +5,13 @@ import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 
 class ChatListItem extends StatelessWidget {
   final Chat chat;
+  final bool isTyping;
   final VoidCallback? onTap;
 
   const ChatListItem({
     super.key,
     required this.chat,
+    this.isTyping = false,
     this.onTap,
   });
 
@@ -81,7 +83,7 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          chat.lastMessageText ?? '',
+                          isTyping ? 'Typing...' : (chat.lastMessageText ?? ''),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

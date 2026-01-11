@@ -12,12 +12,10 @@ import 'package:lets_talk/feature/chats/view/widgets/message_input.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;
-  final String chatTitle;
 
   const ChatDetailsPage({
     super.key,
     required this.chatId,
-    required this.chatTitle,
   });
 
   @override
@@ -128,21 +126,21 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
-            builder: (context, state) {
-              if (state.status == ChatDetailsStatus.initial ||
-                  (state.status == ChatDetailsStatus.loading &&
-                      state.messages.isEmpty)) {
-                return const ChatDetailsSkeleton();
-              }
-              if (state.status == ChatDetailsStatus.failure &&
-                  state.messages.isEmpty) {
-                return Center(child: Text(state.errorMessage ?? 'Error'));
-              }
+      body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+        builder: (context, state) {
+          if (state.status == ChatDetailsStatus.initial ||
+              (state.status == ChatDetailsStatus.loading &&
+                  state.messages.isEmpty)) {
+            return const ChatDetailsSkeleton();
+          }
+          if (state.status == ChatDetailsStatus.failure &&
+              state.messages.isEmpty) {
+            return Center(child: Text(state.errorMessage ?? 'Error'));
+          }
 
-              return ListView.builder(
+          return Stack(
+            children: [
+              ListView.builder(
                 reverse: true,
                 controller: _scrollController,
                 padding: EdgeInsets.only(
@@ -154,17 +152,17 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     : state.messages.length + 1,
                 itemBuilder: (context, index) =>
                     _renderItem(context, index, state),
-              );
-            },
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ChatDetailsAppBar(widget.chatTitle),
-          ),
-          const Positioned(bottom: 0, left: 0, right: 0, child: MessageInput()),
-        ],
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: ChatDetailsAppBar(state.chat?.title ?? ''),
+              ),
+              const Positioned(bottom: 0, left: 0, right: 0, child: MessageInput()),
+            ],
+          );
+        },
       ),
     );
   }

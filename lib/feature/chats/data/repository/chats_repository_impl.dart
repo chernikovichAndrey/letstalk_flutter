@@ -7,7 +7,6 @@ import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart'
 
 class ChatsRepositoryImpl implements ChatsRepository {
   final _apiService = ApiService();
-  final _wsService = WebSocketService();
 
   @override
   Future<List<Chat>> getChats() async {
@@ -24,43 +23,6 @@ class ChatsRepositoryImpl implements ChatsRepository {
     );
     final chatsResponse = ChatsResponse.fromJson(response.data);
     return chatsResponse.chats;
-  }
-
-  @override
-  Future<List<Message>> getMessages(
-    int chatId, {
-    int? limit,
-    int? fromMessageId,
-    int? toMessageId,
-  }) async {
-    final queryParameters = {'limit': limit};
-    if (fromMessageId != null) {
-      queryParameters['from_message_id'] = fromMessageId;
-    }
-    if (toMessageId != null) {
-      queryParameters['to_message_id'] = toMessageId;
-    }
-
-    final response = await _apiService.get(
-      '${ApiConstants.messages}/$chatId',
-      queryParameters: queryParameters,
-    );
-    final messagesResponse = MessagesResponse.fromJson(response.data);
-    return messagesResponse.messages;
-  }
-
-  @override
-  Future<void> markAsRead(int chatId, int messageId) async {
-    _wsService.send({
-      "type": "read_message",
-      "chat_id": chatId,
-      "message_id": messageId
-    });
-  }
-
-  @override
-  Future<void> sendMessage(int chatId, String text) async {
-    WebSocketService().sendMessage(chatId, text);
   }
 
   @override

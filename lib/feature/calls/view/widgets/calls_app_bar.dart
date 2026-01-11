@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
+import 'package:lets_talk/common/widget/glass_button.dart';
 
 class CallsAppBar extends StatelessWidget {
   const CallsAppBar({super.key});
@@ -24,34 +25,64 @@ class CallsAppBar extends StatelessWidget {
               bottom: false,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Container(
-                  height: 36,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: baseColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: TabBar(
-                    dividerColor: Colors.transparent,
-                    indicator: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 2,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
+                child: Row(
+                  children: [
+                    GlassButton(
+                      icon: Icons.edit,
+                      onTap: () {},
                     ),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: Theme.of(context).colorScheme.onSurface,
-                    unselectedLabelColor: baseColor.withValues(alpha: 0.6),
-                    tabs: [
-                      Tab(text: context.s.allCalls),
-                      Tab(text: context.s.missedCalls),
-                    ],
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: baseColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: TabBar(
+                          splashFactory: NoSplash.splashFactory,
+                          overlayColor: WidgetStateProperty.all(Colors.transparent),
+                          dividerColor: Colors.transparent,
+                          indicator: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          labelColor: Theme.of(context).colorScheme.onSurface,
+                          unselectedLabelColor: baseColor.withValues(alpha: 0.6),
+                          tabs: [
+                            Tab(
+                              child: Text(
+                                context.s.allCalls,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            Tab(
+                              child: Text(
+                                context.s.missedCalls,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GlassButton(
+                      icon: Icons.call,
+                      onTap: () {},
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -13,7 +13,7 @@ class CallsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = MediaQuery.of(context).padding.top + 52;
+    final topPadding = MediaQuery.of(context).padding.top + 66;
 
     return DefaultTabController(
       length: 2,

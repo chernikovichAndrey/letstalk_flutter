@@ -10,6 +10,7 @@ import 'package:lets_talk/common/widget/c_search_bar.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_list_item.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_list_skeleton.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats_app_bar.dart';
 
 class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
@@ -38,69 +39,80 @@ class _ChatsPageState extends State<ChatsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top + 66;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.s.chats),
-        toolbarHeight: 30,
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: BlocBuilder<ChatsBloc, ChatsState>(
-        builder: (context, state) {
-          if (state is ChatsLoading) {
-            return const ChatListSkeleton();
-          }
-          return Column(
-            children: [
-              CSearchBar(
-                hintText: context.s.search,
-                onChanged: _onSearchChanged,
-              ),
-              Expanded(
-                child: CRefreshableScrollView(
-                  onRefresh: () => _onRefresh(context),
-                  slivers: [
-                    if (state is ChatsError)
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          BlocBuilder<ChatsBloc, ChatsState>(
+            builder: (context, state) {
+              if (state is ChatsLoading) {
+                return Padding(
+                  padding: EdgeInsets.only(top: topPadding),
+                  child: const ChatListSkeleton(),
+                );
+              }
+              return CRefreshableScrollView(
+                onRefresh: () => _onRefresh(context),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: topPadding),
+                  ),
+                  SliverToBoxAdapter(
+                    child: CSearchBar(
+                      hintText: context.s.search,
+                      onChanged: _onSearchChanged,
+                    ),
+                  ),
+                  if (state is ChatsError)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: Text(state.message)),
+                    )
+                  else if (state is ChatsLoaded)
+                    if (state.chats.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
-                        child: Center(child: Text(state.message)),
+                        child: Center(child: Text(context.s.noChats)),
                       )
-                    else if (state is ChatsLoaded)
-                      if (state.chats.isEmpty)
-                        SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Center(child: Text(context.s.noChats)),
-                        )
-                      else
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final chat = state.chats[index];
-                            final isTyping = state.typingUsers[chat.id]?.isNotEmpty ?? false;
-                            return ChatListItem(
-                              chat: chat,
-                              isTyping: isTyping,
-                              onTap: () async {
-                                await context.push(
-                                  Routes.chatDetails.path.replaceFirst(':id', chat.id.toString())
-                                );
-                                if (context.mounted) {
-                                  context.read<ChatsBloc>().add(ChatUpdated(chat.id));
-                                }
-                              },
-                            );
-                          }, childCount: state.chats.length),
-                        )
                     else
-                      const SliverToBoxAdapter(child: SizedBox.shrink()),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate((
+                          context,
+                          index,
+                        ) {
+                          final chat = state.chats[index];
+                          final isTyping =
+                              state.typingUsers[chat.id]?.isNotEmpty ?? false;
+                          return ChatListItem(
+                            chat: chat,
+                            isTyping: isTyping,
+                            onTap: () async {
+                              await context.push(Routes.chatDetails.path
+                                  .replaceFirst(':id', chat.id.toString()));
+                              if (context.mounted) {
+                                context
+                                    .read<ChatsBloc>()
+                                    .add(ChatUpdated(chat.id));
+                              }
+                            },
+                          );
+                        }, childCount: state.chats.length),
+                      )
+                  else
+                    const SliverToBoxAdapter(child: SizedBox.shrink()),
+                ],
+              );
+            },
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: const ChatsAppBar(),
+          ),
+        ],
       ),
     );
   }

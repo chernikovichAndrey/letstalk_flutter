@@ -5,6 +5,7 @@ class CRefreshableScrollView extends StatelessWidget {
   final List<Widget> slivers;
   final ScrollPhysics? physics;
   final ScrollController? controller;
+  final double edgeOffset;
 
   const CRefreshableScrollView({
     super.key,
@@ -12,6 +13,7 @@ class CRefreshableScrollView extends StatelessWidget {
     required this.slivers,
     this.physics,
     this.controller,
+    this.edgeOffset = 0,
   });
 
   @override
@@ -20,8 +22,11 @@ class CRefreshableScrollView extends StatelessWidget {
       controller: controller,
       physics: physics ?? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       slivers: [
-        CupertinoSliverRefreshControl(
-          onRefresh: onRefresh,
+        SliverPadding(
+          padding: EdgeInsets.only(top: edgeOffset),
+          sliver: CupertinoSliverRefreshControl(
+            onRefresh: onRefresh,
+          ),
         ),
         ...slivers,
       ],

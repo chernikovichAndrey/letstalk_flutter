@@ -31,11 +31,10 @@ class ContactsPage extends StatelessWidget {
                 );
               }
               return CRefreshableScrollView(
+                edgeOffset: topPadding,
                 onRefresh: () => _onRefresh(context),
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: SizedBox(height: topPadding),
-                  ),
+
                   if (state is ContactsLoaded) ...[
                     SliverToBoxAdapter(
                       child: CSearchBar(

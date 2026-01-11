@@ -30,13 +30,14 @@ class CallsPage extends StatelessWidget {
                   );
                 } else if (state is CallsError) {
                   return CRefreshableScrollView(
+                    edgeOffset: topPadding,
                     onRefresh: () async {
                       final completer = Completer();
                       context.read<CallsBloc>().add(RefreshCalls(completer: completer));
                       return completer.future;
                     },
                     slivers: [
-                      SliverToBoxAdapter(child: SizedBox(height: topPadding)),
+
                       SliverFillRemaining(
                         hasScrollBody: false,
                         child: Center(child: Text(state.message)),

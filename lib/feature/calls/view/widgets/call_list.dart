@@ -21,13 +21,14 @@ class CallList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CRefreshableScrollView(
+      edgeOffset: topPadding,
       onRefresh: () async {
         final completer = Completer();
         context.read<CallsBloc>().add(RefreshCalls(completer: completer));
         return completer.future;
       },
       slivers: [
-        SliverToBoxAdapter(child: SizedBox(height: topPadding)),
+
         if (calls.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,

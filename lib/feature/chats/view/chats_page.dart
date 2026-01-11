@@ -54,11 +54,10 @@ class _ChatsPageState extends State<ChatsPage> {
                 );
               }
               return CRefreshableScrollView(
+                edgeOffset: topPadding,
                 onRefresh: () => _onRefresh(context),
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: SizedBox(height: topPadding),
-                  ),
+
                   SliverToBoxAdapter(
                     child: CSearchBar(
                       hintText: context.s.search,

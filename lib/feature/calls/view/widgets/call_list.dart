@@ -42,9 +42,6 @@ class CallList extends StatelessWidget {
                 final call = calls[index];
                 return CallListItem(
                   call: call,
-                  onDelete: () {
-                    context.read<CallsBloc>().add(DeleteCall(call.id));
-                  },
                 );
               },
               childCount: calls.length,

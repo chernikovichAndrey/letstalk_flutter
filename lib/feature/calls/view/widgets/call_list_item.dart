@@ -6,77 +6,61 @@ import 'package:lets_talk/feature/calls/data/model/call_model.dart';
 
 class CallListItem extends StatelessWidget {
   final Call call;
-  final VoidCallback onDelete;
 
   const CallListItem({
     super.key,
     required this.call,
-    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Dismissible(
-      key: ValueKey(call.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 16),
-        child: const Icon(
-          CupertinoIcons.delete,
-          color: Colors.white,
+    return ListTile(
+      leading: CAvatar(
+        name: call.peer.name,
+        radius: 24,
+      ),
+      title: Text(
+        call.peer.name,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: Colors.black,
         ),
       ),
-      onDismissed: (_) => onDelete(),
-      child: ListTile(
-        leading: CAvatar(
-          name: call.peer.name,
-          radius: 24,
-        ),
-        title: Text(
-          call.peer.name,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            _getDirectionIcon(),
+            size: 14,
+            color: Colors.grey,
           ),
-        ),
-        subtitle: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              _getDirectionIcon(),
-              size: 14,
+          const SizedBox(width: 4),
+          Text(
+            call.direction == 'incoming' && call.durationFormatted != null
+                ? '${call.direction} (${call.durationFormatted})'
+                : call.direction,
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.grey,
             ),
-            const SizedBox(width: 4),
-            Text(
-              call.direction == 'incoming' && call.durationFormatted != null
-                  ? '${call.direction} (${call.durationFormatted})'
-                  : call.direction,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.grey,
-              ),
+          ),
+        ],
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _formatDate(call.endedAt ?? call.startedAt),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.grey,
+              fontSize: 12,
             ),
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _formatDate(call.endedAt ?? call.startedAt),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(CupertinoIcons.info, color: Colors.blue),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(CupertinoIcons.info, color: Colors.blue),
+        ],
       ),
     );
   }

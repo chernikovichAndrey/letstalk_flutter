@@ -10,8 +10,13 @@ import 'package:lets_talk/feature/calls/view/widgets/call_list_item.dart';
 
 class CallList extends StatelessWidget {
   final List<Call> calls;
+  final double topPadding;
 
-  const CallList({super.key, required this.calls});
+  const CallList({
+    super.key,
+    required this.calls,
+    this.topPadding = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,7 @@ class CallList extends StatelessWidget {
         return completer.future;
       },
       slivers: [
+        SliverToBoxAdapter(child: SizedBox(height: topPadding)),
         if (calls.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,

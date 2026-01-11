@@ -7,7 +7,6 @@ import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 import 'package:lets_talk/feature/settings/data/model/user_model.dart';
-import 'package:lets_talk/feature/settings/data/repository/profile_repository.dart';
 
 part 'chat_details_event.dart';
 
@@ -15,12 +14,11 @@ part 'chat_details_state.dart';
 
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final ChatsRepository _chatsRepository;
-  final ProfileRepository _profileRepository;
   final WebSocketService _wsService = WebSocketService();
   StreamSubscription? _wsSubscription;
   static const int _limit = 20;
 
-  ChatDetailsBloc(this._chatsRepository, this._profileRepository)
+  ChatDetailsBloc(this._chatsRepository)
     : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
@@ -96,7 +94,6 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   ) async {
     emit(state.copyWith(status: ChatDetailsStatus.loading));
     try {
-      final user = await _profileRepository.getProfile();
       final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
       var messages = await _chatsRepository.getMessages(
         event.chatId,
@@ -126,7 +123,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           members: chatDetails.members,
           messages: messages.reversed.toList(),
           hasReachedMax: messages.length < _limit,
-          currentUser: user,
+          currentUser: event.user,
         ),
       );
     } catch (e) {

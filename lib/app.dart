@@ -9,6 +9,8 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/auth/data/repository/auth_repository_impl.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:lets_talk/feature/settings/data/repository/profile_repository_impl.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 import 'common/l10n/generated/l10n.dart';
 
@@ -32,14 +34,22 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
+        ),
+        BlocProvider(
+          create: (context) => ProfileBloc(ProfileRepositoryImpl()),
+        ),
+      ],
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
             if (state.token != null) {
               WebSocketService().authenticate(state.token!);
             }
+            context.read<ProfileBloc>().add(ProfileLoadEvent());
             router.config.go(Routes.contacts.path);
           } else if (state is AuthUnauthenticated) {
             WebSocketService().disconnect();

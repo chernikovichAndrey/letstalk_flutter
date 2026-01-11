@@ -4,7 +4,8 @@ abstract class ChatDetailsEvent {}
 
 class ChatDetailsLoad extends ChatDetailsEvent {
   final int chatId;
-  ChatDetailsLoad(this.chatId);
+  final UserModel user;
+  ChatDetailsLoad(this.chatId, this.user);
 }
 
 class ChatDetailsLoadMore extends ChatDetailsEvent {

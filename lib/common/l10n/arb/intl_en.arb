@@ -32,6 +32,8 @@
   "noChats": "No chats found",
   "noTitle": "No Title",
   "search": "Search",
-  "messageInputHint": "Message"
+  "messageInputHint": "Message",
+  "today": "Today",
+  "yesterday": "Yesterday"
 
 }

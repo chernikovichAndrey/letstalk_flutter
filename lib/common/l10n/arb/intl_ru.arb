@@ -25,5 +25,7 @@
   "noChats": "Чаты не найдены",
   "noTitle": "Без названия",
   "search": "Поиск",
-  "messageInputHint": "Сообщение"
+  "messageInputHint": "Сообщение",
+  "today": "Сегодня",
+  "yesterday": "Вчера"
 }

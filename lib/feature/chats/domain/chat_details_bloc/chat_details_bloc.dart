@@ -58,6 +58,11 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         if (message is String) {
           final decoded = jsonDecode(message);
           switch (decoded['type']) {
+            case 'new_message':
+              final msg = Message.fromJson(decoded['message']);
+              _chatDetailsRepository.markAsRead(msg.chatId, msg.id);
+              add(ChatDetailsNewMessageReceived(msg));
+              return;
             case 'message_sent':
               final msg = Message.fromJson(decoded['message']);
               add(ChatDetailsNewMessageReceived(msg));
@@ -113,17 +118,9 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
 
       if (messages.isNotEmpty) {
         try {
-          final maxMessageId = messages
-              .map((e) => e.id)
-              .reduce((value, element) => value > element ? value : element);
-          await _chatDetailsRepository.markAsRead(event.chatId, maxMessageId);
-          messages = messages
-              .map(
-                (m) => m.id <= maxMessageId && !m.read
-                    ? m.copyWith(read: true)
-                    : m,
-              )
-              .toList();
+          final lastMemberMessageId = messages
+              .lastWhere((e) => e.fromUserId != event.user.id);
+          await _chatDetailsRepository.markAsRead(event.chatId, lastMemberMessageId.id);
         } catch (_) {}
       }
 

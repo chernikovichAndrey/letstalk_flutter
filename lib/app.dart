@@ -52,7 +52,6 @@ class _AppState extends State<App> {
             context.read<ProfileBloc>().add(ProfileLoadEvent());
             router.config.go(Routes.contacts.path);
           } else if (state is AuthUnauthenticated) {
-            WebSocketService().disconnect();
             router.config.go(Routes.login.path);
           }
         },
@@ -86,6 +85,7 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     router.dispose();
+    WebSocketService().disconnect();
     super.dispose();
   }
 }

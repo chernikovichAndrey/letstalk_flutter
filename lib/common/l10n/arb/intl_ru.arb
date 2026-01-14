@@ -27,5 +27,8 @@
   "search": "Поиск",
   "messageInputHint": "Сообщение",
   "today": "Сегодня",
-  "yesterday": "Вчера"
+  "yesterday": "Вчера",
+  "newContact": "Новый контакт",
+  "firstName": "Имя",
+  "lastName": "Фамилия"
 }

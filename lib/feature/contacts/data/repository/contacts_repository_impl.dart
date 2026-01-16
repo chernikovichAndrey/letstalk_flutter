@@ -12,4 +12,11 @@ class ContactsRepositoryImpl implements ContactsRepository {
     final contactsResponse = ContactsResponse.fromJson(response.data);
     return contactsResponse.contacts;
   }
+
+  @override
+  Future<void> deleteContacts(int id) async {
+    await _apiService.delete(
+      '${ApiConstants.contacts}/$id',
+    );
+  }
 }

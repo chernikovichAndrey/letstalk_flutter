@@ -15,3 +15,14 @@ class ContactsSearch extends ContactsEvent {
 
   ContactsSearch(this.query);
 }
+
+class ContactsToggleSelectionMode extends ContactsEvent {}
+
+class ContactsToggleContactSelection extends ContactsEvent {
+  final int contactId;
+
+  ContactsToggleContactSelection(this.contactId);
+}
+
+class ContactsDeleteSelected extends ContactsEvent {}
+

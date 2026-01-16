@@ -24,7 +24,7 @@ class ContactsPage extends StatelessWidget {
         children: [
           BlocBuilder<ContactsBloc, ContactsState>(
             builder: (context, state) {
-              if (state is ContactsLoading) {
+              if (state is ContactsLoading || state is ContactsActionInProgress) {
                 return Padding(
                   padding: EdgeInsets.only(top: topPadding),
                   child: const ContactsSceleton(),
@@ -34,7 +34,6 @@ class ContactsPage extends StatelessWidget {
                 edgeOffset: topPadding,
                 onRefresh: () => _onRefresh(context),
                 slivers: [
-
                   if (state is ContactsLoaded) ...[
                     SliverToBoxAdapter(
                       child: CSearchBar(
@@ -61,16 +60,37 @@ class ContactsPage extends StatelessWidget {
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             final contact = state.contacts[index];
+                            final isSelected =
+                                state.selectedContactIds.contains(contact.id);
                             return CListTile(
                               leading: CAvatar(
-                                imageUrl: contact.imageUrl != null && contact.imageUrl!.isNotEmpty
-                                    ? contact.imageUrl
-                                    : null,
+                                imageUrl:
+                                    contact.imageUrl != null && contact.imageUrl!.isNotEmpty
+                                        ? contact.imageUrl
+                                        : null,
                                 name: contact.fullName,
                               ),
                               title: contact.fullName,
-                              subtitle:
-                                  contact.phone.isNotEmpty ? contact.phone : null,
+                              subtitle: contact.phone.isNotEmpty ? contact.phone : null,
+                              trailing: state.isSelectionMode
+                                  ? Icon(
+                                      isSelected
+                                          ? Icons.check_circle
+                                          : Icons.radio_button_unchecked,
+                                      color: isSelected
+                                          ? context.color.primary
+                                          : context.color.onSurface.withValues(alpha: 0.3),
+                                    )
+                                  : null,
+                              onTap: state.isSelectionMode
+                                  ? () {
+                                      if (contact.id != null) {
+                                        context.read<ContactsBloc>().add(
+                                              ContactsToggleContactSelection(contact.id!),
+                                            );
+                                      }
+                                    }
+                                  : null,
                             );
                           },
                           childCount: state.contacts.length,

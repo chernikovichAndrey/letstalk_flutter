@@ -10,9 +10,32 @@ class ContactsLoaded extends ContactsState {
   final List<Contact> contacts;
   final List<Contact> allContacts;
   final String query;
+  final bool isSelectionMode;
+  final Set<int> selectedContactIds;
 
-  ContactsLoaded(this.allContacts, {List<Contact>? contacts, this.query = ''})
-      : contacts = contacts ?? allContacts;
+  ContactsLoaded(
+    this.allContacts, {
+    List<Contact>? contacts,
+    this.query = '',
+    this.isSelectionMode = false,
+    this.selectedContactIds = const {},
+  }) : contacts = contacts ?? allContacts;
+
+  ContactsLoaded copyWith({
+    List<Contact>? allContacts,
+    List<Contact>? contacts,
+    String? query,
+    bool? isSelectionMode,
+    Set<int>? selectedContactIds,
+  }) {
+    return ContactsLoaded(
+      allContacts ?? this.allContacts,
+      contacts: contacts ?? this.contacts,
+      query: query ?? this.query,
+      isSelectionMode: isSelectionMode ?? this.isSelectionMode,
+      selectedContactIds: selectedContactIds ?? this.selectedContactIds,
+    );
+  }
 }
 
 class ContactsError extends ContactsState {

@@ -14,6 +14,9 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     on<ContactsLoad>(_onLoad);
     on<ContactsRefresh>(_onRefresh);
     on<ContactsSearch>(_onSearch);
+    on<ContactsToggleSelectionMode>(_onToggleSelectionMode);
+    on<ContactsToggleContactSelection>(_onToggleContactSelection);
+    on<ContactsDeleteSelected>(_onDeleteSelected);
   }
 
   Future<void> _onLoad(ContactsLoad event, Emitter<ContactsState> emit) async {
@@ -29,8 +32,13 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   Future<void> _onRefresh(ContactsRefresh event, Emitter<ContactsState> emit) async {
     final currentState = state;
     String currentQuery = '';
+    bool isSelectionMode = false;
+    Set<int> selectedIds = {};
+
     if (currentState is ContactsLoaded) {
       currentQuery = currentState.query;
+      isSelectionMode = currentState.isSelectionMode;
+      selectedIds = currentState.selectedContactIds;
     }
 
     try {
@@ -42,9 +50,19 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
           final phone = contact.phone.toLowerCase();
           return name.contains(query) || phone.contains(query);
         }).toList();
-        emit(ContactsLoaded(contacts, contacts: filteredContacts, query: currentQuery));
+        emit(ContactsLoaded(
+          contacts,
+          contacts: filteredContacts,
+          query: currentQuery,
+          isSelectionMode: isSelectionMode,
+          selectedContactIds: selectedIds,
+        ));
       } else {
-        emit(ContactsLoaded(contacts));
+        emit(ContactsLoaded(
+          contacts,
+          isSelectionMode: isSelectionMode,
+          selectedContactIds: selectedIds,
+        ));
       }
     } catch (e) {
       emit(ContactsError(e.toString()));
@@ -62,7 +80,59 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
         final phone = contact.phone.toLowerCase();
         return name.contains(query) || phone.contains(query);
       }).toList();
-      emit(ContactsLoaded(state.allContacts, contacts: filteredContacts, query: event.query));
+      emit(state.copyWith(
+        contacts: filteredContacts,
+        query: event.query,
+      ));
+    }
+  }
+
+  void _onToggleSelectionMode(
+    ContactsToggleSelectionMode event,
+    Emitter<ContactsState> emit,
+  ) {
+    final state = this.state;
+    if (state is ContactsLoaded) {
+      emit(state.copyWith(
+        isSelectionMode: !state.isSelectionMode,
+        selectedContactIds: {},
+      ));
+    }
+  }
+
+  void _onToggleContactSelection(
+    ContactsToggleContactSelection event,
+    Emitter<ContactsState> emit,
+  ) {
+    final state = this.state;
+    if (state is ContactsLoaded && state.isSelectionMode) {
+      final updatedSelectedIds = Set<int>.from(state.selectedContactIds);
+      if (updatedSelectedIds.contains(event.contactId)) {
+        updatedSelectedIds.remove(event.contactId);
+      } else {
+        updatedSelectedIds.add(event.contactId);
+      }
+      emit(state.copyWith(selectedContactIds: updatedSelectedIds));
+    }
+  }
+
+  Future<void> _onDeleteSelected(
+    ContactsDeleteSelected event,
+    Emitter<ContactsState> emit,
+  ) async {
+    final state = this.state;
+    if (state is ContactsLoaded && state.selectedContactIds.isNotEmpty) {
+      final selectedIds = state.selectedContactIds.toList();
+      emit(ContactsActionInProgress());
+      try {
+        for (final id in selectedIds) {
+          await _contactsRepository.deleteContacts(id);
+        }        // After deletion, reload contacts and exit selection mode
+        final contacts = await _contactsRepository.getContacts();
+        emit(ContactsLoaded(contacts));
+      } catch (e) {
+        emit(ContactsError(e.toString()));
+      }
     }
   }
 }

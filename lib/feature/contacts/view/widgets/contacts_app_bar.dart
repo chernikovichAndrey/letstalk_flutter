@@ -21,19 +21,56 @@ class ContactsAppBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
         child: Stack(
           children: [
-            const Positioned.fill(
-              child: GlassAppBarBackground(),
-            ),
+            const Positioned.fill(child: GlassAppBarBackground()),
             SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GlassButton(
-                      icon: Icons.edit,
-                      onTap: () {},
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          BlocBuilder<ContactsBloc, ContactsState>(
+                            builder: (context, state) {
+                              IconData icon = Icons.edit;
+                              VoidCallback? onTap = () => context
+                                  .read<ContactsBloc>()
+                                  .add(ContactsToggleSelectionMode());
+
+                              if (state is ContactsLoaded &&
+                                  state.isSelectionMode) {
+                                return Row(
+                                  children: [
+                                    GlassButton(
+                                      icon: Icons.close,
+                                      onTap: () => context.read<ContactsBloc>().add(
+                                        ContactsToggleSelectionMode(),
+                                      ),
+                                    ),
+                                    SizedBox(width: 4),
+                                    if (state.selectedContactIds.isNotEmpty)
+                                      GlassButton(
+                                        icon: Icons.delete,
+                                        onTap: () => context
+                                            .read<ContactsBloc>()
+                                            .add(ContactsDeleteSelected()),
+                                      ),
+                                  ],
+                                );
+                              } else if (state is ContactsActionInProgress) {
+                                onTap = null;
+                              }
+                              return GlassButton(icon: icon, onTap: onTap ?? () {});
+                            },
+                          )
+                        ],
+                      ),
                     ),
                     Center(
                       child: ClipRRect(
@@ -62,22 +99,30 @@ class ContactsAppBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    GlassButton(
-                      icon: Icons.add,
-                      onTap: () async {
-                        final contactsBloc = context.read<ContactsBloc>();
-                        final result = await showModalBottomSheet<bool>(
-                          context: context,
-                          isScrollControlled: true,
-                          useSafeArea: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const CreateContactPageScope(),
-                        );
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GlassButton(
+                            icon: Icons.add,
+                            onTap: () async {
+                              final contactsBloc = context.read<ContactsBloc>();
+                              final result = await showModalBottomSheet<bool>(
+                                context: context,
+                                isScrollControlled: true,
+                                useSafeArea: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) =>
+                                const CreateContactPageScope(),
+                              );
 
-                        if (result == true) {
-                          contactsBloc.add(ContactsLoad());
-                        }
-                      },
+                              if (result == true) {
+                                contactsBloc.add(ContactsLoad());
+                              }
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),

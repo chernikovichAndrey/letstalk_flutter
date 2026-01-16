@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -15,7 +16,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final appColors = context.appColors;
     
     final timeFormat = DateFormat('HH:mm');
     final DateTime? createdAt = DateTime.tryParse(message.createdAt);
@@ -28,29 +29,15 @@ class MessageBubble extends StatelessWidget {
     Color? checkUnreadColor;
 
     if (isMe) {
-      if (isDark) {
-        backgroundColor = const Color(0xFF537AA3);
-        textColor = Colors.white;
-        timeColor = Colors.white.withValues(alpha: 0.6);
-        checkReadColor = Colors.blue;
-        checkUnreadColor = Colors.white.withValues(alpha: 0.6);
-      } else {
-        backgroundColor = const Color(0xFF6C9ECA);
-        textColor = Colors.white;
-        timeColor = Colors.white.withValues(alpha: 0.6);
-        checkReadColor = Colors.white;
-        checkUnreadColor = Colors.white.withValues(alpha: 0.6);
-      }
+      backgroundColor = appColors.messageMeBubble;
+      textColor = appColors.messageMeText;
+      timeColor = appColors.messageMeTime;
+      checkReadColor = appColors.messageReadIcon;
+      checkUnreadColor = appColors.messageMeTime;
     } else {
-      if (isDark) {
-        backgroundColor = const Color(0xFF2B2D31);
-        textColor = Colors.white;
-        timeColor = Colors.white.withValues(alpha: 0.6);
-      } else {
-        backgroundColor = const Color(0xFFF2F2F7);
-        textColor = Colors.black;
-        timeColor = Colors.grey;
-      }
+      backgroundColor = appColors.messageOtherBubble;
+      textColor = appColors.messageOtherText;
+      timeColor = appColors.messageOtherTime;
     }
 
     return Align(

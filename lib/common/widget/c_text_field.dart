@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class CTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -36,7 +37,8 @@ class CTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final telegramBlue = const Color(0xFF0088CC);
+    final appColors = context.appColors;
+    final telegramBlue = appColors.telegramBlue;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,9 +62,7 @@ class CTextField extends StatelessWidget {
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey.withValues(alpha: 0.2)
-                : Colors.grey.withValues(alpha: 0.2),
+            fillColor: appColors.inputFill,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

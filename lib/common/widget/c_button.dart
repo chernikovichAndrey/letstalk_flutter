@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 enum CButtonType { primary, secondary, text, destructive }
 
@@ -27,33 +27,27 @@ class CButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    // Telegram-like colors
-    final telegramBlue = const Color(0xFF0088CC);
-    final destructiveColor = CupertinoColors.destructiveRed;
-
     Color backgroundColor;
     Color textColor;
-    BorderSide? borderSide;
+
+    final appColors = context.appColors;
 
     switch (type) {
       case CButtonType.primary:
-        backgroundColor = telegramBlue;
+        backgroundColor = appColors.telegramBlue;
         textColor = Colors.white;
         break;
       case CButtonType.secondary:
-        backgroundColor = isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05);
-        textColor = telegramBlue;
+        backgroundColor = appColors.secondaryBackground;
+        textColor = appColors.telegramBlue;
         break;
       case CButtonType.text:
         backgroundColor = Colors.transparent;
-        textColor = telegramBlue;
+        textColor = appColors.telegramBlue;
         break;
       case CButtonType.destructive:
         backgroundColor = Colors.transparent;
-        textColor = destructiveColor;
+        textColor = appColors.destructive;
         break;
     }
 
@@ -114,12 +108,6 @@ class CButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(12),
-              border: borderSide != null ? Border(
-                top: borderSide,
-                bottom: borderSide,
-                left: borderSide,
-                right: borderSide,
-              ) : null,
             ),
             padding: padding,
             child: content,

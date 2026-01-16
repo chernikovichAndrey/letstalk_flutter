@@ -97,15 +97,15 @@ class ChatListItem extends StatelessWidget {
                           margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.appColors.messageMeBubble,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           constraints: const BoxConstraints(minWidth: 20),
                           child: Center(
                             child: Text(
                               chat.unreadCount.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: context.appColors.messageMeText,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                               ),

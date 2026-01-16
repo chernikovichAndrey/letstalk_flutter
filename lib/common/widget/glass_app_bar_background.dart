@@ -1,17 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class GlassAppBarBackground extends StatelessWidget {
   const GlassAppBarBackground({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white : Colors.black;
+    final appColors = context.appColors;
     final gradientColors = [
-      baseColor.withValues(alpha: 0.05),
-      baseColor.withValues(alpha: 0.05),
+      appColors.glassBackground,
+      appColors.glassBackground,
     ];
 
     return ShaderMask(

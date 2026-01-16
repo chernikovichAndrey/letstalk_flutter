@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/app/config/app_colors_extension.dart';
 import 'package:lets_talk/common/constants/ui_constants.dart';
 
 class AppTheme {
@@ -16,6 +17,30 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
       ),
       textTheme: _textTheme,
+      extensions: [
+        AppColorsExtension(
+          secondaryBackground: Colors.black.withValues(alpha: 0.05),
+          telegramBlue: const Color(0xFF0088CC),
+          destructive: const Color(0xFFFF3B30),
+          messageMeBubble: const Color(0xFF6C9ECA),
+          messageOtherBubble: const Color(0xFFF2F2F7),
+          messageMeText: Colors.white,
+          messageOtherText: Colors.black,
+          messageMeTime: Colors.white.withValues(alpha: 0.6),
+          messageOtherTime: Colors.grey,
+          inputFill: Colors.grey.withValues(alpha: 0.2),
+          inputSecondaryFill: Colors.black.withValues(alpha: 0.05),
+          glassBackground: Colors.white.withValues(alpha: 0.2),
+          glassForeground: Colors.black,
+          glassButtonBackground: Colors.black.withValues(alpha: 0.1),
+          divider: Colors.black.withValues(alpha: 0.1),
+          hintText: Colors.black38,
+          dateSeparatorBackground: const Color(0xFFE5E7EB),
+          dateSeparatorText: Colors.black54,
+          surfaceSecondary: const Color(0xFFF2F2F7),
+          messageReadIcon: Colors.white,
+        ),
+      ],
     );
   }
 
@@ -33,6 +58,30 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
       ),
       textTheme: _textTheme,
+      extensions: [
+        AppColorsExtension(
+          secondaryBackground: Colors.white.withValues(alpha: 0.1),
+          telegramBlue: const Color(0xFF0088CC),
+          destructive: const Color(0xFFFF453A),
+          messageMeBubble: const Color(0xFF537AA3),
+          messageOtherBubble: const Color(0xFF2B2D31),
+          messageMeText: Colors.white,
+          messageOtherText: Colors.white,
+          messageMeTime: Colors.white.withValues(alpha: 0.6),
+          messageOtherTime: Colors.white.withValues(alpha: 0.6),
+          inputFill: Colors.grey.withValues(alpha: 0.2),
+          inputSecondaryFill: Colors.white.withValues(alpha: 0.05),
+          glassBackground: Colors.black.withValues(alpha: 0.2),
+          glassForeground: Colors.white,
+          glassButtonBackground: Colors.white.withValues(alpha: 0.1),
+          divider: Colors.white10,
+          hintText: Colors.white38,
+          dateSeparatorBackground: const Color(0xFF2B2D31),
+          dateSeparatorText: Colors.white70,
+          surfaceSecondary: Colors.black,
+          messageReadIcon: Colors.blue,
+        ),
+      ],
     );
   }
 

@@ -10,8 +10,8 @@ class CallsAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white : Colors.black;
+    final appColors = context.appColors;
+    final baseColor = appColors.glassForeground;
 
     return ClipRect(
       child: BackdropFilter(
@@ -37,7 +37,7 @@ class CallsAppBar extends StatelessWidget {
                         height: 50,
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
-                          color: baseColor.withValues(alpha: 0.1),
+                          color: appColors.glassButtonBackground,
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: TabBar(

@@ -62,13 +62,13 @@ class _CreateContactPageState extends State<CreateContactPage> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final isDark = theme.brightness == Brightness.dark;
+    final appColors = context.appColors;
 
-    final backgroundColor = isDark ? Colors.black : const Color(0xFFF2F2F7);
-    final cardColor = isDark ? const Color(0xFF1C1C1E) : Colors.white;
-    final dividerColor = isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.1);
+    final backgroundColor = appColors.surfaceSecondary;
+    final cardColor = appColors.secondaryBackground;
+    final dividerColor = appColors.divider;
     final hintStyle = context.text.bodyLarge?.copyWith(
-      color: isDark ? Colors.white38 : Colors.black38,
+      color: appColors.hintText,
     );
 
     return BlocListener<AddContactBloc, AddContactState>(
@@ -99,7 +99,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
               context.s.newContact,
               style: context.text.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black,
+                color: appColors.glassForeground,
               ),
             ),
             actions: [
@@ -229,7 +229,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
                             Container(
                               width: 1,
                               height: 24,
-                              color: isDark ? Colors.white24 : Colors.black12,
+                              color: appColors.divider,
                             ),
                             const SizedBox(width: 12),
                             Expanded(

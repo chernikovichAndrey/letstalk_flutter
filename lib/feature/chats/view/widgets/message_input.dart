@@ -66,15 +66,13 @@ class _MessageInputState extends State<MessageInput> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final appColors = context.appColors;
 
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
         child: Container(
-          color: isDark
-              ? Colors.black.withValues(alpha: 0.2)
-              : Colors.white.withValues(alpha: 0.2),
+          color: appColors.glassBackground,
           padding: EdgeInsets.only(
             left: 8,
             right: 16,
@@ -94,9 +92,7 @@ class _MessageInputState extends State<MessageInput> {
                   decoration: InputDecoration(
                     hintText: context.s.messageInputHint,
                     filled: true,
-                    fillColor: isDark
-                        ? Colors.white.withValues(alpha: 0.05)
-                        : Colors.black.withValues(alpha: 0.05),
+                    fillColor: appColors.inputSecondaryFill,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
                       borderSide: BorderSide.none,

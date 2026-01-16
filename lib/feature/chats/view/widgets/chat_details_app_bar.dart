@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
@@ -11,8 +12,8 @@ class ChatDetailsAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white : Colors.black;
+    final appColors = context.appColors;
+    final baseColor = appColors.glassForeground;
 
     return ClipRect(
       child: BackdropFilter(
@@ -43,7 +44,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: baseColor.withValues(alpha: 0.1),
+                            color: appColors.glassButtonBackground,
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Center(

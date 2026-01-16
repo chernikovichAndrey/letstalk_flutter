@@ -1,10 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/feature/contacts/view/create_contact_page.dart';
+import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
+import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
 
 class ContactsAppBar extends StatelessWidget {
   const ContactsAppBar({super.key});
@@ -22,7 +24,6 @@ class ContactsAppBar extends StatelessWidget {
             const Positioned.fill(
               child: GlassAppBarBackground(),
             ),
-            // Content
             SafeArea(
               bottom: false,
               child: Padding(
@@ -63,14 +64,19 @@ class ContactsAppBar extends StatelessWidget {
                     ),
                     GlassButton(
                       icon: Icons.add,
-                      onTap: () {
-                        showModalBottomSheet(
+                      onTap: () async {
+                        final contactsBloc = context.read<ContactsBloc>();
+                        final result = await showModalBottomSheet<bool>(
                           context: context,
                           isScrollControlled: true,
                           useSafeArea: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) => const CreateContactPage(),
+                          builder: (context) => const CreateContactPageScope(),
                         );
+
+                        if (result == true) {
+                          contactsBloc.add(ContactsLoad());
+                        }
                       },
                     ),
                   ],

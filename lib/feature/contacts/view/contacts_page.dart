@@ -63,7 +63,7 @@ class ContactsPage extends StatelessWidget {
                             final contact = state.contacts[index];
                             return CListTile(
                               leading: CAvatar(
-                                imageUrl: contact.imageUrl.isNotEmpty
+                                imageUrl: contact.imageUrl != null && contact.imageUrl!.isNotEmpty
                                     ? contact.imageUrl
                                     : null,
                                 name: contact.fullName,

@@ -20,3 +20,7 @@ class ContactsError extends ContactsState {
 
   ContactsError(this.message);
 }
+
+class ContactsActionInProgress extends ContactsState {}
+
+class ContactsActionSuccess extends ContactsState {}

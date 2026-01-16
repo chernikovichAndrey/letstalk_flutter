@@ -38,6 +38,11 @@ class ContactsAppBar extends StatelessWidget {
                         children: [
                           BlocBuilder<ContactsBloc, ContactsState>(
                             builder: (context, state) {
+                              if (state is ContactsLoaded &&
+                                  state.allContacts.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+
                               IconData icon = Icons.edit;
                               VoidCallback? onTap = () => context
                                   .read<ContactsBloc>()

@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
-import 'package:lets_talk/feature/calls/data/model/call_model.dart';
+import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
 
-class CallListItem extends StatelessWidget {
-  final Call call;
+class CallHistoryListItem extends StatelessWidget {
+  final CallHistory call;
 
-  const CallListItem({
+  const CallHistoryListItem({
     super.key,
     required this.call,
   });

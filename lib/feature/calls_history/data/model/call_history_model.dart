@@ -1,18 +1,18 @@
-import 'package:lets_talk/feature/calls/data/model/call_peer_model.dart';
+import 'package:lets_talk/feature/calls_history/data/model/call_history_peer_model.dart';
 
-class Call {
+class CallHistory {
   final int id;
   final String type; // 'audio' or 'video'
   final String status; // 'ended', 'missed'
   final String direction; // 'outgoing', 'incoming'
-  final CallPeer peer;
+  final CallHistoryPeer peer;
   final DateTime? startedAt;
   final DateTime? answeredAt;
   final DateTime? endedAt;
   final int? duration;
   final String? durationFormatted;
 
-  Call({
+  CallHistory({
     required this.id,
     required this.type,
     required this.status,
@@ -25,13 +25,13 @@ class Call {
     this.durationFormatted,
   });
 
-  factory Call.fromJson(Map<String, dynamic> json) {
-    return Call(
+  factory CallHistory.fromJson(Map<String, dynamic> json) {
+    return CallHistory(
       id: json['id'] as int,
       type: json['type'] as String,
       status: json['status'] as String,
       direction: json['direction'] as String,
-      peer: CallPeer.fromJson(json['peer'] as Map<String, dynamic>),
+      peer: CallHistoryPeer.fromJson(json['peer'] as Map<String, dynamic>),
       startedAt: json['started_at'] != null
           ? DateTime.parse(json['started_at'] as String)
           : null,

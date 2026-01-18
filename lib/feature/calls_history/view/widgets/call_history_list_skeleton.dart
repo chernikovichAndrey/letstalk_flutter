@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/widget/c_skeleton.dart';
 
-class CallListSkeleton extends StatelessWidget {
-  const CallListSkeleton({super.key});
+class CallHistoryListSkeleton extends StatelessWidget {
+  const CallHistoryListSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
-import 'package:lets_talk/feature/calls/data/model/call_model.dart';
-import 'package:lets_talk/feature/calls/domain/calls_bloc/calls_bloc.dart';
-import 'package:lets_talk/feature/calls/view/widgets/call_list_item.dart';
+import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
+import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
+import 'package:lets_talk/feature/calls_history/view/widgets/call_history_list_item.dart';
 
-class CallList extends StatelessWidget {
-  final List<Call> calls;
+class CallHistoryList extends StatelessWidget {
+  final List<CallHistory> calls;
   final double topPadding;
 
-  const CallList({
+  const CallHistoryList({
     super.key,
     required this.calls,
     this.topPadding = 0,
@@ -24,7 +24,7 @@ class CallList extends StatelessWidget {
       edgeOffset: topPadding,
       onRefresh: () async {
         final completer = Completer();
-        context.read<CallsBloc>().add(RefreshCalls(completer: completer));
+        context.read<CallsHistoryBloc>().add(RefreshHistoryCalls(completer: completer));
         return completer.future;
       },
       slivers: [
@@ -41,7 +41,7 @@ class CallList extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final call = calls[index];
-                return CallListItem(
+                return CallHistoryListItem(
                   call: call,
                 );
               },

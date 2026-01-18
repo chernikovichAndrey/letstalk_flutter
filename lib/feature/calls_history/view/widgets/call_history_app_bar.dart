@@ -5,8 +5,8 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
-class CallsAppBar extends StatelessWidget {
-  const CallsAppBar({super.key});
+class CallHistoryAppBar extends StatelessWidget {
+  const CallHistoryAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {

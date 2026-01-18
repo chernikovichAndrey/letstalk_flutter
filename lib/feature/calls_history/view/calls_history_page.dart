@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
-import 'package:lets_talk/feature/calls/domain/calls_bloc/calls_bloc.dart';
-import 'package:lets_talk/feature/calls/view/widgets/call_list.dart';
-import 'package:lets_talk/feature/calls/view/widgets/call_list_skeleton.dart';
-import 'package:lets_talk/feature/calls/view/widgets/calls_app_bar.dart';
+import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
+import 'package:lets_talk/feature/calls_history/view/widgets/call_history_app_bar.dart';
+import 'package:lets_talk/feature/calls_history/view/widgets/call_history_list.dart';
+import 'package:lets_talk/feature/calls_history/view/widgets/call_history_list_skeleton.dart';
 
-class CallsPage extends StatelessWidget {
-  const CallsPage({super.key});
+class CallsHistoryPage extends StatelessWidget {
+  const CallsHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +21,19 @@ class CallsPage extends StatelessWidget {
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-            BlocBuilder<CallsBloc, CallsState>(
+            BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
               builder: (context, state) {
-                if (state is CallsLoading) {
+                if (state is CallsHistoryLoading) {
                   return Padding(
                     padding: EdgeInsets.only(top: topPadding),
-                    child: const CallListSkeleton(),
+                    child: const CallHistoryListSkeleton(),
                   );
-                } else if (state is CallsError) {
+                } else if (state is CallsHistoryError) {
                   return CRefreshableScrollView(
                     edgeOffset: topPadding,
                     onRefresh: () async {
                       final completer = Completer();
-                      context.read<CallsBloc>().add(RefreshCalls(completer: completer));
+                      context.read<CallsHistoryBloc>().add(RefreshHistoryCalls(completer: completer));
                       return completer.future;
                     },
                     slivers: [
@@ -44,14 +44,14 @@ class CallsPage extends StatelessWidget {
                       ),
                     ],
                   );
-                } else if (state is CallsLoaded) {
+                } else if (state is CallsHistoryLoaded) {
                   return TabBarView(
                     children: [
-                      CallList(
+                      CallHistoryList(
                         calls: state.calls,
                         topPadding: topPadding,
                       ),
-                      CallList(
+                      CallHistoryList(
                         calls: state.calls
                             .where((c) => c.status == 'missed')
                             .toList(),
@@ -67,7 +67,7 @@ class CallsPage extends StatelessWidget {
               top: 0,
               left: 0,
               right: 0,
-              child: const CallsAppBar(),
+              child: const CallHistoryAppBar(),
             ),
           ],
         ),

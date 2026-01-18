@@ -31,7 +31,7 @@ abstract class _Paths {
   static const String dialog = '/alert';
   static const String login = '/login';
   static const String contacts = '/contacts';
-  static const String calls = '/calls';
+  static const String calls = '/calls_history';
   static const String chats = '/chats';
   static const String settings = '/settings';
   static const String chatDetails = '/chat_details/:id';

@@ -117,7 +117,7 @@ final Animatable<double> _kScaleTween = Tween<double>(
 /// necessary however, it can be done by pushing to the root [Navigator].
 ///
 /// If `useNestedNavigation` is `false` (the default), then a [CupertinoSheetRoute]
-/// will be shown with no [Navigator] widget. Multiple calls to `showCupertinoSheet`
+/// will be shown with no [Navigator] widget. Multiple calls_history to `showCupertinoSheet`
 /// can still be made to show multiple stacked sheets, if desired.
 ///
 /// `showCupertinoSheet` always pushes the [CupertinoSheetRoute] to the root

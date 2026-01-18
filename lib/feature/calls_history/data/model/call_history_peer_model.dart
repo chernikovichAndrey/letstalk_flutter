@@ -1,16 +1,16 @@
-class CallPeer {
+class CallHistoryPeer {
   final int userId;
   final String phone;
   final String name;
 
-  CallPeer({
+  CallHistoryPeer({
     required this.userId,
     required this.phone,
     required this.name,
   });
 
-  factory CallPeer.fromJson(Map<String, dynamic> json) {
-    return CallPeer(
+  factory CallHistoryPeer.fromJson(Map<String, dynamic> json) {
+    return CallHistoryPeer(
       userId: json['user_id'] as int,
       phone: json['phone'] as String,
       name: json['name'] as String,

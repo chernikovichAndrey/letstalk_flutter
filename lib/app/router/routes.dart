@@ -4,10 +4,11 @@ enum Routes {
   splash(path: _Paths.splash, type: RouteType.page),
   login(path: _Paths.login, type: RouteType.page),
   contacts(path: _Paths.contacts, type: RouteType.page),
-  calls(path: _Paths.calls, type: RouteType.page),
+  callsHistory(path: _Paths.callsHistory, type: RouteType.page),
   chats(path: _Paths.chats, type: RouteType.page),
   settings(path: _Paths.settings, type: RouteType.page),
   chatDetails(path: _Paths.chatDetails, type: RouteType.page),
+  calls(path: _Paths.calls, type: RouteType.page),
   // dialogs
   dialog(path: _Paths.dialog, type: RouteType.dialog);
 
@@ -31,8 +32,9 @@ abstract class _Paths {
   static const String dialog = '/alert';
   static const String login = '/login';
   static const String contacts = '/contacts';
-  static const String calls = '/calls_history';
+  static const String callsHistory = '/calls_history';
   static const String chats = '/chats';
   static const String settings = '/settings';
   static const String chatDetails = '/chat_details/:id';
+  static const String calls = '/calls';
 }

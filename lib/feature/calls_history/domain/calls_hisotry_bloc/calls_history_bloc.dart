@@ -45,7 +45,7 @@ class CallsHistoryBloc extends Bloc<CallsHistoryEvent, CallsHistoryState> {
           emit(CallsHistoryLoaded(updatedCalls));
         } catch (e) {
           emit(CallsHistoryError(e.toString()));
-          // Reload calls_history to revert to correct state
+          // Reload calls to revert to correct state
           add(LoadHistoryCalls());
         }
       }

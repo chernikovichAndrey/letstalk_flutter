@@ -5,6 +5,7 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/routes_ext.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
 import 'package:lets_talk/feature/shell/view/bottom_navigation_shell.dart';
+import 'package:lets_talk/feature/shell/view/shell_holder.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -16,27 +17,37 @@ class AppRouter {
     navigatorKey: navigatorKey,
     debugLogDiagnostics: true,
     routes: [
-      // Splash route
-      buildRoute(Routes.splash),
-      
-      // Login route (outside shell)
-      buildRoute(Routes.login),
-      
-      // Shell for main tabs
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return BottomNavigationShell(navigationShell: navigationShell);
+      ShellRoute(
+        builder: (context, state, child) {
+          return ShellHolder(child: child);
         },
-        branches: [
-          StatefulShellBranch(routes: [buildRoute(Routes.contacts)]),
-          StatefulShellBranch(routes: [buildRoute(Routes.calls)]),
-          StatefulShellBranch(routes: [buildRoute(Routes.chats)]),
-          StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
-        ],
-      ),
+        routes: [
+          // Splash route
+          buildRoute(Routes.splash),
 
-      // Chat Details
-      buildRoute(Routes.chatDetails),
+          // Login route (outside shell)
+          buildRoute(Routes.login),
+
+          // Shell for main tabs
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) {
+              return BottomNavigationShell(navigationShell: navigationShell);
+            },
+            branches: [
+              StatefulShellBranch(routes: [buildRoute(Routes.contacts)]),
+              StatefulShellBranch(routes: [buildRoute(Routes.callsHistory)]),
+              StatefulShellBranch(routes: [buildRoute(Routes.chats)]),
+              StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
+            ],
+          ),
+
+          // Chat Details
+          buildRoute(Routes.chatDetails),
+
+          //Call screen
+          buildRoute(Routes.calls),
+        ]
+      ),
 
       // Dialogs and Sheets (global)
       ...Routes.sheetRoutes.map(buildRoute),

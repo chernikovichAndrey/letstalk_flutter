@@ -172,7 +172,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     switch (type) {
       case 'call_incoming':
         add(CallIncomingReceived(
-          callId: data['call_id'],
+          callId: int.tryParse(data['call_id']) ?? 0,
           callerId: data['caller_id'],
           offer: data['offer'],
           callType: data['call_type'] ?? 'audio',

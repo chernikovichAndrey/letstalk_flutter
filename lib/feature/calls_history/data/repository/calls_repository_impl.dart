@@ -9,7 +9,7 @@ class CallsRepositoryImpl implements CallsHistoryRepository {
   @override
   Future<List<CallHistory>> getCalls() async {
     final response = await _apiService.get(ApiConstants.calls);
-    final List<dynamic> callsJson = response.data['calls_history'];
+    final List<dynamic> callsJson = response.data['calls'];
     return callsJson.map((json) => CallHistory.fromJson(json)).toList();
   }
 

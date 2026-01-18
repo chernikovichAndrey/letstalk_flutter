@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 
 class CallHistoryAppBar extends StatelessWidget {
   const CallHistoryAppBar({super.key});
@@ -80,7 +82,9 @@ class CallHistoryAppBar extends StatelessWidget {
                     const SizedBox(width: 12),
                     GlassButton(
                       icon: Icons.call,
-                      onTap: () {},
+                      onTap: () {
+                        context.read<CallBloc>().add(CallInitiated(targetUserId: 19, isVideo: true));
+                      },
                     ),
                   ],
                 ),

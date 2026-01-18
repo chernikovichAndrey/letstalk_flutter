@@ -5,10 +5,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lets_talk/app/config/app_theme.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/app_router.dart';
-import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/auth/data/repository/auth_repository_impl.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:lets_talk/feature/call/data/repository/call_repository_impl.dart';
+import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/settings/data/repository/profile_repository_impl.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
@@ -23,6 +25,8 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   late final AppRouter router;
+  final _webRTCService = WebRTCService();
+  final _callRepository = CallRepositoryImpl();
 
   @override
   void initState() {
@@ -34,27 +38,27 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider(
-          create: (context) => AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
-        ),
-        BlocProvider(
-          create: (context) => ProfileBloc(ProfileRepositoryImpl()),
-        ),
+        RepositoryProvider.value(value: _webRTCService),
+        RepositoryProvider.value(value: _callRepository),
       ],
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthAuthenticated) {
-            if (state.token != null) {
-              WebSocketService().authenticate(state.token!);
-            }
-            context.read<ProfileBloc>().add(ProfileLoadEvent());
-            router.config.go(Routes.contacts.path);
-          } else if (state is AuthUnauthenticated) {
-            router.config.go(Routes.login.path);
-          }
-        },
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) =>
+                AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
+          ),
+          BlocProvider(
+            create: (context) => ProfileBloc(ProfileRepositoryImpl()),
+          ),
+          BlocProvider(
+            create: (context) => CallBloc(
+              callRepository: _callRepository,
+              webRTCService: _webRTCService,
+            ),
+          ),
+        ],
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
           routerConfig: router.config,
@@ -86,6 +90,7 @@ class _AppState extends State<App> {
   void dispose() {
     router.dispose();
     WebSocketService().disconnect();
+    _webRTCService.dispose();
     super.dispose();
   }
 }

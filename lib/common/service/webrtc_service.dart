@@ -30,8 +30,6 @@ class WebRTCService {
     final configuration = {
       'iceServers': [
         {'urls': 'stun:stun.l.google.com:19302'},
-        {'urls': "stun:stun1.l.google.com:19302"},
-        {'urls': "stun:stun2.l.google.com:19302"},
       ]
     };
 
@@ -132,6 +130,15 @@ class WebRTCService {
         await Helper.switchCamera(videoTracks[0]);
         _logger.d('Switched camera');
       }
+    }
+  }
+
+  Future<void> toggleSpeaker(bool enabled) async {
+    try {
+      await Helper.setSpeakerphoneOn(enabled);
+      _logger.d('Set speakerphone to $enabled');
+    } catch (e) {
+      _logger.e('Error setting speakerphone: $e');
     }
   }
 

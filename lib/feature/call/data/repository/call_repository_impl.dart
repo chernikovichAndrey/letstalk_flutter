@@ -17,8 +17,8 @@ class CallRepositoryImpl implements CallRepository {
   }) async {
     _wsService.send({
       'type': 'call_offer',
-      'target_user_id': targetUserId,
-      'call_type': callType,
+      'target_user_id': 19,
+      'call_type': 'audio',
       'offer': sdp,
     });
   }

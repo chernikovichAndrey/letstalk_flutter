@@ -71,7 +71,10 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     try {
       await _webRTCService.initialize();
       _currentTargetUserId = event.targetUserId;
-      emit(CallOutgoing(targetUserId: event.targetUserId));
+      emit(CallOutgoing(
+        targetUserId: event.targetUserId,
+        isVideo: event.isVideo,
+      ));
       
       final offer = await _webRTCService.createOffer(isVideo: event.isVideo);
       await _callRepository.sendOffer(
@@ -130,6 +133,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         callId: event.callId,
         targetUserId: event.callerId,
         isCaller: false,
+        isVideo: event.isVideo,
       ));
     } catch (e) {
       emit(CallFailure(e.toString()));
@@ -181,6 +185,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         
       case 'call_answered':
         if (state is CallOutgoing) {
+          final isVideo = (state as CallOutgoing).isVideo;
           final sdp = data['answer'];
           await _webRTCService.setRemoteDescription(
             RTCSessionDescription(sdp, 'answer'),
@@ -191,6 +196,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
             callId: _currentCallId!,
             targetUserId: _currentTargetUserId!,
             isCaller: true,
+            isVideo: isVideo,
           ));
         }
         break;

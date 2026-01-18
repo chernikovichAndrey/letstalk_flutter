@@ -23,6 +23,41 @@ class WebSocketService {
     return _broadcastStream!;
   }
 
+  Stream<Map<String, dynamic>> get signalingStream {
+    return stream.transform<Map<String, dynamic>>(
+      StreamTransformer.fromHandlers(
+        handleData: (data, sink) {
+          try {
+            final Map<String, dynamic> map;
+            if (data is String) {
+              map = jsonDecode(data);
+            } else if (data is Map) {
+              map = Map<String, dynamic>.from(data);
+            } else {
+              return;
+            }
+
+            final type = map['type'];
+            const signalingTypes = {
+              'call_incoming',
+              'call_answered',
+              'ice_candidate',
+              'call_ended',
+              'call_rejected',
+              'call_failed',
+            };
+
+            if (signalingTypes.contains(type)) {
+              sink.add(map);
+            }
+          } catch (e) {
+            _logger.e('Error parsing signaling message: $e');
+          }
+        },
+      ),
+    ).asBroadcastStream();
+  }
+
   void connect(String url, {Iterable<String>? protocols}) {
     if (_channel != null) return;
 

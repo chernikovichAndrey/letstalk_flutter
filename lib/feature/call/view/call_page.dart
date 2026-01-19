@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
@@ -44,14 +45,14 @@ class _CallPageState extends State<CallPage> {
       backgroundColor: Colors.black,
       body: BlocConsumer<CallBloc, CallState>(
         listener: (context, state) {
-          if (state is CallEnded) {
-            Navigator.of(context).pop();
+          if (state is CallEnded && context.canPop()) {
+            context.pop();
           }
-          if (state is CallFailure) {
+          if (state is CallFailure && context.canPop()) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Call failed: ${state.reason}')),
             );
-            Navigator.of(context).pop();
+            context.pop();
           }
         },
         builder: (context, state) {
@@ -132,10 +133,15 @@ class _CallPageState extends State<CallPage> {
                       icon: const Icon(Icons.call_end, color: Colors.white, size: 40),
                       onPressed: () {
                         final state = context.read<CallBloc>().state;
-                        if (state is CallActive) {
+                        final callId = switch (state) {
+                          CallActive(:final callId) => callId,
+                          CallOutgoing(:final callId) => callId,
+                          _ => null,
+                        };
+                        if (callId != null) {
                           context
                               .read<CallBloc>()
-                              .add(CallHangup(callId: state.callId));
+                              .add(CallHangup(callId: callId));
                         } else {
                           // For CallOutgoing or others, trigger cleanup.
                           // Passing -1 as we might not have a callId yet.

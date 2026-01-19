@@ -45,13 +45,13 @@ class ShellHolder extends StatelessWidget {
                           context
                               .read<CallBloc>()
                               .add(CallRejected(callId: state.callId));
-                          Navigator.pop(context);
+                          context.pop();
                         },
                         child: const Text('Decline'),
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          context.pop();
                           context.read<CallBloc>().add(CallAccepted(
                             callId: state.callId,
                             callerId: state.callerId,
@@ -66,7 +66,12 @@ class ShellHolder extends StatelessWidget {
                   ),
                 );
               } else if (state is CallOutgoing) {
-                context.push(Routes.calls.path);
+                final currentPath = GoRouterState.of(context).uri.path;
+                if (currentPath != Routes.calls.path) {
+                  context.push(Routes.calls.path);
+                }
+              } else if (state is CallEnded) {
+                context.pop();
               }
             },
           ),

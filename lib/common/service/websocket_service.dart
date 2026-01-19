@@ -39,6 +39,7 @@ class WebSocketService {
 
             final type = map['type'];
             const signalingTypes = {
+              'call_offered',
               'call_incoming',
               'call_answered',
               'ice_candidate',

@@ -24,6 +24,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         super(CallInitial()) {
     on<CallInitiated>(_onCallInitiated);
     on<CallIncomingReceived>(_onCallIncomingReceived);
+    on<CallOfferedReceived>(_onCallOfferedReceived);
     on<CallAccepted>(_onCallAccepted);
     on<CallRejected>(_onCallRejected);
     on<CallHangup>(_onCallHangup);
@@ -84,6 +85,19 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       );
     } catch (e) {
       emit(CallFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onCallOfferedReceived(
+      CallOfferedReceived event,
+      Emitter<CallState> emit,
+      ) async {
+    if (event.status == 'success') {
+      final currentState = state as CallOutgoing;
+      _currentCallId = event.callId;
+      emit(currentState.copyWith(
+        callId: event.callId,
+      ));
     }
   }
 
@@ -174,6 +188,12 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     final data = event.data;
 
     switch (type) {
+      case 'call_offered':
+        add(CallOfferedReceived(
+          callId: int.tryParse(data['call_id']) ?? 0,
+          status: data['status'],
+        ));
+        break;
       case 'call_incoming':
         add(CallIncomingReceived(
           callId: int.tryParse(data['call_id']) ?? 0,

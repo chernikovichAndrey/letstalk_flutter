@@ -9,6 +9,16 @@ class CallInitiated extends CallEvent {
   CallInitiated({required this.targetUserId, this.isVideo = false});
 }
 
+class CallOfferedReceived extends CallEvent {
+  final int callId;
+  final String status;
+
+  CallOfferedReceived({
+    required this.callId,
+    required this.status,
+  });
+}
+
 class CallIncomingReceived extends CallEvent {
   final int callId;
   final int callerId;

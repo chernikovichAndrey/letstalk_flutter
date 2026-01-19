@@ -20,12 +20,26 @@ class CallIncoming extends CallState {
 
 class CallOutgoing extends CallState {
   final int targetUserId;
+  final int? callId;
   final bool isVideo;
 
   CallOutgoing({
     required this.targetUserId,
     required this.isVideo,
+    this.callId,
   });
+
+  CallOutgoing copyWith({
+    int? targetUserId,
+    int? callId,
+    bool? isVideo,
+  }) {
+    return CallOutgoing(
+      targetUserId: targetUserId ?? this.targetUserId,
+      callId: callId ?? this.callId,
+      isVideo: isVideo ?? this.isVideo,
+    );
+  }
 }
 
 class CallActive extends CallState {

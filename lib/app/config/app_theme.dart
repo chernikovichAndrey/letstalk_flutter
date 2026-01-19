@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/config/app_colors_extension.dart';
+import 'package:lets_talk/app/config/app_gradients_extension.dart';
 import 'package:lets_talk/common/constants/ui_constants.dart';
 
 class AppTheme {
@@ -39,6 +40,16 @@ class AppTheme {
           dateSeparatorText: Colors.black54,
           surfaceSecondary: const Color(0xFFF2F2F7),
           messageReadIcon: Colors.white,
+        ),
+        const AppGradientsExtension(
+          backgroundGradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF80CBC4), // Teal 200
+              Color(0xFF00695C), // Teal 800
+            ],
+          ),
         ),
       ],
     );
@@ -80,6 +91,16 @@ class AppTheme {
           dateSeparatorText: Colors.white70,
           surfaceSecondary: Colors.black,
           messageReadIcon: Colors.blue,
+        ),
+        const AppGradientsExtension(
+          backgroundGradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF7E57C2), // Deep Purple 400
+              Color(0xFF311B92), // Deep Purple 900
+            ],
+          ),
         ),
       ],
     );

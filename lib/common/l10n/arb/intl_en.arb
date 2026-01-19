@@ -49,5 +49,19 @@
   },
   "unknownUser": "Unknown User",
   "incomingVideoCall": "Incoming video call...",
-  "incomingAudioCall": "Incoming audio call..."
+  "incomingAudioCall": "Incoming audio call...",
+  "callFailed": "Call failed: {reason}",
+  "@callFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "calling": "Calling...",
+  "speaker": "Speaker",
+  "video": "Video",
+  "mute": "Mute",
+  "endCall": "End",
+  "defaultUserName": "User"
 }

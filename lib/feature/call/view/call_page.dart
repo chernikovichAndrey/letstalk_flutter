@@ -104,7 +104,7 @@ class _CallPageState extends State<CallPage> {
           }
           if (state is CallFailure && context.canPop()) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Call failed: ${state.reason}')),
+              SnackBar(content: Text(context.s.callFailed(state.reason))),
             );
             context.pop();
           }
@@ -167,14 +167,14 @@ class _CallPageState extends State<CallPage> {
                     child: Column(
                       children: [
                         const Spacer(flex: 1),
-                        const CAvatar(
+                        CAvatar(
                           radius: 80,
-                          name: 'User', // Placeholder
+                          name: context.s.defaultUserName, // Placeholder
                         ),
                         const SizedBox(height: 24),
-                        const Text(
-                          'User',
-                          style: TextStyle(
+                        Text(
+                          context.s.defaultUserName,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -182,9 +182,9 @@ class _CallPageState extends State<CallPage> {
                         ),
                         const SizedBox(height: 8),
                         if (state is CallOutgoing)
-                          const Text(
-                            'Calling...',
-                            style: TextStyle(
+                          Text(
+                            context.s.calling,
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 18,
                             ),
@@ -213,7 +213,7 @@ class _CallPageState extends State<CallPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CallActionButton(
-                        label: 'Динамик',
+                        label: context.s.speaker,
                         icon: _isSpeakerOn ? Icons.volume_up : Icons.volume_off,
                         onTap: () {
                           setState(() {
@@ -224,12 +224,12 @@ class _CallPageState extends State<CallPage> {
                       ),
                       if (isVideo)
                         CallActionButton(
-                          label: 'Видео',
+                          label: context.s.video,
                           icon: Icons.video_call,
                           onTap: () => webRTCService.toggleVideo(),
                         ),
                       CallActionButton(
-                        label: 'Убрать звук',
+                        label: context.s.mute,
                         icon: _isMuted ? Icons.mic_off : Icons.mic,
                         onTap: () {
                           setState(() {
@@ -239,7 +239,7 @@ class _CallPageState extends State<CallPage> {
                         },
                       ),
                       CallActionButton(
-                        label: 'Завершить',
+                        label: context.s.endCall,
                         icon: Icons.call_end,
                         backgroundColor: Colors.red,
                         onTap: onEndCallPress,

@@ -35,5 +35,12 @@
   "userCallerName": "Пользователь {id}",
   "unknownUser": "Неизвестный пользователь",
   "incomingVideoCall": "Входящий видеозвонок...",
-  "incomingAudioCall": "Входящий аудиозвонок..."
+  "incomingAudioCall": "Входящий аудиозвонок...",
+  "callFailed": "Ошибка звонка: {reason}",
+  "calling": "Вызов...",
+  "speaker": "Динамик",
+  "video": "Видео",
+  "mute": "Убрать звук",
+  "endCall": "Завершить",
+  "defaultUserName": "Пользователь"
 }

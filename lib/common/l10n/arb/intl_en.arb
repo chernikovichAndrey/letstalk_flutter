@@ -37,5 +37,17 @@
   "yesterday": "Yesterday",
   "newContact": "New Contact",
   "firstName": "First Name",
-  "lastName": "Last Name"
+  "lastName": "Last Name",
+  "incomingCall": "Incoming Call",
+  "userCallerName": "User {id}",
+  "@userCallerName": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownUser": "Unknown User",
+  "incomingVideoCall": "Incoming video call...",
+  "incomingAudioCall": "Incoming audio call..."
 }

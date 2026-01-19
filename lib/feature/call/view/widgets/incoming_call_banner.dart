@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 
 class IncomingCallBanner extends StatelessWidget {
@@ -35,13 +36,13 @@ class IncomingCallBanner extends StatelessWidget {
               ),
             ],
           ),
-          child: Material(
+            child: Material(
             color: Colors.transparent,
             child: Row(
               children: [
-                const CAvatar(
+                CAvatar(
                   radius: 24,
-                  name: 'Неизвестный Пользователь',
+                  name: context.s.unknownUser,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -50,7 +51,9 @@ class IncomingCallBanner extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Incoming ${callType} Call...',
+                        callType == 'video'
+                            ? context.s.incomingVideoCall
+                            : context.s.incomingAudioCall,
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 12,

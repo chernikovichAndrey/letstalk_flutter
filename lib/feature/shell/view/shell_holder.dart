@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/call/view/widgets/incoming_call_banner.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/l10n/generated/l10n.dart';
 
 class ShellHolder extends StatelessWidget {
   const ShellHolder({required this.child, super.key});
@@ -37,11 +39,11 @@ class ShellHolder extends StatelessWidget {
                 showGeneralDialog(
                   context: context,
                   barrierDismissible: false,
-                  barrierLabel: 'Incoming Call',
+                  barrierLabel: context.s.incomingCall,
                   barrierColor: Colors.black54,
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return IncomingCallBanner(
-                      callerName: 'User ${state.callerId}',
+                      callerName: context.s.userCallerName(state.callerId.toString()),
                       callType: state.callType,
                       onDecline: () {
                         context

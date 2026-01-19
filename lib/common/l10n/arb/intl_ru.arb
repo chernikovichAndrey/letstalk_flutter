@@ -30,5 +30,10 @@
   "yesterday": "Вчера",
   "newContact": "Новый контакт",
   "firstName": "Имя",
-  "lastName": "Фамилия"
+  "lastName": "Фамилия",
+  "incomingCall": "Входящий звонок",
+  "userCallerName": "Пользователь {id}",
+  "unknownUser": "Неизвестный пользователь",
+  "incomingVideoCall": "Входящий видеозвонок...",
+  "incomingAudioCall": "Входящий аудиозвонок..."
 }

@@ -31,7 +31,7 @@ class _CallPageState extends State<CallPage> {
         _isSpeakerOn = isVideo;
       });
       // Set initial speaker state
-      context.read<WebRTCService>().toggleSpeaker(_isSpeakerOn);
+      // context.read<WebRTCService>().toggleSpeaker(_isSpeakerOn);
     });
   }
 
@@ -119,13 +119,13 @@ class _CallPageState extends State<CallPage> {
                         setState(() {
                           _isSpeakerOn = !_isSpeakerOn;
                         });
-                        webRTCService.toggleSpeaker(_isSpeakerOn);
+                        // webRTCService.toggleSpeaker(_isSpeakerOn);
                       },
                       style: IconButton.styleFrom(backgroundColor: Colors.grey.withOpacity(0.5)),
                     ),
                     IconButton(
                       icon: const Icon(Icons.mic, color: Colors.white, size: 32),
-                      onPressed: () => webRTCService.toggleMute(),
+                      onPressed: () => {},
                       style: IconButton.styleFrom(backgroundColor: Colors.grey.withOpacity(0.5)),
                     ),
                     IconButton(

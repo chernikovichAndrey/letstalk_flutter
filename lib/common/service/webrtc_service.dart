@@ -1,155 +1,478 @@
 import 'dart:async';
-
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:logger/logger.dart';
 
 typedef OnIceCandidateCallback = void Function(RTCIceCandidate candidate);
 typedef OnTrackCallback = void Function(MediaStream stream);
+typedef OnConnectionStateChangeCallback = void Function(RTCPeerConnectionState state);
+
+enum CallType { audio, video }
 
 class WebRTCService {
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
+
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   final Logger _logger = Logger();
 
+  final List<RTCIceCandidate> _pendingCandidates = [];
+  bool _isInitialized = false;
+  bool _remoteDescriptionSet = false;
+
+  // Callbacks
   OnIceCandidateCallback? onIceCandidate;
   OnTrackCallback? onTrack;
+  OnConnectionStateChangeCallback? onConnectionStateChange;
 
+  // Getters
   RTCVideoRenderer get localRenderer => _localRenderer;
   RTCVideoRenderer get remoteRenderer => _remoteRenderer;
+  MediaStream? get localStream => _localStream;
+  bool get isInitialized => _isInitialized;
+  RTCPeerConnection? get peerConnection => _peerConnection;
+
+  /* ================= INITIALIZATION ================= */
 
   Future<void> initialize() async {
-    _logger.d('Initializing WebRTCService');
-    await _localRenderer.initialize();
-    await _remoteRenderer.initialize();
-  }
-
-  Future<void> _createPeerConnection() async {
-    _logger.d('Creating PeerConnection');
-    final configuration = {
-      'iceServers': [
-        {'urls': 'stun:stun.l.google.com:19302'},
-      ]
-    };
-
-    _peerConnection = await createPeerConnection(configuration);
-
-    _peerConnection!.onIceCandidate = (candidate) {
-      _logger.d('OnIceCandidate: ${candidate.candidate}');
-      onIceCandidate?.call(candidate);
-    };
-
-    _peerConnection!.onTrack = (event) {
-      _logger.d('OnTrack');
-      if (event.streams.isNotEmpty) {
-        _remoteRenderer.srcObject = event.streams[0];
-        onTrack?.call(event.streams[0]);
-      }
-    };
-  }
-
-  Future<void> _getUserMedia({bool isVideo = false}) async {
-    _logger.d('Getting User Media. Video: $isVideo');
-    final Map<String, dynamic> mediaConstraints = {
-      'audio': true,
-      'video': isVideo
-          ? {
-              'facingMode': 'user',
-            }
-          : false,
-    };
+    if (_isInitialized) {
+      _logger.w('WebRTC already initialized');
+      return;
+    }
 
     try {
-      _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      _localRenderer.srcObject = _localStream;
-      
-      _localStream!.getTracks().forEach((track) {
-        _peerConnection?.addTrack(track, _localStream!);
-      });
+      _logger.d('WebRTC initializing...');
+      await _localRenderer.initialize();
+      await _remoteRenderer.initialize();
+      _isInitialized = true;
+      _logger.i('WebRTC initialized successfully');
     } catch (e) {
-      _logger.e('Error getting user media: $e');
+      _logger.e('WebRTC initialization failed: $e');
       rethrow;
     }
   }
 
-  Future<RTCSessionDescription> createOffer({bool isVideo = false}) async {
-    _logger.d('Creating Offer');
-    await _createPeerConnection();
-    await _getUserMedia(isVideo: isVideo);
+  /* ================= PEER CONNECTION ================= */
 
-    RTCSessionDescription offer = await _peerConnection!.createOffer();
-    await _peerConnection!.setLocalDescription(offer);
-    return offer;
+  Future<void> _createPeerConnection() async {
+    if (_peerConnection != null) {
+      _logger.w('PeerConnection already exists');
+      return;
+    }
+
+    try {
+      _logger.d('Creating PeerConnection');
+
+      final config = {
+        'iceServers': [
+          {'urls': 'stun:stun.l.google.com:19302'},
+          {'urls': 'stun:stun1.l.google.com:19302'},
+          {'urls': 'stun:stun2.l.google.com:19302'},
+
+          // Twilio TURN (бесплатный для тестов)
+          {
+            'urls': 'turn:global.turn.twilio.com:3478?transport=udp',
+            'username': 'f4b4035eaa76f4a55de5f4351567653ee4ff6fa97b50b6b334fcc1be9c27212d',
+            'credential': 'w1uxM55V9yVoqyVFjt+mxDBV0F87AUCemaYVQGxsPLw=',
+          },
+          {
+            'urls': 'turn:global.turn.twilio.com:3478?transport=tcp',
+            'username': 'f4b4035eaa76f4a55de5f4351567653ee4ff6fa97b50b6b334fcc1be9c27212d',
+            'credential': 'w1uxM55V9yVoqyVFjt+mxDBV0F87AUCemaYVQGxsPLw=',
+          },
+          {
+            'urls': 'turn:global.turn.twilio.com:443?transport=tcp',
+            'username': 'f4b4035eaa76f4a55de5f4351567653ee4ff6fa97b50b6b334fcc1be9c27212d',
+            'credential': 'w1uxM55V9yVoqyVFjt+mxDBV0F87AUCemaYVQGxsPLw=',
+          },
+
+          // Metered TURN
+          {
+            'urls': 'turn:a.relay.metered.ca:80',
+            'username': '85d6ac5e769fc101adbe935b',
+            'credential': 'Wy+zWUeAJs1GSNBH',
+          },
+          {
+            'urls': 'turn:a.relay.metered.ca:443',
+            'username': '85d6ac5e769fc101adbe935b',
+            'credential': 'Wy+zWUeAJs1GSNBH',
+          },
+          {
+            'urls': 'turn:a.relay.metered.ca:443?transport=tcp',
+            'username': '85d6ac5e769fc101adbe935b',
+            'credential': 'Wy+zWUeAJs1GSNBH',
+          },
+        ],
+        'sdpSemantics': 'unified-plan',
+        'iceCandidatePoolSize': 10,
+      };
+
+      final constraints = {
+        'mandatory': {},
+        'optional': [
+          {'DtlsSrtpKeyAgreement': true},
+        ],
+      };
+
+      _peerConnection = await createPeerConnection(config, constraints);
+
+      _setupPeerConnectionListeners();
+
+      _logger.i('PeerConnection created successfully');
+    } catch (e) {
+      _logger.e('Failed to create PeerConnection: $e');
+      rethrow;
+    }
+  }
+
+  void _setupPeerConnectionListeners() {
+    if (_peerConnection == null) return;
+
+    // ICE Candidate handler
+    _peerConnection!.onIceCandidate = (RTCIceCandidate candidate) {
+      if (candidate.candidate != null && candidate.candidate!.isNotEmpty) {
+        _logger.d('New ICE candidate: ${candidate.candidate}');
+        onIceCandidate?.call(candidate);
+      }
+    };
+
+    // Track handler (remote stream)
+    _peerConnection!.onTrack = (RTCTrackEvent event) {
+      _logger.d('onTrack: ${event.track.kind}');
+
+      if (event.streams.isNotEmpty) {
+        final remoteStream = event.streams.first;
+        _remoteRenderer.srcObject = remoteStream;
+        onTrack?.call(remoteStream);
+        _logger.i('Remote stream set to renderer');
+      }
+    };
+
+    // Connection state change
+    _peerConnection!.onConnectionState = (RTCPeerConnectionState state) {
+      _logger.i('Connection state: $state');
+      onConnectionStateChange?.call(state);
+
+      switch (state) {
+        case RTCPeerConnectionState.RTCPeerConnectionStateConnected:
+          _logger.i('WebRTC connection established');
+          break;
+        case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
+          _logger.w('WebRTC connection disconnected');
+          break;
+        case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
+          _logger.e('WebRTC connection failed');
+          break;
+        case RTCPeerConnectionState.RTCPeerConnectionStateClosed:
+          _logger.i('WebRTC connection closed');
+          break;
+        default:
+          break;
+      }
+    };
+
+    // ICE connection state change
+    _peerConnection!.onIceConnectionState = (RTCIceConnectionState state) {
+      _logger.d('ICE connection state: $state');
+    };
+
+    // ICE gathering state change
+    _peerConnection!.onIceGatheringState = (RTCIceGatheringState state) {
+      _logger.d('ICE gathering state: $state');
+    };
+
+    // Signaling state change
+    _peerConnection!.onSignalingState = (RTCSignalingState state) {
+      _logger.d('Signaling state: $state');
+    };
+  }
+
+  /* ================= MEDIA STREAMS ================= */
+
+  Future<void> _getUserMedia({required CallType callType}) async {
+    if (_localStream != null) {
+      _logger.w('Local stream already exists');
+      return;
+    }
+
+    try {
+      _logger.d('Getting user media: ${callType.name}');
+
+      final constraints = {
+        'audio': {
+          'echoCancellation': true,
+          'noiseSuppression': true,
+          'autoGainControl': true,
+        },
+        'video': callType == CallType.video
+            ? {
+          'facingMode': 'user',
+          'width': {'ideal': 1280},
+          'height': {'ideal': 720},
+          'frameRate': {'ideal': 30},
+        }
+            : false,
+      };
+
+      _localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      _localRenderer.srcObject = _localStream;
+
+      // Add tracks to peer connection
+      if (_peerConnection != null) {
+        for (final track in _localStream!.getTracks()) {
+          await _peerConnection!.addTrack(track, _localStream!);
+          _logger.d('Added ${track.kind} track to peer connection');
+        }
+      }
+
+      _logger.i('User media acquired successfully');
+    } catch (e) {
+      _logger.e('Failed to get user media: $e');
+      rethrow;
+    }
+  }
+
+  /* ================= OFFER / ANSWER ================= */
+
+  Future<RTCSessionDescription> createOffer({
+    CallType callType = CallType.audio,
+  }) async {
+    try {
+      _logger.d('Creating offer for ${callType.name} call');
+
+      await _createPeerConnection();
+      await _getUserMedia(callType: callType);
+
+      final offerOptions = {
+        'offerToReceiveAudio': true,
+        'offerToReceiveVideo': callType == CallType.video,
+      };
+
+      final offer = await _peerConnection!.createOffer(offerOptions);
+      await _peerConnection!.setLocalDescription(offer);
+
+      _logger.i('Offer created: ${offer.type}');
+      return offer;
+    } catch (e) {
+      _logger.e('Failed to create offer: $e');
+      rethrow;
+    }
   }
 
   Future<RTCSessionDescription> createAnswer({
-    required RTCSessionDescription remoteDescription,
-    bool isVideo = false,
+    required RTCSessionDescription remoteOffer,
+    CallType callType = CallType.audio,
   }) async {
-    _logger.d('Creating Answer');
-    await _createPeerConnection();
-    await _getUserMedia(isVideo: isVideo); // User needs to accept media permissions to answer
+    try {
+      _logger.d('Creating answer for ${callType.name} call');
 
-    await _peerConnection!.setRemoteDescription(remoteDescription);
-    RTCSessionDescription answer = await _peerConnection!.createAnswer();
-    await _peerConnection!.setLocalDescription(answer);
-    return answer;
+      await _createPeerConnection();
+      await _getUserMedia(callType: callType);
+      await _setRemoteDescription(remoteOffer);
+
+      final answerOptions = {
+        'offerToReceiveAudio': true,
+        'offerToReceiveVideo': callType == CallType.video,
+      };
+
+      final answer = await _peerConnection!.createAnswer(answerOptions);
+      await _peerConnection!.setLocalDescription(answer);
+
+      _logger.i('Answer created: ${answer.type}');
+      return answer;
+    } catch (e) {
+      _logger.e('Failed to create answer: $e');
+      rethrow;
+    }
   }
+
+  /* ================= SIGNALING ================= */
 
   Future<void> setRemoteDescription(RTCSessionDescription description) async {
-    _logger.d('Setting Remote Description: ${description.type}');
-    if (_peerConnection == null) {
+    try {
       await _createPeerConnection();
+      await _setRemoteDescription(description);
+    } catch (e) {
+      _logger.e('Failed to set remote description: $e');
+      rethrow;
     }
+  }
+
+  Future<void> _setRemoteDescription(RTCSessionDescription description) async {
+    if (_peerConnection == null) {
+      throw Exception('PeerConnection not created');
+    }
+
+    _logger.d('Setting remote description: ${description.type}');
     await _peerConnection!.setRemoteDescription(description);
+    _remoteDescriptionSet = true;
+
+    // Process pending ICE candidates
+    if (_pendingCandidates.isNotEmpty) {
+      _logger.d('Adding ${_pendingCandidates.length} pending ICE candidates');
+      for (final candidate in _pendingCandidates) {
+        await _peerConnection!.addCandidate(candidate);
+      }
+      _pendingCandidates.clear();
+    }
+
+    _logger.i('Remote description set successfully');
   }
 
-  Future<void> addCandidate(RTCIceCandidate candidate) async {
-    _logger.d('Adding ICE Candidate');
-    if (_peerConnection != null) {
+  Future<void> addIceCandidate(RTCIceCandidate candidate) async {
+    try {
+      if (_peerConnection == null || !_remoteDescriptionSet) {
+        _logger.d('Buffering ICE candidate (peer connection not ready)');
+        _pendingCandidates.add(candidate);
+        return;
+      }
+
+      _logger.d('Adding ICE candidate');
       await _peerConnection!.addCandidate(candidate);
+    } catch (e) {
+      _logger.e('Failed to add ICE candidate: $e');
+      // Don't rethrow - ICE candidates can fail without breaking the call
     }
   }
 
-  Future<void> toggleMute() async {
-    if (_localStream != null) {
-      final audioTracks = _localStream!.getAudioTracks();
-      if (audioTracks.isNotEmpty) {
-        final enabled = audioTracks[0].enabled;
-        audioTracks[0].enabled = !enabled;
-        _logger.d('Toggled mute to ${!enabled}');
+  /* ================= MEDIA CONTROLS ================= */
+
+  Future<bool> toggleAudio() async {
+    try {
+      final audioTracks = _localStream?.getAudioTracks() ?? [];
+      if (audioTracks.isEmpty) {
+        _logger.w('No audio tracks available');
+        return false;
       }
+
+      final track = audioTracks.first;
+      track.enabled = !track.enabled;
+      _logger.i('Audio ${track.enabled ? "enabled" : "muted"}');
+      return track.enabled;
+    } catch (e) {
+      _logger.e('Failed to toggle audio: $e');
+      return false;
+    }
+  }
+
+  Future<bool> toggleVideo() async {
+    try {
+      final videoTracks = _localStream?.getVideoTracks() ?? [];
+      if (videoTracks.isEmpty) {
+        _logger.w('No video tracks available');
+        return false;
+      }
+
+      final track = videoTracks.first;
+      track.enabled = !track.enabled;
+      _logger.i('Video ${track.enabled ? "enabled" : "disabled"}');
+      return track.enabled;
+    } catch (e) {
+      _logger.e('Failed to toggle video: $e');
+      return false;
     }
   }
 
   Future<void> switchCamera() async {
-    if (_localStream != null) {
-      final videoTracks = _localStream!.getVideoTracks();
-      if (videoTracks.isNotEmpty) {
-        await Helper.switchCamera(videoTracks[0]);
-        _logger.d('Switched camera');
+    try {
+      final videoTracks = _localStream?.getVideoTracks() ?? [];
+      if (videoTracks.isEmpty) {
+        _logger.w('No video tracks to switch');
+        return;
       }
+
+      await Helper.switchCamera(videoTracks.first);
+      _logger.i('Camera switched');
+    } catch (e) {
+      _logger.e('Failed to switch camera: $e');
     }
   }
 
-  Future<void> toggleSpeaker(bool enabled) async {
+  Future<void> setSpeakerphone(bool enabled) async {
     try {
       await Helper.setSpeakerphoneOn(enabled);
-      _logger.d('Set speakerphone to $enabled');
+      _logger.i('Speakerphone ${enabled ? "enabled" : "disabled"}');
     } catch (e) {
-      _logger.e('Error setting speakerphone: $e');
+      _logger.e('Failed to set speakerphone: $e');
+    }
+  }
+
+  bool get isAudioEnabled {
+    final audioTracks = _localStream?.getAudioTracks() ?? [];
+    return audioTracks.isNotEmpty && audioTracks.first.enabled;
+  }
+
+  bool get isVideoEnabled {
+    final videoTracks = _localStream?.getVideoTracks() ?? [];
+    return videoTracks.isNotEmpty && videoTracks.first.enabled;
+  }
+
+  /* ================= CLEANUP ================= */
+
+  Future<void> endCall() async {
+    _logger.d('Ending call and cleaning up resources');
+
+    try {
+      // Stop all tracks
+      _localStream?.getTracks().forEach((track) {
+        track.stop();
+      });
+
+      // Clear renderers
+      _localRenderer.srcObject = null;
+      _remoteRenderer.srcObject = null;
+
+      // Dispose streams
+      await _localStream?.dispose();
+      _localStream = null;
+
+      // Close peer connection
+      await _peerConnection?.close();
+      _peerConnection = null;
+
+      // Clear state
+      _pendingCandidates.clear();
+      _remoteDescriptionSet = false;
+
+      _logger.i('Call ended and resources cleaned up');
+    } catch (e) {
+      _logger.e('Error during cleanup: $e');
     }
   }
 
   Future<void> dispose() async {
-    _logger.d('Disposing WebRTCService');
-    await _localStream?.dispose();
-    await _peerConnection?.close();
-    _peerConnection = null;
-    _localRenderer.srcObject = null;
-    _remoteRenderer.srcObject = null;
-    await _localRenderer.dispose();
-    await _remoteRenderer.dispose();
+    _logger.d('Disposing WebRTC service');
+
+    try {
+      await endCall();
+
+      // Dispose renderers
+      await _localRenderer.dispose();
+      await _remoteRenderer.dispose();
+
+      _isInitialized = false;
+      _logger.i('WebRTC service disposed');
+    } catch (e) {
+      _logger.e('Error during disposal: $e');
+    }
+  }
+
+  /* ================= STATS & DEBUGGING ================= */
+
+  Future<List<StatsReport>> getConnectionStats() async {
+    final stats = await _peerConnection!.getStats();
+    return stats;
+  }
+
+  String? get connectionState {
+    return _peerConnection?.connectionState?.name;
+  }
+
+  String? get iceConnectionState {
+    return _peerConnection?.iceConnectionState?.name;
+  }
+
+  String? get signalingState {
+    return _peerConnection?.signalingState?.name;
   }
 }

@@ -76,7 +76,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         isVideo: event.isVideo,
       ));
       
-      final offer = await _webRTCService.createOffer(isVideo: event.isVideo);
+      final offer = await _webRTCService.createOffer(callType: event.isVideo ? CallType.video: CallType.audio);
       await _callRepository.sendOffer(
         targetUserId: event.targetUserId,
         callType: event.isVideo ? 'video' : 'audio',
@@ -120,8 +120,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       
       // Create Answer
       final answer = await _webRTCService.createAnswer(
-        remoteDescription: RTCSessionDescription(event.offer, 'offer'),
-        isVideo: event.isVideo,
+        remoteOffer: RTCSessionDescription(event.offer, 'offer'),
+        callType: event.isVideo ? CallType.video : CallType.audio,
       );
 
       await _callRepository.sendAnswer(
@@ -209,7 +209,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
             candidateMap['sdpMid'],
             candidateMap['sdpMLineIndex'],
           );
-          await _webRTCService.addCandidate(candidate);
+          await _webRTCService.addIceCandidate(candidate);
         }
         break;
         

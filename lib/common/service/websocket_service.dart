@@ -24,9 +24,6 @@ class WebSocketService {
   }
 
   Stream<Map<String, dynamic>> get signalingStream {
-    stream.listen((data) {
-      print('111111 ${data}');
-    });
     return stream.transform<Map<String, dynamic>>(
       StreamTransformer.fromHandlers(
         handleData: (data, sink) {

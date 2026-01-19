@@ -146,7 +146,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   ) async {
     try {
       await _callRepository.sendReject(callId: event.callId);
-      _cleanup();
+      await _cleanup();
       emit(CallEnded());
     } catch (e) {
       emit(CallFailure(e.toString()));
@@ -159,7 +159,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   ) async {
     try {
       await _callRepository.sendHangup(callId: event.callId);
-      _cleanup();
+      await _cleanup();
       emit(CallEnded());
     } catch (e) {
       emit(CallFailure(e.toString()));
@@ -216,7 +216,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       case 'call_ended':
       case 'call_rejected':
       case 'call_failed':
-        _cleanup();
+        await _cleanup();
         emit(CallEnded()); // Or CallFailure if failed
         if (type == 'call_failed') {
           emit(CallFailure(data['reason'] ?? 'Call failed'));
@@ -225,17 +225,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     }
   }
 
-  void _cleanup() {
-    _webRTCService.dispose(); // This might be too aggressive if we want to reuse service?
-    // Actually WebRTCService dispose closes peer connection. We should probably re-initialize for next call?
-    // The service has initialize(). But currently dispose() kills everything.
-    // Maybe we should just close PeerConnection inside service?
-    // For now, I'll assume we can re-initialize or create new bloc/service per call context.
-    // If the Bloc is singleton/global, this is bad. 
-    // Assuming Bloc is scoped to the App or Call feature.
-    // If we dispose, we might need to re-create WebRTCService or call initialize again.
-    // The WebRTCService provided in constructor might be singleton or scoped.
-    // Let's assume we need to clean up resources.
+  Future<void> _cleanup() async {
+    await _webRTCService.endCall();
     
     _currentCallId = null;
     _currentTargetUserId = null;

@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
+import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 
 class CallPage extends StatefulWidget {
@@ -15,6 +19,9 @@ class CallPage extends StatefulWidget {
 
 class _CallPageState extends State<CallPage> {
   bool _isSpeakerOn = false;
+  bool _isMuted = false;
+  Timer? _callTimer;
+  Duration _duration = Duration.zero;
 
   @override
   void initState() {
@@ -26,6 +33,9 @@ class _CallPageState extends State<CallPage> {
         isVideo = state.isVideo;
       } else if (state is CallActive) {
         isVideo = state.isVideo;
+        _startTimer();
+      } else if (state is CallIncoming) {
+        isVideo = state.callType == 'video';
       }
 
       setState(() {
@@ -37,12 +47,53 @@ class _CallPageState extends State<CallPage> {
   }
 
   @override
+  void dispose() {
+    _callTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    if (_callTimer != null) return;
+    _callTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {
+        _duration += const Duration(seconds: 1);
+      });
+    });
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
+  @override
   Widget build(BuildContext context) {
     // We assume WebRTCService is provided via RepositoryProvider up the tree
     final webRTCService = RepositoryProvider.of<WebRTCService>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Background Gradients
+    final lightGradient = const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0xFF80CBC4), // Teal 200
+        Color(0xFF00695C), // Teal 800
+      ],
+    );
+
+    final darkGradient = const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0xFF7E57C2), // Deep Purple 400
+        Color(0xFF311B92), // Deep Purple 900
+      ],
+    );
 
     return Scaffold(
-      backgroundColor: Colors.black,
       body: BlocConsumer<CallBloc, CallState>(
         listener: (context, state) {
           if (state is CallEnded && context.canPop()) {
@@ -54,18 +105,33 @@ class _CallPageState extends State<CallPage> {
             );
             context.pop();
           }
+          if (state is CallActive && _callTimer == null) {
+            _startTimer();
+          }
         },
         builder: (context, state) {
           bool isVideo = false;
-          // Check call type based on state
+
           if (state is CallOutgoing) {
             isVideo = state.isVideo;
           } else if (state is CallActive) {
             isVideo = state.isVideo;
+          } else if (state is CallIncoming) {
+            isVideo = state.callType == 'video';
           }
 
           return Stack(
             children: [
+              // Background
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: isDark ? darkGradient : lightGradient,
+                  ),
+                ),
+              ),
+
+              // Video Views (if video call)
               if (isVideo) ...[
                 // Remote Video (Full Screen)
                 Positioned.fill(
@@ -92,11 +158,43 @@ class _CallPageState extends State<CallPage> {
                 ),
               ] else ...[
                 // Audio Call UI - Avatar
-                const Positioned.fill(
-                  child: Center(
-                    child: CAvatar(
-                      radius: 80,
-                      name: 'User', // Placeholder
+                Positioned.fill(
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        const Spacer(flex: 1),
+                        const CAvatar(
+                          radius: 80,
+                          name: 'User', // Placeholder
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'User',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (state is CallOutgoing)
+                          const Text(
+                            'Calling...',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 18,
+                            ),
+                          )
+                        else if (state is CallActive)
+                          Text(
+                            _formatDuration(_duration),
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 18,
+                            ),
+                          ),
+                        const Spacer(flex: 2),
+                      ],
                     ),
                   ),
                 ),
@@ -107,67 +205,79 @@ class _CallPageState extends State<CallPage> {
                 bottom: 40,
                 left: 0,
                 right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _isSpeakerOn ? Icons.volume_up : Icons.volume_off,
-                        color: Colors.white,
-                        size: 32,
+                child: SafeArea(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GlassButton(
+                        icon: _isSpeakerOn ? Icons.volume_up : Icons.volume_off,
+                        onTap: () {
+                          setState(() {
+                            _isSpeakerOn = !_isSpeakerOn;
+                          });
+                          // webRTCService.toggleSpeaker(_isSpeakerOn);
+                        },
+                        size: 60,
+                        iconColor: Colors.white,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isSpeakerOn = !_isSpeakerOn;
-                        });
-                        // webRTCService.toggleSpeaker(_isSpeakerOn);
-                      },
-                      style: IconButton.styleFrom(backgroundColor: Colors.grey.withOpacity(0.5)),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.mic, color: Colors.white, size: 32),
-                      onPressed: () => {},
-                      style: IconButton.styleFrom(backgroundColor: Colors.grey.withOpacity(0.5)),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.call_end, color: Colors.white, size: 40),
-                      onPressed: () {
-                        final state = context.read<CallBloc>().state;
-                        final callId = switch (state) {
-                          CallActive(:final callId) => callId,
-                          CallOutgoing(:final callId) => callId,
-                          _ => null,
-                        };
-                        if (callId != null) {
-                          context
-                              .read<CallBloc>()
-                              .add(CallHangup(callId: callId));
-                        } else {
-                          // For CallOutgoing or others, trigger cleanup.
-                          // Passing -1 as we might not have a callId yet.
-                          context.read<CallBloc>().add(CallHangup(callId: -1));
-                        }
-                      },
-                      style: IconButton.styleFrom(backgroundColor: Colors.red),
-                    ),
-                    if (isVideo)
-                      IconButton(
-                        icon: const Icon(Icons.cameraswitch, color: Colors.white, size: 32),
-                        onPressed: () => webRTCService.switchCamera(),
-                        style: IconButton.styleFrom(backgroundColor: Colors.grey.withOpacity(0.5)),
+                      if (isVideo)
+                        GlassButton(
+                          icon: Icons.video_call,
+                          onTap: () => webRTCService.switchCamera(),
+                          size: 60,
+                          iconColor: Colors.white,
+                        ),
+                      GlassButton(
+                        icon: _isMuted ? Icons.mic_off : Icons.mic,
+                        onTap: () {
+                          setState(() {
+                            _isMuted = !_isMuted;
+                          });
+                        },
+                        size: 60,
+                        iconColor: Colors.white,
                       ),
-                  ],
-                ),
-              ),
 
-              // Status Text
-              if (state is CallOutgoing)
-                const Center(
-                  child: Text(
-                    'Calling...',
-                    style: TextStyle(color: Colors.white, fontSize: 24),
+                      // End Call Button (Red)
+                      GlassButton(
+                        icon: Icons.call_end,
+                        backgroundColor: Colors.red,
+                        iconColor: Colors.white,
+                        size: 60,
+                        onTap: () {
+                          final state = context.read<CallBloc>().state;
+                          final callId = switch (state) {
+                            CallActive(:final callId) => callId,
+                            CallOutgoing(:final callId) => callId,
+                            CallIncoming(:final callId) => callId,
+                            _ => null,
+                          };
+
+                          if (state is CallIncoming) {
+                            // Reject
+                            if (callId != null) {
+                              context.read<CallBloc>().add(
+                                CallRejected(callId: callId),
+                              );
+                            }
+                          } else {
+                            // Hangup
+                            if (callId != null) {
+                              context.read<CallBloc>().add(
+                                CallHangup(callId: callId),
+                              );
+                            } else {
+                              context.read<CallBloc>().add(
+                                CallHangup(callId: -1),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
+              ),
             ],
           );
         },

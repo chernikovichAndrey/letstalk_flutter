@@ -69,8 +69,7 @@ class _CallPageState extends State<CallPage> {
 
   @override
   Widget build(BuildContext context) {
-    // We assume WebRTCService is provided via RepositoryProvider up the tree
-    final webRTCService = RepositoryProvider.of<WebRTCService>(context);
+    final webRTCService = WebRTCService();
 
     void onEndCallPress() {
       final state = context.read<CallBloc>().state;

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
+import 'package:lets_talk/common/service/ringtone_service.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
 
 part 'call_event.dart';
@@ -9,18 +10,16 @@ part 'call_state.dart';
 
 class CallBloc extends Bloc<CallEvent, CallState> {
   final CallRepository _callRepository;
-  final WebRTCService _webRTCService;
+  final WebRTCService _webRTCService = WebRTCService();
+  final RingtoneService _ringtoneService = RingtoneService();
   StreamSubscription? _signalingSubscription;
-  
+
   // Track current call details internally for callbacks
   int? _currentCallId;
   int? _currentTargetUserId;
 
-  CallBloc({
-    required CallRepository callRepository,
-    required WebRTCService webRTCService,
-  })  : _callRepository = callRepository,
-        _webRTCService = webRTCService,
+  CallBloc({required CallRepository callRepository})
+      : _callRepository = callRepository,
         super(CallInitial()) {
     on<CallInitiated>(_onCallInitiated);
     on<CallIncomingReceived>(_onCallIncomingReceived);
@@ -76,7 +75,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         targetUserId: event.targetUserId,
         isVideo: event.isVideo,
       ));
-      
+
       final offer = await _webRTCService.createOffer(callType: event.isVideo ? CallType.video: CallType.audio);
       await _callRepository.sendOffer(
         targetUserId: event.targetUserId,
@@ -108,6 +107,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     // Only accept incoming if not already in a call
     if (state is CallInitial || state is CallEnded || state is CallFailure) {
        await _webRTCService.initialize();
+       await _ringtoneService.playIncomingCall();
        _currentCallId = event.callId;
        _currentTargetUserId = event.callerId;
        emit(CallIncoming(
@@ -124,14 +124,15 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     Emitter<CallState> emit,
   ) async {
     try {
+      await _ringtoneService.stop();
       _currentCallId = event.callId;
       _currentTargetUserId = event.callerId;
-      
+
       // Set remote description (Offer)
       await _webRTCService.setRemoteDescription(
         RTCSessionDescription(event.offer, 'offer'),
       );
-      
+
       // Create Answer
       final answer = await _webRTCService.createAnswer(
         remoteOffer: RTCSessionDescription(event.offer, 'offer'),
@@ -202,7 +203,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           callType: data['call_type'] ?? 'audio',
         ));
         break;
-        
+
       case 'call_answered':
         if (state is CallOutgoing) {
           final isVideo = (state as CallOutgoing).isVideo;
@@ -210,7 +211,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           await _webRTCService.setRemoteDescription(
             RTCSessionDescription(sdp, 'answer'),
           );
-          
+
           _currentCallId = data['call_id'];
           emit(CallActive(
             callId: _currentCallId!,
@@ -220,7 +221,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           ));
         }
         break;
-        
+
       case 'ice_candidate':
         final candidateMap = data['candidate'];
         if (candidateMap != null) {
@@ -232,7 +233,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           await _webRTCService.addIceCandidate(candidate);
         }
         break;
-        
+
       case 'call_ended':
       case 'call_rejected':
       case 'call_failed':
@@ -246,8 +247,9 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   }
 
   Future<void> _cleanup() async {
+    await _ringtoneService.stop();
     await _webRTCService.endCall();
-    
+
     _currentCallId = null;
     _currentTargetUserId = null;
   }

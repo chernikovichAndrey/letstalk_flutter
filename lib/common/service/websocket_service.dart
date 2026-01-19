@@ -7,9 +7,7 @@ import 'package:web_socket_channel/status.dart' as status;
 
 class WebSocketService {
   static final WebSocketService _instance = WebSocketService._internal();
-
   factory WebSocketService() => _instance;
-
   WebSocketService._internal();
 
   WebSocketChannel? _channel;

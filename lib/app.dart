@@ -7,6 +7,7 @@ import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/app_router.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
+import 'package:lets_talk/common/service/ringtone_service.dart';
 import 'package:lets_talk/feature/auth/data/repository/auth_repository_impl.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/call/data/repository/call_repository_impl.dart';
@@ -26,6 +27,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   late final AppRouter router;
   final _webRTCService = WebRTCService();
+  final _ringtoneService = RingtoneService();
   final _callRepository = CallRepositoryImpl();
 
   @override
@@ -38,49 +40,42 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
+    return MultiBlocProvider(
       providers: [
-        RepositoryProvider.value(value: _webRTCService),
-        RepositoryProvider.value(value: _callRepository),
+        BlocProvider(
+          create: (context) =>
+          AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
+        ),
+        BlocProvider(
+          create: (context) => ProfileBloc(ProfileRepositoryImpl()),
+        ),
+        BlocProvider(
+          create: (context) => CallBloc(
+            callRepository: _callRepository,
+          ),
+        ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) =>
-                AuthBloc(AuthRepositoryImpl())..add(AuthCheckStatus()),
-          ),
-          BlocProvider(
-            create: (context) => ProfileBloc(ProfileRepositoryImpl()),
-          ),
-          BlocProvider(
-            create: (context) => CallBloc(
-              callRepository: _callRepository,
-              webRTCService: _webRTCService,
-            ),
-          ),
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: router.config,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.system,
+        localizationsDelegates: [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
-        child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          routerConfig: router.config,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.system,
-          localizationsDelegates: [
-            S.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: S.delegate.supportedLocales,
-          locale: S.delegate.supportedLocales.first,
-          scrollBehavior: const MaterialScrollBehavior().copyWith(
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.stylus,
-              PointerDeviceKind.trackpad,
-              PointerDeviceKind.mouse,
-            },
-          ),
+        supportedLocales: S.delegate.supportedLocales,
+        locale: S.delegate.supportedLocales.first,
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.stylus,
+            PointerDeviceKind.trackpad,
+            PointerDeviceKind.mouse,
+          },
         ),
       ),
     );
@@ -91,6 +86,7 @@ class _AppState extends State<App> {
     router.dispose();
     WebSocketService().disconnect();
     _webRTCService.dispose();
+    _ringtoneService.dispose();
     super.dispose();
   }
 }

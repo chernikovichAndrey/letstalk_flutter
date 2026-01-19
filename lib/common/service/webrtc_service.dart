@@ -9,6 +9,10 @@ typedef OnConnectionStateChangeCallback = void Function(RTCPeerConnectionState s
 enum CallType { audio, video }
 
 class WebRTCService {
+  static final WebRTCService _instance = WebRTCService._internal();
+  factory WebRTCService() => _instance;
+  WebRTCService._internal();
+
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
 

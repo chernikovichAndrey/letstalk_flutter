@@ -21,6 +21,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color dateSeparatorText;
   final Color surfaceSecondary;
   final Color messageReadIcon;
+  final Color skeletonColor;
+  final Color skeletonShimmerColor;
 
   const AppColorsExtension({
     required this.secondaryBackground,
@@ -43,6 +45,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.dateSeparatorText,
     required this.surfaceSecondary,
     required this.messageReadIcon,
+    required this.skeletonColor,
+    required this.skeletonShimmerColor,
   });
 
   @override
@@ -67,6 +71,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? dateSeparatorText,
     Color? surfaceSecondary,
     Color? messageReadIcon,
+    Color? skeletonColor,
+    Color? skeletonShimmerColor,
   }) {
     return AppColorsExtension(
       secondaryBackground: secondaryBackground ?? this.secondaryBackground,
@@ -89,6 +95,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       dateSeparatorText: dateSeparatorText ?? this.dateSeparatorText,
       surfaceSecondary: surfaceSecondary ?? this.surfaceSecondary,
       messageReadIcon: messageReadIcon ?? this.messageReadIcon,
+      skeletonColor: skeletonColor ?? this.skeletonColor,
+      skeletonShimmerColor: skeletonShimmerColor ?? this.skeletonShimmerColor,
     );
   }
 
@@ -116,6 +124,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       dateSeparatorText: Color.lerp(dateSeparatorText, other.dateSeparatorText, t)!,
       surfaceSecondary: Color.lerp(surfaceSecondary, other.surfaceSecondary, t)!,
       messageReadIcon: Color.lerp(messageReadIcon, other.messageReadIcon, t)!,
+      skeletonColor: Color.lerp(skeletonColor, other.skeletonColor, t)!,
+      skeletonShimmerColor: Color.lerp(skeletonShimmerColor, other.skeletonShimmerColor, t)!,
     );
   }
 }

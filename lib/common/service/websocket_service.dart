@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:lets_talk/common/model/call_signaling_type.dart';
 import 'package:logger/logger.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -36,15 +37,7 @@ class WebSocketService {
             }
 
             final type = map['type'];
-            const signalingTypes = {
-              'call_offered',
-              'call_incoming',
-              'call_answered',
-              'ice_candidate',
-              'call_ended',
-              'call_rejected',
-              'call_failed',
-            };
+            final signalingTypes = CallSignalingType.values.map((e) => e.value).toSet();
 
             if (signalingTypes.contains(type)) {
               sink.add(map);

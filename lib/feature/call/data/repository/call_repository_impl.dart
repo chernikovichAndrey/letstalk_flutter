@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:lets_talk/common/model/call_signaling_type.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
 
@@ -16,7 +17,7 @@ class CallRepositoryImpl implements CallRepository {
     required String sdp,
   }) async {
     _wsService.send({
-      'type': 'call_offer',
+      'type': CallSignalingType.callOffer.value,
       'target_user_id': targetUserId,
       'call_type': callType,
       'offer': sdp,
@@ -29,7 +30,7 @@ class CallRepositoryImpl implements CallRepository {
     required String sdp,
   }) async {
     _wsService.send({
-      'type': 'call_answer',
+      'type': CallSignalingType.callAnswer.value,
       'call_id': callId,
       'answer': sdp,
     });
@@ -41,7 +42,7 @@ class CallRepositoryImpl implements CallRepository {
     required Map<String, dynamic> candidate,
   }) async {
     _wsService.send({
-      'type': 'ice_candidate',
+      'type': CallSignalingType.iceCandidate.value,
       'target_user_id': targetUserId,
       'candidate': candidate,
     });
@@ -50,7 +51,7 @@ class CallRepositoryImpl implements CallRepository {
   @override
   Future<void> sendHangup({required int callId}) async {
     _wsService.send({
-      'type': 'call_hangup',
+      'type': CallSignalingType.callHangup.value,
       'call_id': callId,
     });
   }
@@ -58,7 +59,7 @@ class CallRepositoryImpl implements CallRepository {
   @override
   Future<void> sendReject({required int callId}) async {
     _wsService.send({
-      'type': 'call_reject',
+      'type': CallSignalingType.callReject.value,
       'call_id': callId,
     });
   }

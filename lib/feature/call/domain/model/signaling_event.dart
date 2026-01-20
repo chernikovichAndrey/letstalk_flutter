@@ -1,25 +1,29 @@
+import 'package:lets_talk/common/model/call_signaling_type.dart';
+
 abstract class SignalingEvent {
   const SignalingEvent();
 
   factory SignalingEvent.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as String?;
+    final typeStr = json['type'] as String?;
+    final type = CallSignalingType.fromString(typeStr ?? '');
+
     switch (type) {
-      case 'call_offered':
+      case CallSignalingType.callOffered:
         return CallOfferedSignal.fromJson(json);
-      case 'call_incoming':
+      case CallSignalingType.callIncoming:
         return CallIncomingSignal.fromJson(json);
-      case 'call_answered':
+      case CallSignalingType.callAnswered:
         return CallAnsweredSignal.fromJson(json);
-      case 'ice_candidate':
+      case CallSignalingType.iceCandidate:
         return IceCandidateSignal.fromJson(json);
-      case 'call_ended':
+      case CallSignalingType.callEnded:
         return CallEndedSignal.fromJson(json);
-      case 'call_rejected':
+      case CallSignalingType.callRejected:
         return CallRejectedSignal.fromJson(json);
-      case 'call_failed':
+      case CallSignalingType.callFailed:
         return CallFailedSignal.fromJson(json);
       default:
-        return UnknownSignal(type, json);
+        return UnknownSignal(typeStr, json);
     }
   }
 }

@@ -3,18 +3,49 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactsPageScope extends StatelessWidget {
   const ContactsPageScope({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ContactsBloc(ContactsRepositoryImpl())..add(ContactsLoad()),
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: const ContactsPage(),
-      ),
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
+
+        final prefs = snapshot.data!;
+        final contactsSynced =
+            prefs.getBool('contacts_synced_first_time') ?? false;
+
+        return BlocProvider(
+          create: (context) {
+            final bloc = ContactsBloc(ContactsRepositoryImpl());
+            if (!contactsSynced) {
+              bloc.add(ContactsSyncPhoneContacts());
+            } else {
+              bloc.add(ContactsLoad());
+            }
+            return bloc;
+          },
+          child: BlocListener<ContactsBloc, ContactsState>(
+            listener: (context, state) {
+              if (state is ContactsLoaded && !contactsSynced) {
+                prefs.setBool('contacts_synced_first_time', true);
+              }
+            },
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: const ContactsPage(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

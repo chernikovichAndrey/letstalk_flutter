@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/service/phone_contacts_service.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/repository/contacts_repository.dart';
 
@@ -9,19 +10,50 @@ part 'contacts_state.dart';
 
 class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   final ContactsRepository _contactsRepository;
+  final PhoneContactsService _phoneContactsService;
 
-  ContactsBloc(this._contactsRepository) : super(ContactsInitial()) {
+  ContactsBloc(this._contactsRepository, {PhoneContactsService? phoneContactsService})
+      : _phoneContactsService = phoneContactsService ?? PhoneContactsService(),
+        super(ContactsInitial()) {
     on<ContactsLoad>(_onLoad);
     on<ContactsRefresh>(_onRefresh);
     on<ContactsSearch>(_onSearch);
     on<ContactsToggleSelectionMode>(_onToggleSelectionMode);
     on<ContactsToggleContactSelection>(_onToggleContactSelection);
     on<ContactsDeleteSelected>(_onDeleteSelected);
+    on<ContactsSyncPhoneContacts>(_onSyncPhoneContacts);
   }
 
   Future<void> _onLoad(ContactsLoad event, Emitter<ContactsState> emit) async {
     emit(ContactsLoading());
     try {
+      final contacts = await _contactsRepository.getContacts();
+      emit(ContactsLoaded(contacts));
+    } catch (e) {
+      emit(ContactsError(e.toString()));
+    }
+  }
+
+  Future<void> _onSyncPhoneContacts(
+    ContactsSyncPhoneContacts event,
+    Emitter<ContactsState> emit,
+  ) async {
+    emit(ContactsSyncingPhoneContacts(0.0));
+    try {
+      final hasPermission = await _phoneContactsService.requestPermission();
+      if (!hasPermission) {
+        emit(ContactsError('Permission denied'));
+        return;
+      }
+
+      final phoneContacts = await _phoneContactsService.getPhoneContacts();
+      emit(ContactsSyncingPhoneContacts(0.5));
+
+      if (phoneContacts.isNotEmpty) {
+        await _contactsRepository.uploadPhoneContacts(phoneContacts);
+      }
+      emit(ContactsSyncingPhoneContacts(0.75));
+
       final contacts = await _contactsRepository.getContacts();
       emit(ContactsLoaded(contacts));
     } catch (e) {

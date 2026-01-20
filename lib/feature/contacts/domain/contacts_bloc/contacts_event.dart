@@ -26,3 +26,5 @@ class ContactsToggleContactSelection extends ContactsEvent {
 
 class ContactsDeleteSelected extends ContactsEvent {}
 
+class ContactsSyncPhoneContacts extends ContactsEvent {}
+

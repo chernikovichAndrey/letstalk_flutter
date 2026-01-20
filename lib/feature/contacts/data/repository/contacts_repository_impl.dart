@@ -19,4 +19,14 @@ class ContactsRepositoryImpl implements ContactsRepository {
       '${ApiConstants.contacts}/$id',
     );
   }
+
+  @override
+  Future<void> uploadPhoneContacts(List<Contact> contacts) async {
+    await _apiService.post(
+      ApiConstants.contacts,
+      data: {
+        'contacts': contacts.map((c) => c.toJson()).toList(),
+      },
+    );
+  }
 }

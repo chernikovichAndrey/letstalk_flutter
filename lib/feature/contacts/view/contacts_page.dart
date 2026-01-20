@@ -24,6 +24,21 @@ class ContactsPage extends StatelessWidget {
         children: [
           BlocBuilder<ContactsBloc, ContactsState>(
             builder: (context, state) {
+              if (state is ContactsSyncingPhoneContacts) {
+                return Padding(
+                  padding: EdgeInsets.only(top: topPadding),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator.adaptive(),
+                        const SizedBox(height: 16),
+                        Text('${(state.progress * 100).toInt()}%'),
+                      ],
+                    ),
+                  ),
+                );
+              }
               if (state is ContactsLoading || state is ContactsActionInProgress) {
                 return Padding(
                   padding: EdgeInsets.only(top: topPadding),

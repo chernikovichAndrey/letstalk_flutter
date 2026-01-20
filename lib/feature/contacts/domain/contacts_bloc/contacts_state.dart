@@ -47,3 +47,9 @@ class ContactsError extends ContactsState {
 class ContactsActionInProgress extends ContactsState {}
 
 class ContactsActionSuccess extends ContactsState {}
+
+class ContactsSyncingPhoneContacts extends ContactsState {
+  final double progress;
+
+  ContactsSyncingPhoneContacts(this.progress);
+}

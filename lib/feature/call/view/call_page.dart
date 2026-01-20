@@ -23,6 +23,7 @@ class _CallPageState extends State<CallPage> {
   bool _isMuted = false;
   Timer? _callTimer;
   Duration _duration = Duration.zero;
+  final _webRTCService = WebRTCService();
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _CallPageState extends State<CallPage> {
       } else if (state is CallIncoming) {
         isVideo = state.callType == 'video';
       }
+      _webRTCService.setSpeakerphone(isVideo);
 
       setState(() {
         _isSpeakerOn = isVideo;
@@ -69,8 +71,6 @@ class _CallPageState extends State<CallPage> {
 
   @override
   Widget build(BuildContext context) {
-    final webRTCService = WebRTCService();
-
     void onEndCallPress() {
       final state = context.read<CallBloc>().state;
       final callId = switch (state) {
@@ -138,7 +138,7 @@ class _CallPageState extends State<CallPage> {
                 // Remote Video (Full Screen)
                 Positioned.fill(
                   child: RTCVideoView(
-                    webRTCService.remoteRenderer,
+                    _webRTCService.remoteRenderer,
                     objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
                   ),
                 ),
@@ -152,7 +152,7 @@ class _CallPageState extends State<CallPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: RTCVideoView(
-                      webRTCService.localRenderer,
+                      _webRTCService.localRenderer,
                       mirror: true,
                       objectFit:
                           RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
@@ -218,14 +218,14 @@ class _CallPageState extends State<CallPage> {
                           setState(() {
                             _isSpeakerOn = !_isSpeakerOn;
                           });
-                          webRTCService.setSpeakerphone(_isSpeakerOn);
+                          _webRTCService.setSpeakerphone(_isSpeakerOn);
                         },
                       ),
                       if (isVideo)
                         CallActionButton(
                           label: context.s.video,
                           icon: Icons.video_call,
-                          onTap: () => webRTCService.toggleVideo(),
+                          onTap: () => _webRTCService.toggleVideo(),
                         ),
                       CallActionButton(
                         label: context.s.mute,
@@ -234,7 +234,7 @@ class _CallPageState extends State<CallPage> {
                           setState(() {
                             _isMuted = !_isMuted;
                           });
-                          webRTCService.toggleAudio();
+                          _webRTCService.toggleAudio();
                         },
                       ),
                       CallActionButton(

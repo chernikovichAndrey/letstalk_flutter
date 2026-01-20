@@ -10,26 +10,18 @@ class CallInitiated extends CallEvent {
 }
 
 class CallOfferedReceived extends CallEvent {
-  final int callId;
-  final String status;
+  final CallOfferedSignal signal;
 
   CallOfferedReceived({
-    required this.callId,
-    required this.status,
+    required this.signal,
   });
 }
 
 class CallIncomingReceived extends CallEvent {
-  final int callId;
-  final int callerId;
-  final String offer;
-  final String callType;
+  final CallIncomingSignal signal;
 
   CallIncomingReceived({
-    required this.callId,
-    required this.callerId,
-    required this.offer,
-    required this.callType,
+    required this.signal,
   });
 }
 

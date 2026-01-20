@@ -4,6 +4,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/service/ringtone_service.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
+import 'package:lets_talk/feature/call/domain/model/signaling_event.dart';
 
 part 'call_event.dart';
 part 'call_state.dart';
@@ -92,11 +93,11 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       CallOfferedReceived event,
       Emitter<CallState> emit,
       ) async {
-    if (event.status == 'success') {
+    if (event.signal.status == 'success') {
       final currentState = state as CallOutgoing;
-      _currentCallId = event.callId;
+      _currentCallId = event.signal.callId;
       emit(currentState.copyWith(
-        callId: event.callId,
+        callId: event.signal.callId,
       ));
     }
   }
@@ -109,13 +110,13 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     if (state is CallInitial || state is CallEnded || state is CallFailure) {
        await _webRTCService.initialize();
        await _ringtoneService.playIncomingCall();
-       _currentCallId = event.callId;
-       _currentTargetUserId = event.callerId;
+       _currentCallId = event.signal.callId;
+       _currentTargetUserId = event.signal.callerId;
        emit(CallIncoming(
-         callId: event.callId,
-         callerId: event.callerId,
-         offer: event.offer,
-         callType: event.callType,
+         callId: event.signal.callId,
+         callerId: event.signal.callerId,
+         offer: event.signal.offer,
+         callType: event.signal.callType,
        ));
     }
   }
@@ -186,35 +187,22 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     CallSignalingReceived event,
     Emitter<CallState> emit,
   ) async {
-    final type = event.data['type'];
-    final data = event.data;
-
-    switch (type) {
-      case 'call_offered':
-        add(CallOfferedReceived(
-          callId: int.tryParse(data['call_id']) ?? 0,
-          status: data['status'],
-        ));
+    final signal = SignalingEvent.fromJson(event.data);
+    switch (signal) {
+      case CallOfferedSignal():
+        add(CallOfferedReceived(signal: signal));
         break;
-      case 'call_incoming':
-        add(CallIncomingReceived(
-          callId: int.tryParse(data['call_id']) ?? 0,
-          callerId: data['caller_id'],
-          offer: data['offer'],
-          callType: data['call_type'] ?? 'audio',
-        ));
+      case CallIncomingSignal():
+        add(CallIncomingReceived(signal: signal));
         break;
-
-      case 'call_answered':
+      case CallAnsweredSignal():
         if (state is CallOutgoing) {
           await _ringtoneService.stop();
           final isVideo = (state as CallOutgoing).isVideo;
-          final sdp = data['answer'];
           await _webRTCService.setRemoteDescription(
-            RTCSessionDescription(sdp, 'answer'),
+            RTCSessionDescription(signal.answer, 'answer'),
           );
-
-          _currentCallId = data['call_id'];
+          _currentCallId = signal.callId;
           emit(CallActive(
             callId: _currentCallId!,
             targetUserId: _currentTargetUserId!,
@@ -223,27 +211,23 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           ));
         }
         break;
+      case IceCandidateSignal():
+        final candidate = RTCIceCandidate(
+          signal.candidate,
+          signal.sdpMid,
+          signal.sdpMLineIndex,
+        );
+        await _webRTCService.addIceCandidate(candidate);
+        break;
+      case CallEndedSignal() || CallRejectedSignal() || CallFailedSignal():
+        await _cleanup();
+        emit(CallEnded());
 
-      case 'ice_candidate':
-        final candidateMap = data['candidate'];
-        if (candidateMap != null) {
-          final candidate = RTCIceCandidate(
-            candidateMap['candidate'],
-            candidateMap['sdpMid'],
-            candidateMap['sdpMLineIndex'],
-          );
-          await _webRTCService.addIceCandidate(candidate);
+        if (signal is CallFailedSignal) {
+          emit(CallFailure(signal.reason));
         }
         break;
-
-      case 'call_ended':
-      case 'call_rejected':
-      case 'call_failed':
-        await _cleanup();
-        emit(CallEnded()); // Or CallFailure if failed
-        if (type == 'call_failed') {
-          emit(CallFailure(data['reason'] ?? 'Call failed'));
-        }
+      case UnknownSignal():
         break;
     }
   }

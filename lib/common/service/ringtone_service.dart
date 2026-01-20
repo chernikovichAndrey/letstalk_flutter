@@ -19,6 +19,16 @@ class RingtoneService {
     }
   }
 
+  Future<void> playOutgoingCall() async {
+    try {
+      _logger.d('Playing outgoing call ringtone');
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+      await _audioPlayer.play(AssetSource('sounds/dialing.mp3'));
+    } catch (e) {
+      _logger.e('Failed to play outgoing ringtone: $e');
+    }
+  }
+
   Future<void> stop() async {
     try {
       _logger.d('Stopping ringtone');

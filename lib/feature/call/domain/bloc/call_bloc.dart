@@ -70,6 +70,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   ) async {
     try {
       await _webRTCService.initialize();
+      await _ringtoneService.playOutgoingCall();
       _currentTargetUserId = event.targetUserId;
       emit(CallOutgoing(
         targetUserId: event.targetUserId,
@@ -206,6 +207,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
       case 'call_answered':
         if (state is CallOutgoing) {
+          await _ringtoneService.stop();
           final isVideo = (state as CallOutgoing).isVideo;
           final sdp = data['answer'];
           await _webRTCService.setRemoteDescription(

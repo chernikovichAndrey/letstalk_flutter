@@ -193,7 +193,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
                           }
                         },
                         initialSelection: View.of(context).platformDispatcher.locale.countryCode,
-                        favorite: const ['RU', 'BY', 'KZ'],
+                        favorite: const ['RU', 'KZ'],
                         showCountryOnly: true,
                         showOnlyCountryWhenClosed: true,
                         alignLeft: true,

@@ -1,5 +1,4 @@
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
-import 'package:permission_handler/permission_handler.dart';
 import '../../feature/contacts/data/model/contact_model.dart';
 
 class PhoneContactsService {
@@ -8,12 +7,11 @@ class PhoneContactsService {
   PhoneContactsService._internal();
 
   Future<bool> requestPermission() async {
-    final status = await Permission.contacts.request();
-    return status.isGranted;
+    return await fc.FlutterContacts.requestPermission();
   }
 
   Future<List<Contact>> getPhoneContacts() async {
-    if (!await Permission.contacts.isGranted) {
+    if (!await fc.FlutterContacts.requestPermission()) {
       return [];
     }
 

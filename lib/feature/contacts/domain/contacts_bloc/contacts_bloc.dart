@@ -40,12 +40,6 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   ) async {
     emit(ContactsSyncingPhoneContacts(0.0));
     try {
-      final hasPermission = await _phoneContactsService.requestPermission();
-      if (!hasPermission) {
-        emit(ContactsError('Permission denied'));
-        return;
-      }
-
       final phoneContacts = await _phoneContactsService.getPhoneContacts();
       emit(ContactsSyncingPhoneContacts(0.5));
 
@@ -55,6 +49,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
       emit(ContactsSyncingPhoneContacts(0.75));
 
       final contacts = await _contactsRepository.getContacts();
+      emit(ContactsSyncingPhoneContacts(1));
       emit(ContactsLoaded(contacts));
     } catch (e) {
       emit(ContactsError(e.toString()));

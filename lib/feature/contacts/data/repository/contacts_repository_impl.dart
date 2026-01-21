@@ -10,7 +10,12 @@ class ContactsRepositoryImpl implements ContactsRepository {
   Future<List<Contact>> getContacts() async {
     final response = await _apiService.get(ApiConstants.contacts);
     final contactsResponse = ContactsResponse.fromJson(response.data);
-    return contactsResponse.contacts;
+    final contacts = contactsResponse.contacts;
+    contacts.sort((a, b) {
+      if (a.isRegistered == b.isRegistered) return 0;
+      return a.isRegistered ? -1 : 1;
+    });
+    return contacts;
   }
 
   @override

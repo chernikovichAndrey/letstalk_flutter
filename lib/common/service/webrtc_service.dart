@@ -15,6 +15,7 @@ class WebRTCService {
 
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
+  MediaStream? _remoteStream;
 
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
@@ -33,6 +34,7 @@ class WebRTCService {
   RTCVideoRenderer get localRenderer => _localRenderer;
   RTCVideoRenderer get remoteRenderer => _remoteRenderer;
   MediaStream? get localStream => _localStream;
+  MediaStream? get remoteStream => _remoteStream;
   bool get isInitialized => _isInitialized;
   RTCPeerConnection? get peerConnection => _peerConnection;
 
@@ -69,46 +71,35 @@ class WebRTCService {
 
       final config = {
         'iceServers': [
-          {'urls': 'stun:stun.l.google.com:19302'},
-          {'urls': 'stun:stun1.l.google.com:19302'},
-          {'urls': 'stun:stun2.l.google.com:19302'},
-
-          // Twilio TURN (бесплатный для тестов)
           {
-            'urls': 'turn:global.turn.twilio.com:3478?transport=udp',
-            'username': 'f4b4035eaa76f4a55de5f4351567653ee4ff6fa97b50b6b334fcc1be9c27212d',
-            'credential': 'w1uxM55V9yVoqyVFjt+mxDBV0F87AUCemaYVQGxsPLw=',
+            'urls': "stun:stun.relay.metered.ca:80",
           },
           {
-            'urls': 'turn:global.turn.twilio.com:3478?transport=tcp',
-            'username': 'f4b4035eaa76f4a55de5f4351567653ee4ff6fa97b50b6b334fcc1be9c27212d',
-            'credential': 'w1uxM55V9yVoqyVFjt+mxDBV0F87AUCemaYVQGxsPLw=',
+            'urls': "turn:global.relay.metered.ca:80",
+            'username': "4abfeabd2ed84d7afda25bba",
+            'credential': "xzfonFAO6csyuqXb",
           },
           {
-            'urls': 'turn:global.turn.twilio.com:443?transport=tcp',
-            'username': 'f4b4035eaa76f4a55de5f4351567653ee4ff6fa97b50b6b334fcc1be9c27212d',
-            'credential': 'w1uxM55V9yVoqyVFjt+mxDBV0F87AUCemaYVQGxsPLw=',
-          },
-
-          // Metered TURN
-          {
-            'urls': 'turn:a.relay.metered.ca:80',
-            'username': '85d6ac5e769fc101adbe935b',
-            'credential': 'Wy+zWUeAJs1GSNBH',
+            'urls': "turn:global.relay.metered.ca:80?transport=tcp",
+            'username': "4abfeabd2ed84d7afda25bba",
+            'credential': "xzfonFAO6csyuqXb",
           },
           {
-            'urls': 'turn:a.relay.metered.ca:443',
-            'username': '85d6ac5e769fc101adbe935b',
-            'credential': 'Wy+zWUeAJs1GSNBH',
+            'urls': "turn:global.relay.metered.ca:443",
+            'username': "4abfeabd2ed84d7afda25bba",
+            'credential': "xzfonFAO6csyuqXb",
           },
           {
-            'urls': 'turn:a.relay.metered.ca:443?transport=tcp',
-            'username': '85d6ac5e769fc101adbe935b',
-            'credential': 'Wy+zWUeAJs1GSNBH',
+            'urls': "turns:global.relay.metered.ca:443?transport=tcp",
+            'username': "4abfeabd2ed84d7afda25bba",
+            'credential': "xzfonFAO6csyuqXb",
           },
         ],
         'sdpSemantics': 'unified-plan',
-        'iceCandidatePoolSize': 10,
+        'iceCandidatePoolSize': 2,
+        'iceTransportPolicy': 'all',
+        'bundlePolicy': 'max-bundle',
+        'rtcpMuxPolicy': 'require',
       };
 
       final constraints = {
@@ -141,21 +132,22 @@ class WebRTCService {
     };
 
     // Track handler (remote stream)
-    _peerConnection!.onTrack = (RTCTrackEvent event) {
+    _peerConnection!.onTrack = (RTCTrackEvent event) async {
       _logger.d('onTrack: ${event.track.kind}');
-
-      if (event.streams.isNotEmpty) {
-        final remoteStream = event.streams.first;
-        _remoteRenderer.srcObject = remoteStream;
-        onTrack?.call(remoteStream);
-        _logger.i('Remote stream set to renderer');
-      }
+      _remoteStream ??= await createLocalMediaStream('remote');
+      _remoteStream!.addTrack(event.track);
+      _remoteRenderer.srcObject = _remoteStream;
+      _logger.i('Remote ${event.track.kind} track added');
     };
 
     // Connection state change
-    _peerConnection!.onConnectionState = (RTCPeerConnectionState state) {
+    _peerConnection!.onConnectionState = (RTCPeerConnectionState state) async {
       _logger.i('Connection state: $state');
       onConnectionStateChange?.call(state);
+      if (state ==
+          RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+        await Helper.setAndroidAudioConfiguration(AndroidAudioConfiguration.communication);
+      }
 
       switch (state) {
         case RTCPeerConnectionState.RTCPeerConnectionStateConnected:
@@ -252,7 +244,7 @@ class WebRTCService {
         'offerToReceiveVideo': callType == CallType.video,
       };
 
-      final offer = await _peerConnection!.createOffer(offerOptions);
+      final offer = await _peerConnection!.createOffer();
       await _peerConnection!.setLocalDescription(offer);
 
       _logger.i('Offer created: ${offer.type}');
@@ -279,7 +271,7 @@ class WebRTCService {
         'offerToReceiveVideo': callType == CallType.video,
       };
 
-      final answer = await _peerConnection!.createAnswer(answerOptions);
+      final answer = await _peerConnection!.createAnswer();
       await _peerConnection!.setLocalDescription(answer);
 
       _logger.i('Answer created: ${answer.type}');
@@ -429,6 +421,7 @@ class WebRTCService {
       // Dispose streams
       await _localStream?.dispose();
       _localStream = null;
+      _remoteStream = null;
 
       // Close peer connection
       await _peerConnection?.close();

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
+import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
 import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -15,35 +15,7 @@ class CallContactsSheet extends StatelessWidget {
 
   void _onSelectContact(int? id, BuildContext context) {
     if (id != null) {
-      showDialog(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(context.s.selectCallType),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.call),
-                title: Text(context.s.audioCall),
-                onTap: () {
-                  context.pop();
-                  context.read<CallBloc>().add(CallInitiated(targetUserId: id));
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.videocam),
-                title: Text(context.s.videoCall),
-                onTap: () {
-                  context.pop();
-                  context
-                      .read<CallBloc>()
-                      .add(CallInitiated(targetUserId: id, isVideo: true));
-                },
-              ),
-            ],
-          ),
-        ),
-      );
+      SelectCallTypeDialog(id, context);
     }
   }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
@@ -79,10 +81,9 @@ class CallHistoryListItem extends StatelessWidget {
               .read<CallsHistoryBloc>()
               .add(CallsHistoryToggleCallSelection(call.id));
         } else {
-          // Normal tap action (info or call?)
-          // Original code didn't have onTap on ListTile, but the "info" icon was there.
-          // Usually list tile tap opens details or calls.
-          // The previous code didn't have onTap.
+          context.push(
+            Routes.callDetails.path.replaceFirst(':id', call.id.toString()),
+          );
         }
       },
     );

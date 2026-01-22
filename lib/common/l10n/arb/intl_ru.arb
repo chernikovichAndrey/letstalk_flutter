@@ -46,5 +46,14 @@
   "selectCallType": "Выберите тип звонка",
   "audioCall": "Аудио звонок",
   "videoCall": "Видео звонок",
-  "newCall": "Новый звонок"
+  "newCall": "Новый звонок",
+  "errorMessage": "Ошибка: {message}",
+  "type": "Тип",
+  "duration": "Длительность",
+  "date": "Дата",
+  "status": "Статус",
+  "phone": "Телефон",
+  "callDirection": "Направление",
+  "callDirectionIncoming": "Входящий",
+  "callDirectionOutgoing": "Исходящий"
 }

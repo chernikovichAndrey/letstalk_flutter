@@ -67,5 +67,21 @@
   "selectCallType": "Select call type",
   "audioCall": "Audio call",
   "videoCall": "Video call",
-  "newCall": "New call"
+  "newCall": "New call",
+  "errorMessage": "Error: {message}",
+  "@errorMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Type",
+  "duration": "Duration",
+  "date": "Date",
+  "status": "Status",
+  "phone": "Phone",
+  "callDirection": "Direction",
+  "callDirectionIncoming": "Incoming",
+  "callDirectionOutgoing": "Outgoing"
 }

@@ -14,6 +14,12 @@ class CallsRepositoryImpl implements CallsHistoryRepository {
   }
 
   @override
+  Future<CallHistory> getCallDetails(int id) async {
+    final response = await _apiService.get('${ApiConstants.calls}/$id');
+    return CallHistory.fromJson(response.data['call']);
+  }
+
+  @override
   Future<void> deleteCall(int id) async {
     await _apiService.delete('${ApiConstants.calls}/$id');
   }

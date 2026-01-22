@@ -25,6 +25,7 @@ extension RoutesExt on Routes {
       Routes.dialog => const CAlertDialog(),
       Routes.createContact => const CreateContactPageScope(),
       Routes.callContacts => const CallContactsSheet(),
+      Routes.callDetails => const SizedBox(),
     };
   }
 }

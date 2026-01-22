@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/router_observers.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
@@ -19,13 +20,25 @@ class ChatsPage extends StatefulWidget {
   State<ChatsPage> createState() => _ChatsPageState();
 }
 
-class _ChatsPageState extends State<ChatsPage> {
+class _ChatsPageState extends State<ChatsPage> with RouteAware {
   Timer? _debounce;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    chatsRouteObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
   void dispose() {
+    chatsRouteObserver.unsubscribe(this);
     _debounce?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    context.read<ChatsBloc>().add(ChatsRefresh());
   }
 
   void _onSearchChanged(String query) {

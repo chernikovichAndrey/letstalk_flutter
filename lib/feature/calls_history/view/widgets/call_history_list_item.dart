@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
 
@@ -22,11 +23,8 @@ class CallHistoryListItem extends StatelessWidget {
         radius: 24,
       ),
       title: Text(
-        call.peer.name,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: Colors.black,
-        ),
+        call.peer.name.isEmpty ? context.s.unknownUser : call.peer.name,
+        style: theme.textTheme.bodyLarge,
       ),
       subtitle: Row(
         mainAxisAlignment: MainAxisAlignment.start,

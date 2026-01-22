@@ -42,7 +42,6 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context, state) {
             final String title;
             final String subtitle;
-            final bool isCodeSent = state is AuthCodeSent;
             if (state is AuthCodeSent) {
               title = context.s.verificationTitle;
               subtitle = context.s.verificationSubtitle(state.phone);
@@ -79,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const Spacer(flex: 3),
-                  if (isCodeSent)
+                  if (state is AuthCodeSent)
                     CodeVerificationCard(
                       codeController: codeController,
                       onVerifyPressed: () {
@@ -90,8 +89,8 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         }
                       },
-                    )
-                  else
+                    ),
+                  if (state is AuthUnauthenticated)
                     LoginCard(
                       phoneController: phoneController,
                       countryCode: countryCode,

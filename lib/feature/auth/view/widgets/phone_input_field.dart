@@ -1,7 +1,11 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
+import 'package:lets_talk/feature/contacts/domain/add_contact_bloc/add_contact_bloc.dart';
 
 class PhoneInputField extends StatelessWidget {
   const PhoneInputField({
@@ -21,9 +25,13 @@ class PhoneInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final textTheme = context.text;
+
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        color: appColors.inputFill,
+        border: Border.all(color: appColors.divider),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -34,11 +42,21 @@ class PhoneInputField extends StatelessWidget {
             initialSelection: countryCode?.code ?? initialCountryCode,
             favorite: const ['RU', 'KZ'],
             padding: EdgeInsets.zero,
+            textStyle: textTheme.bodyLarge?.copyWith(
+              color: Colors.black,
+            ),
+            dialogTextStyle: textTheme.bodyLarge,
+            searchStyle: textTheme.bodyLarge,
+            barrierColor: Colors.black.withValues(alpha: 0.5),
+            dialogBackgroundColor: context.theme.scaffoldBackgroundColor,
           ),
           Expanded(
             child: TextField(
               controller: controller,
               keyboardType: TextInputType.phone,
+              style: textTheme.bodyLarge?.copyWith(
+                color: Colors.black,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
                 TextInputFormatter.withFunction((oldValue, newValue) {
@@ -50,10 +68,9 @@ class PhoneInputField extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: context.s.enterPhoneNumber,
                 border: InputBorder.none,
-                hintStyle: const TextStyle(
-                  color: Colors.grey,
+                hintStyle: textTheme.bodyMedium?.copyWith(
+                  color: appColors.hintText,
                   letterSpacing: 0,
-                  fontSize: 14,
                 ),
               ),
             ),

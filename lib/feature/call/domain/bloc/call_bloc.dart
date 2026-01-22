@@ -35,7 +35,6 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
   void _init() {
     _signalingSubscription = _callRepository.signalingStream.listen((data) {
-      print('11111 ${data}');
       add(CallSignalingReceived(data));
     });
 

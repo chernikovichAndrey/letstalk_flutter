@@ -61,7 +61,6 @@ class _CreateContactPageState extends State<CreateContactPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
     final appColors = context.appColors;
 
     final backgroundColor = appColors.surfaceSecondary;
@@ -151,7 +150,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
                           border: InputBorder.none,
                         ),
                       ),
-                      Divider(height: 1, indent: 16, color: dividerColor),
+                      Divider(height: 1, indent: 16, endIndent: 16, color: dividerColor),
                       TextField(
                         controller: _lastNameController,
                         style: context.text.bodyLarge,
@@ -213,8 +212,13 @@ class _CreateContactPageState extends State<CreateContactPage> {
                             trailing: const Icon(Icons.chevron_right, size: 20),
                           );
                         },
+                        textStyle: context.text.bodyLarge,
+                        dialogTextStyle: context.text.bodyLarge,
+                        searchStyle: context.text.bodyLarge,
+                        barrierColor: Colors.black.withValues(alpha: 0.5),
+                        dialogBackgroundColor: context.theme.scaffoldBackgroundColor,
                       ),
-                      Divider(height: 1, indent: 16, color: dividerColor),
+                      Divider(height: 1, indent: 16, endIndent: 16, color: dividerColor),
                       // Phone Input Row
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

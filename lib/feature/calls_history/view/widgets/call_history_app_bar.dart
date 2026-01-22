@@ -2,10 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
 
 class CallHistoryAppBar extends StatelessWidget {
@@ -36,7 +37,7 @@ class CallHistoryAppBar extends StatelessWidget {
                             state.calls.isEmpty) {
                           return GlassButton(
                             icon: Icons.edit,
-                            onTap: () {}, // Disable if empty
+                            onTap: () {},
                           );
                         }
 
@@ -123,9 +124,7 @@ class CallHistoryAppBar extends StatelessWidget {
                     const SizedBox(width: 12),
                     GlassButton(
                       icon: Icons.call,
-                      onTap: () {
-                        context.read<CallBloc>().add(CallInitiated(targetUserId: 22));
-                      },
+                      onTap: () => context.push(Routes.callContacts.path),
                     ),
                   ],
                 ),

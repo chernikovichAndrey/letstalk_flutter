@@ -9,10 +9,20 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 class ContactItem extends StatelessWidget {
   final Contact contact;
   final ContactsLoaded state;
+  final VoidCallback? onTap;
 
-  const ContactItem({super.key, required this.contact, required this.state});
+  const ContactItem({
+    super.key,
+    required this.contact,
+    required this.state,
+    this.onTap,
+  });
 
   void _onTapContact(BuildContext context) {
+    if (onTap != null) {
+      onTap!();
+      return;
+    }
     if (state.isSelectionMode) {
       if (contact.id != null) {
         context.read<ContactsBloc>().add(

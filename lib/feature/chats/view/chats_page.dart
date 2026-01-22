@@ -38,6 +38,7 @@ class _ChatsPageState extends State<ChatsPage> with RouteAware {
 
   @override
   void didPopNext() {
+    print('11111111');
     context.read<ChatsBloc>().add(ChatsRefresh());
   }
 

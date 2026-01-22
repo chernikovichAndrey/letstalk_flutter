@@ -1,6 +1,7 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
@@ -91,7 +92,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
               padding: const EdgeInsets.all(8),
               child: GlassButton(
                 icon: Icons.close,
-                onTap: () => Navigator.pop(context),
+                onTap: context.pop,
               ),
             ),
             title: Text(

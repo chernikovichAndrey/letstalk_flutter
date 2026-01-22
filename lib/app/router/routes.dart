@@ -10,7 +10,10 @@ enum Routes {
   chatDetails(path: _Paths.chatDetails, type: RouteType.page),
   calls(path: _Paths.calls, type: RouteType.page),
   // dialogs
-  dialog(path: _Paths.dialog, type: RouteType.dialog);
+  dialog(path: _Paths.dialog, type: RouteType.dialog),
+  // sheets
+  createContact(path: _Paths.createContact, type: RouteType.sheet),
+  callContacts(path: _Paths.callContacts, type: RouteType.sheet);
 
   const Routes({required this.path, required this.type});
 
@@ -32,6 +35,8 @@ abstract class _Paths {
   static const String dialog = '/alert';
   static const String login = '/login';
   static const String contacts = '/contacts';
+  static const String createContact = '/create_contact';
+  static const String callContacts = '/call_contacts';
   static const String callsHistory = '/calls_history';
   static const String chats = '/chats';
   static const String settings = '/settings';

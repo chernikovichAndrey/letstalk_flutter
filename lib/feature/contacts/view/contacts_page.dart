@@ -2,16 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/c_avatar.dart';
-import 'package:lets_talk/common/widget/c_list_tile.dart';
+import 'package:lets_talk/app/router/router_observers.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
-import 'package:lets_talk/common/widget/c_search_bar.dart';
-import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
-import 'package:lets_talk/feature/contacts/view/widgets/contact_item.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_app_bar.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
+import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
 
 class ContactsPage extends StatelessWidget {
   const ContactsPage({super.key});
@@ -57,44 +53,7 @@ class ContactsPage extends StatelessWidget {
                 edgeOffset: topPadding,
                 onRefresh: () => _onRefresh(context),
                 slivers: [
-                  if (state is ContactsLoaded) ...[
-                    SliverToBoxAdapter(
-                      child: CSearchBar(
-                        hintText: context.s.search,
-                        onChanged: (value) {
-                          context.read<ContactsBloc>().add(ContactsSearch(value));
-                        },
-                      ),
-                    ),
-                    if (state.contacts.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Text(
-                            context.s.noContacts,
-                            style: context.text.titleMedium?.copyWith(
-                              color: context.color.onSurface.withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final contact = state.contacts[index];
-                            return ContactItem(contact: contact, state: state);
-                          },
-                          childCount: state.contacts.length,
-                        ),
-                      ),
-                  ] else if (state is ContactsError)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(child: Text(state.message)),
-                    )
-                  else
-                    const SliverToBoxAdapter(child: SizedBox.shrink()),
+                  ContactsSlivers(state: state),
                 ],
               );
             },

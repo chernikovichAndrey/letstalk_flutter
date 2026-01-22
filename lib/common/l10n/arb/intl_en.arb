@@ -63,5 +63,9 @@
   "video": "Video",
   "mute": "Mute",
   "endCall": "End",
-  "defaultUserName": "User"
+  "defaultUserName": "User",
+  "selectCallType": "Select call type",
+  "audioCall": "Audio call",
+  "videoCall": "Video call",
+  "newCall": "New call"
 }

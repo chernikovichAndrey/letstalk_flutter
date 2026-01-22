@@ -50,14 +50,15 @@ class AppRouter {
             ],
           ),
 
-
           //Call screen
           buildRoute(Routes.calls),
+
+          //Sheets
+          ...Routes.sheetRoutes.map(buildRoute),
         ]
       ),
 
-      // Dialogs and Sheets (global)
-      ...Routes.sheetRoutes.map(buildRoute),
+      // Dialogs(global)
       ...Routes.dialogRoutes.map(buildRoute),
     ],
   );

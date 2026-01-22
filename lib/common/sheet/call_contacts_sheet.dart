@@ -15,8 +15,35 @@ class CallContactsSheet extends StatelessWidget {
 
   void _onSelectContact(int? id, BuildContext context) {
     if (id != null) {
-      context.pop();
-      context.read<CallBloc>().add(CallInitiated(targetUserId: id));
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(context.s.selectCallType),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.call),
+                title: Text(context.s.audioCall),
+                onTap: () {
+                  context.pop();
+                  context.read<CallBloc>().add(CallInitiated(targetUserId: id));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.videocam),
+                title: Text(context.s.videoCall),
+                onTap: () {
+                  context.pop();
+                  context
+                      .read<CallBloc>()
+                      .add(CallInitiated(targetUserId: id, isVideo: true));
+                },
+              ),
+            ],
+          ),
+        ),
+      );
     }
   }
 
@@ -43,7 +70,7 @@ class CallContactsSheet extends StatelessWidget {
               child: GlassButton(icon: Icons.close, onTap: context.pop),
             ),
             title: Text(
-              'Новый звонок',
+              context.s.newCall,
               style: context.text.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: context.appColors.glassForeground,

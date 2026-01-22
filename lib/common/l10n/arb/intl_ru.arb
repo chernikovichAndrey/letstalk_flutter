@@ -42,5 +42,9 @@
   "video": "Видео",
   "mute": "Убрать звук",
   "endCall": "Завершить",
-  "defaultUserName": "Пользователь"
+  "defaultUserName": "Пользователь",
+  "selectCallType": "Выберите тип звонка",
+  "audioCall": "Аудио звонок",
+  "videoCall": "Видео звонок",
+  "newCall": "Новый звонок"
 }

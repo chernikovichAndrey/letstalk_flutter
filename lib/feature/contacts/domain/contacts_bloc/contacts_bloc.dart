@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/service/phone_contacts_service.dart';
+import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/repository/contacts_repository.dart';
 
@@ -10,10 +11,14 @@ part 'contacts_state.dart';
 
 class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   final ContactsRepository _contactsRepository;
+  final ChatsRepository _chatsRepository;
   final PhoneContactsService _phoneContactsService;
 
-  ContactsBloc(this._contactsRepository, {PhoneContactsService? phoneContactsService})
-      : _phoneContactsService = phoneContactsService ?? PhoneContactsService(),
+  ContactsBloc(
+    this._contactsRepository,
+    this._chatsRepository, {
+    PhoneContactsService? phoneContactsService,
+  })  : _phoneContactsService = phoneContactsService ?? PhoneContactsService(),
         super(ContactsInitial()) {
     on<ContactsLoad>(_onLoad);
     on<ContactsRefresh>(_onRefresh);
@@ -22,6 +27,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     on<ContactsToggleContactSelection>(_onToggleContactSelection);
     on<ContactsDeleteSelected>(_onDeleteSelected);
     on<ContactsSyncPhoneContacts>(_onSyncPhoneContacts);
+    on<ContactsCreateChat>(_onCreateChat);
   }
 
   Future<void> _onLoad(ContactsLoad event, Emitter<ContactsState> emit) async {
@@ -154,9 +160,24 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
       try {
         for (final id in selectedIds) {
           await _contactsRepository.deleteContacts(id);
-        }        // After deletion, reload contacts and exit selection mode
+        } // After deletion, reload contacts and exit selection mode
         final contacts = await _contactsRepository.getContacts();
         emit(ContactsLoaded(contacts));
+      } catch (e) {
+        emit(ContactsError(e.toString()));
+      }
+    }
+  }
+
+  Future<void> _onCreateChat(ContactsCreateChat event,
+      Emitter<ContactsState> emit,) async {
+    final state = this.state;
+    if (state is ContactsLoaded) {
+      emit(ContactsCreateChatInProgress(state));
+      try {
+        final response = await _chatsRepository.createPrivateChat(event.userId);
+        emit(ContactsChatCreated(response.chat.id));
+        emit(state);
       } catch (e) {
         emit(ContactsError(e.toString()));
       }

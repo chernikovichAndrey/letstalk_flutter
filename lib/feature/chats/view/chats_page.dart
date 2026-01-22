@@ -88,8 +88,10 @@ class _ChatsPageState extends State<ChatsPage> {
                             chat: chat,
                             isTyping: isTyping,
                             onTap: () async {
-                              await context.push(Routes.chatDetails.path
-                                  .replaceFirst(':id', chat.id.toString()));
+                              context.push(
+                                '${Routes.chats.path}/${Routes.chatDetails.path}'
+                                    .replaceFirst(':id', chat.id.toString()),
+                              );
                               if (context.mounted) {
                                 context
                                     .read<ChatsBloc>()

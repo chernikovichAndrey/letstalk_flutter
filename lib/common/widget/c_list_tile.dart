@@ -6,7 +6,6 @@ class CListTile extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
   final VoidCallback? onTap;
-  final VoidCallback? onLongTap;
   final bool isDestructive;
 
   const CListTile({
@@ -17,7 +16,6 @@ class CListTile extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.isDestructive = false,
-    this.onLongTap
   });
 
   @override
@@ -27,7 +25,6 @@ class CListTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      onLongPress: onLongTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(

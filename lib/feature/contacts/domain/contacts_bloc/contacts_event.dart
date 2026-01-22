@@ -26,5 +26,11 @@ class ContactsToggleContactSelection extends ContactsEvent {
 
 class ContactsDeleteSelected extends ContactsEvent {}
 
+class ContactsCreateChat extends ContactsEvent {
+  final int userId;
+
+  ContactsCreateChat(this.userId);
+}
+
 class ContactsSyncPhoneContacts extends ContactsEvent {}
 

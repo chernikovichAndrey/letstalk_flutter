@@ -36,13 +36,17 @@ class AppRouter {
             branches: [
               StatefulShellBranch(routes: [buildRoute(Routes.contacts)]),
               StatefulShellBranch(routes: [buildRoute(Routes.callsHistory)]),
-              StatefulShellBranch(routes: [buildRoute(Routes.chats)]),
+              StatefulShellBranch(routes: [
+                GoRoute(
+                  path: Routes.chats.path,
+                  pageBuilder: (final _, final state) => buildPage(Routes.chats, state),
+                  routes: [buildRoute(Routes.chatDetails)],
+                )
+              ]),
               StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
             ],
           ),
 
-          // Chat Details
-          buildRoute(Routes.chatDetails),
 
           //Call screen
           buildRoute(Routes.calls),

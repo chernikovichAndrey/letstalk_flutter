@@ -113,3 +113,23 @@ class ChatDetailsResponse {
     );
   }
 }
+
+class CreateChatResponse {
+  final String status;
+  final Chat chat;
+  final bool isNew;
+
+  CreateChatResponse({
+    required this.status,
+    required this.chat,
+    required this.isNew,
+  });
+
+  factory CreateChatResponse.fromJson(Map<String, dynamic> json) {
+    return CreateChatResponse(
+      status: json['status'] as String? ?? '',
+      chat: Chat.fromJson(json['chat'] as Map<String, dynamic>),
+      isNew: json['is_new'] as bool? ?? false,
+    );
+  }
+}

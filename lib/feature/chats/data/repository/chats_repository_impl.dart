@@ -32,4 +32,16 @@ class ChatsRepositoryImpl implements ChatsRepository {
     );
     return ChatDetailsResponse.fromJson(response.data);
   }
+
+  @override
+  Future<CreateChatResponse> createPrivateChat(int userId) async {
+    final response = await _apiService.post(
+      ApiConstants.chats,
+      data: {
+        'type': 'private',
+        'user_ids': [userId],
+      },
+    );
+    return CreateChatResponse.fromJson(response.data);
+  }
 }

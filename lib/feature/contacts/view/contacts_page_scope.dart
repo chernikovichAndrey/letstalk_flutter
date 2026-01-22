@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page.dart';
@@ -25,7 +28,10 @@ class ContactsPageScope extends StatelessWidget {
 
         return BlocProvider(
           create: (context) {
-            final bloc = ContactsBloc(ContactsRepositoryImpl());
+            final bloc = ContactsBloc(
+              ContactsRepositoryImpl(),
+              ChatsRepositoryImpl(),
+            );
             if (!contactsSynced) {
               bloc.add(ContactsSyncPhoneContacts());
             } else {
@@ -37,6 +43,12 @@ class ContactsPageScope extends StatelessWidget {
             listener: (context, state) {
               if (state is ContactsLoaded && !contactsSynced) {
                 prefs.setBool('contacts_synced_first_time', true);
+              }
+              if (state is ContactsChatCreated) {
+                context.go(
+                  '${Routes.chats.path}/${Routes.chatDetails.path}'
+                      .replaceFirst(':id', state.chatId.toString()),
+                );
               }
             },
             child: GestureDetector(

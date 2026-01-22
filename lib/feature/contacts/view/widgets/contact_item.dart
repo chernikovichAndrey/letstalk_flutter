@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/c_list_tile.dart';
-import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 
@@ -24,22 +23,12 @@ class ContactItem extends StatelessWidget {
     }
     if (contact.isRegistered) {
       if (contact.registeredUserId != null) {
-        context.read<CallBloc>().add(
-          CallInitiated(targetUserId: contact.registeredUserId!),
+        context.read<ContactsBloc>().add(
+          ContactsCreateChat(contact.registeredUserId!),
         );
       }
     } else {
       //TODO: send registration sms
-    }
-  }
-
-  void _onLongTapContact(BuildContext context) {
-    if (contact.isRegistered) {
-      if (contact.registeredUserId != null) {
-        context.read<CallBloc>().add(
-          CallInitiated(targetUserId: contact.registeredUserId!, isVideo: true),
-        );
-      }
     }
   }
 
@@ -51,7 +40,6 @@ class ContactItem extends StatelessWidget {
     return Opacity(
       opacity: isRegistered ? 1.0 : 0.5,
       child: CListTile(
-        onLongTap: () => _onLongTapContact(context),
         leading: CAvatar(
           imageUrl: contact.imageUrl != null && contact.imageUrl!.isNotEmpty
               ? contact.imageUrl

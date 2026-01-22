@@ -47,6 +47,12 @@ class ContactsPage extends StatelessWidget {
                   child: const ContactsSceleton(),
                 );
               }
+              if (state is ContactsCreateChatInProgress) {
+                return Center(
+                  child: CircularProgressIndicator.adaptive(),
+                );
+              }
+
               return CRefreshableScrollView(
                 edgeOffset: topPadding,
                 onRefresh: () => _onRefresh(context),

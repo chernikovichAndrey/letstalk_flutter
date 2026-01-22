@@ -35,6 +35,6 @@ abstract class _Paths {
   static const String callsHistory = '/calls_history';
   static const String chats = '/chats';
   static const String settings = '/settings';
-  static const String chatDetails = '/chat_details/:id';
+  static const String chatDetails = 'details/:id';
   static const String calls = '/calls';
 }

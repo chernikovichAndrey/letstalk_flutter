@@ -46,6 +46,18 @@ class ContactsError extends ContactsState {
 
 class ContactsActionInProgress extends ContactsState {}
 
+class ContactsCreateChatInProgress extends ContactsState {
+  final ContactsLoaded state;
+
+  ContactsCreateChatInProgress(this.state);
+}
+
+class ContactsChatCreated extends ContactsState {
+  final int chatId;
+
+  ContactsChatCreated(this.chatId);
+}
+
 class ContactsActionSuccess extends ContactsState {}
 
 class ContactsSyncingPhoneContacts extends ContactsState {

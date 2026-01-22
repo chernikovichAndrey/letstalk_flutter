@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
@@ -62,7 +64,9 @@ class ChatsAppBar extends StatelessWidget {
                     ),
                     GlassButton(
                       icon: Icons.chat_bubble_outline,
-                      onTap: () {},
+                      onTap: () {
+                        context.push(Routes.chatContacts.path);
+                      },
                     ),
                   ],
                 ),

@@ -157,7 +157,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: ChatDetailsAppBar(state.chat?.title ?? ''),
+                child: ChatDetailsAppBar(state.chat?.title ?? state.members
+                    .firstWhere((member) =>
+                member.userId != state.currentUser?.id)
+                    .phone ?? ''),
               ),
               const Positioned(bottom: 0, left: 0, right: 0, child: MessageInput()),
             ],

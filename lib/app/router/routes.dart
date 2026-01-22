@@ -14,6 +14,7 @@ enum Routes {
   // sheets
   createContact(path: _Paths.createContact, type: RouteType.sheet),
   callContacts(path: _Paths.callContacts, type: RouteType.sheet),
+  chatContacts(path: _Paths.chatContacts, type: RouteType.sheet),
   callDetails(path: _Paths.callDetails, type: RouteType.sheet);
 
   const Routes({required this.path, required this.type});
@@ -38,6 +39,7 @@ abstract class _Paths {
   static const String contacts = '/contacts';
   static const String createContact = '/create_contact';
   static const String callContacts = '/call_contacts';
+  static const String chatContacts = '/chat_contacts';
   static const String callDetails = '/call_details/:id';
   static const String callsHistory = '/calls_history';
   static const String chats = '/chats';

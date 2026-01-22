@@ -65,7 +65,6 @@ class _MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final appColors = context.appColors;
 
     return ClipRRect(
@@ -119,7 +118,7 @@ class _MessageInputState extends State<MessageInput> {
                               }
                             },
                             icon: const Icon(Icons.send),
-                            color: theme.primaryColor,
+                            color: appColors.telegramBlue,
                           )
                         : null,
                   ),

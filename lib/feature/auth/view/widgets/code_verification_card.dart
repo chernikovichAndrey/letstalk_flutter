@@ -41,8 +41,10 @@ class CodeVerificationCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Pinput(
+            autofocus: true,
             controller: codeController,
             length: 6,
+            onCompleted: (_) => onVerifyPressed(),
             defaultPinTheme: defaultPinTheme,
             focusedPinTheme: defaultPinTheme.copyWith(
               decoration: defaultPinTheme.decoration!.copyWith(

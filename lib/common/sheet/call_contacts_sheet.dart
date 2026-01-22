@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -11,6 +12,13 @@ import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
 
 class CallContactsSheet extends StatelessWidget {
   const CallContactsSheet({super.key});
+
+  void _onSelectContact(int? id, BuildContext context) {
+    if (id != null) {
+      context.pop();
+      context.read<CallBloc>().add(CallInitiated(targetUserId: id));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +40,7 @@ class CallContactsSheet extends StatelessWidget {
             elevation: 0,
             leading: Padding(
               padding: const EdgeInsets.all(8),
-              child: GlassButton(
-                icon: Icons.close,
-                onTap: context.pop,
-              ),
+              child: GlassButton(icon: Icons.close, onTap: context.pop),
             ),
             title: Text(
               'Новый звонок',
@@ -52,7 +57,14 @@ class CallContactsSheet extends StatelessWidget {
                   state is ContactsActionInProgress) {
                 return const ContactsSceleton();
               }
-              return CustomScrollView(slivers: [ContactsSlivers(state: state)]);
+              return CustomScrollView(
+                slivers: [
+                  ContactsSlivers(
+                    state: state,
+                    onSelectContact:(id) => _onSelectContact(id, context),
+                  ),
+                ],
+              );
             },
           ),
         ),

@@ -6,9 +6,12 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 import 'package:lets_talk/feature/contacts/view/widgets/contact_item.dart';
 
 class ContactsSlivers extends StatelessWidget {
+  final Function(int? id)? onSelectContact;
+
   const ContactsSlivers({
     super.key,
     required this.state,
+    this.onSelectContact,
   });
 
   final ContactsState state;
@@ -44,7 +47,11 @@ class ContactsSlivers extends StatelessWidget {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final contact = loadedState.contacts[index];
-                  return ContactItem(contact: contact, state: loadedState);
+                  return ContactItem(
+                    contact: contact,
+                    state: loadedState,
+                    onTap: onSelectContact,
+                  );
                 },
                 childCount: loadedState.contacts.length,
               ),

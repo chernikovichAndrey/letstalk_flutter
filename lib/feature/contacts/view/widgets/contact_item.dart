@@ -9,7 +9,7 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 class ContactItem extends StatelessWidget {
   final Contact contact;
   final ContactsLoaded state;
-  final VoidCallback? onTap;
+  final Function(int? id)? onTap;
 
   const ContactItem({
     super.key,
@@ -20,7 +20,7 @@ class ContactItem extends StatelessWidget {
 
   void _onTapContact(BuildContext context) {
     if (onTap != null) {
-      onTap!();
+      onTap!(contact.registeredUserId);
       return;
     }
     if (state.isSelectionMode) {

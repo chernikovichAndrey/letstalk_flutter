@@ -11,11 +11,15 @@ import 'package:lets_talk/feature/calls_history/view/widgets/call_history_list_i
 class CallHistoryList extends StatelessWidget {
   final List<CallHistory> calls;
   final double topPadding;
+  final bool isSelectionMode;
+  final Set<int> selectedCallIds;
 
   const CallHistoryList({
     super.key,
     required this.calls,
     this.topPadding = 0,
+    this.isSelectionMode = false,
+    this.selectedCallIds = const {},
   });
 
   @override
@@ -24,11 +28,12 @@ class CallHistoryList extends StatelessWidget {
       edgeOffset: topPadding,
       onRefresh: () async {
         final completer = Completer();
-        context.read<CallsHistoryBloc>().add(RefreshHistoryCalls(completer: completer));
+        context
+            .read<CallsHistoryBloc>()
+            .add(RefreshHistoryCalls(completer: completer));
         return completer.future;
       },
       slivers: [
-
         if (calls.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
@@ -43,6 +48,8 @@ class CallHistoryList extends StatelessWidget {
                 final call = calls[index];
                 return CallHistoryListItem(
                   call: call,
+                  isSelectionMode: isSelectionMode,
+                  isSelected: selectedCallIds.contains(call.id),
                 );
               },
               childCount: calls.length,

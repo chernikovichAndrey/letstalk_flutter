@@ -16,3 +16,13 @@ class DeleteHistoryCall extends CallsHistoryEvent {
 
   DeleteHistoryCall(this.callId);
 }
+
+class CallsHistoryToggleSelectionMode extends CallsHistoryEvent {}
+
+class CallsHistoryToggleCallSelection extends CallsHistoryEvent {
+  final int callId;
+
+  CallsHistoryToggleCallSelection(this.callId);
+}
+
+class CallsHistoryDeleteSelected extends CallsHistoryEvent {}

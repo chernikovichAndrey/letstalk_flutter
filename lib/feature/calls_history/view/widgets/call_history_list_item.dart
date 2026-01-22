@@ -1,16 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
+import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
 
 class CallHistoryListItem extends StatelessWidget {
   final CallHistory call;
+  final bool isSelectionMode;
+  final bool isSelected;
 
   const CallHistoryListItem({
     super.key,
     required this.call,
+    this.isSelectionMode = false,
+    this.isSelected = false,
   });
 
   @override
@@ -46,20 +52,39 @@ class CallHistoryListItem extends StatelessWidget {
           ),
         ],
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            _formatDate(call.endedAt ?? call.startedAt),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.grey,
-              fontSize: 12,
+      trailing: isSelectionMode
+          ? Icon(
+              isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: isSelected
+                  ? context.color.primary
+                  : context.color.onSurface.withValues(alpha: 0.3),
+            )
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _formatDate(call.endedAt ?? call.startedAt),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(CupertinoIcons.info, color: Colors.blue),
+              ],
             ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(CupertinoIcons.info, color: Colors.blue),
-        ],
-      ),
+      onTap: () {
+        if (isSelectionMode) {
+          context
+              .read<CallsHistoryBloc>()
+              .add(CallsHistoryToggleCallSelection(call.id));
+        } else {
+          // Normal tap action (info or call?)
+          // Original code didn't have onTap on ListTile, but the "info" icon was there.
+          // Usually list tile tap opens details or calls.
+          // The previous code didn't have onTap.
+        }
+      },
     );
   }
 

@@ -42,10 +42,52 @@ class CallsHistoryBloc extends Bloc<CallsHistoryEvent, CallsHistoryState> {
           final updatedCalls = currentState.calls
               .where((call) => call.id != event.callId)
               .toList();
-          emit(CallsHistoryLoaded(updatedCalls));
+          emit(currentState.copyWith(calls: updatedCalls));
         } catch (e) {
           emit(CallsHistoryError(e.toString()));
           // Reload calls to revert to correct state
+          add(LoadHistoryCalls());
+        }
+      }
+    });
+
+    on<CallsHistoryToggleSelectionMode>((event, emit) {
+      final currentState = state;
+      if (currentState is CallsHistoryLoaded) {
+        emit(currentState.copyWith(
+          isSelectionMode: !currentState.isSelectionMode,
+          selectedCallIds: {},
+        ));
+      }
+    });
+
+    on<CallsHistoryToggleCallSelection>((event, emit) {
+      final currentState = state;
+      if (currentState is CallsHistoryLoaded && currentState.isSelectionMode) {
+        final updatedSelectedIds = Set<int>.from(currentState.selectedCallIds);
+        if (updatedSelectedIds.contains(event.callId)) {
+          updatedSelectedIds.remove(event.callId);
+        } else {
+          updatedSelectedIds.add(event.callId);
+        }
+        emit(currentState.copyWith(selectedCallIds: updatedSelectedIds));
+      }
+    });
+
+    on<CallsHistoryDeleteSelected>((event, emit) async {
+      final currentState = state;
+      if (currentState is CallsHistoryLoaded &&
+          currentState.selectedCallIds.isNotEmpty) {
+        final selectedIds = currentState.selectedCallIds.toList();
+        emit(CallsHistoryActionInProgress());
+        try {
+          for (final id in selectedIds) {
+            await callsRepository.deleteCall(id);
+          }
+          final calls = await callsRepository.getCalls();
+          emit(CallsHistoryLoaded(calls));
+        } catch (e) {
+          emit(CallsHistoryError(e.toString()));
           add(LoadHistoryCalls());
         }
       }

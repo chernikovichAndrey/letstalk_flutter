@@ -6,6 +6,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
+import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
 
 class CallHistoryAppBar extends StatelessWidget {
   const CallHistoryAppBar({super.key});
@@ -29,9 +30,49 @@ class CallHistoryAppBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Row(
                   children: [
-                    GlassButton(
-                      icon: Icons.edit,
-                      onTap: () {},
+                    BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
+                      builder: (context, state) {
+                        if (state is CallsHistoryLoaded &&
+                            state.calls.isEmpty) {
+                          return GlassButton(
+                            icon: Icons.edit,
+                            onTap: () {}, // Disable if empty
+                          );
+                        }
+
+                        if (state is CallsHistoryLoaded &&
+                            state.isSelectionMode) {
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GlassButton(
+                                icon: Icons.close,
+                                onTap: () => context
+                                    .read<CallsHistoryBloc>()
+                                    .add(CallsHistoryToggleSelectionMode()),
+                              ),
+                              if (state.selectedCallIds.isNotEmpty) ...[
+                                const SizedBox(width: 12),
+                                GlassButton(
+                                  icon: Icons.delete,
+                                  onTap: () => context
+                                      .read<CallsHistoryBloc>()
+                                      .add(CallsHistoryDeleteSelected()),
+                                ),
+                              ],
+                            ],
+                          );
+                        }
+
+                        return GlassButton(
+                          icon: Icons.edit,
+                          onTap: () {
+                            context
+                                .read<CallsHistoryBloc>()
+                                .add(CallsHistoryToggleSelectionMode());
+                          },
+                        );
+                      },
                     ),
                     const SizedBox(width: 12),
                     Expanded(

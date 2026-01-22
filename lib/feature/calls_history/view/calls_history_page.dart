@@ -21,14 +21,15 @@ class CallsHistoryPage extends StatelessWidget {
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-            BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
-              builder: (context, state) {
-                if (state is CallsHistoryLoading) {
-                  return Padding(
-                    padding: EdgeInsets.only(top: topPadding),
-                    child: const CallHistoryListSkeleton(),
-                  );
-                } else if (state is CallsHistoryError) {
+          BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
+            builder: (context, state) {
+              if (state is CallsHistoryLoading ||
+                  state is CallsHistoryActionInProgress) {
+                return Padding(
+                  padding: EdgeInsets.only(top: topPadding),
+                  child: const CallHistoryListSkeleton(),
+                );
+              } else if (state is CallsHistoryError) {
                   return CRefreshableScrollView(
                     edgeOffset: topPadding,
                     onRefresh: () async {
@@ -50,12 +51,16 @@ class CallsHistoryPage extends StatelessWidget {
                       CallHistoryList(
                         calls: state.calls,
                         topPadding: topPadding,
+                        isSelectionMode: state.isSelectionMode,
+                        selectedCallIds: state.selectedCallIds,
                       ),
                       CallHistoryList(
                         calls: state.calls
                             .where((c) => c.status == 'missed')
                             .toList(),
                         topPadding: topPadding,
+                        isSelectionMode: state.isSelectionMode,
+                        selectedCallIds: state.selectedCallIds,
                       ),
                     ],
                   );

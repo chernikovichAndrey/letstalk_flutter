@@ -94,9 +94,20 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
                           color: iconColor,
                         ),
                       )
-                    : Icon(
-                        Icons.insert_drive_file,
-                        color: iconColor,
+                    : Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.insert_drive_file,
+                            color: iconColor,
+                            size: 38,
+                          ),
+                          Icon(
+                            Icons.download,
+                            color: Colors.black.withValues(alpha: 0.5),
+                            size: 20,
+                          ),
+                        ],
                       ),
               ),
               const SizedBox(width: 8),

@@ -154,7 +154,7 @@ class _MessageInputState extends State<MessageInput> {
                                   backgroundColor: Colors.transparent,
                                 )
                             );
-                            if (context.mounted) {
+                            if (context.mounted && file != null) {
                               context.read<ChatDetailsBloc>().add(
                                 ChatDetailsSendMedia(file),
                               );

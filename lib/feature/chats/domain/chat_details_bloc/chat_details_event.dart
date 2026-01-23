@@ -35,6 +35,18 @@ class DownloadDocument extends ChatDetailsEvent {
   });
 }
 
+class SaveImageToGallery extends ChatDetailsEvent {
+  final String imageUrl;
+  final String filename;
+  final int messageId;
+
+  SaveImageToGallery({
+    required this.imageUrl,
+    required this.filename,
+    required this.messageId,
+  });
+}
+
 class ChatDetailsDownloadProgress extends ChatDetailsEvent {
   final int count;
   final int total;

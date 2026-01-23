@@ -84,6 +84,7 @@
   "callDirection": "Direction",
   "callDirectionIncoming": "Incoming",
   "callDirectionOutgoing": "Outgoing",
+  "download": "Download",
   "copy": "Copy",
   "edit": "Edit",
   "forward": "Forward",

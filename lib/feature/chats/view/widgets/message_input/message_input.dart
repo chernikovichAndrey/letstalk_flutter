@@ -141,24 +141,24 @@ class _MessageInputState extends State<MessageInput> {
                     children: [
                       GlassButton(
                         icon: isEditing ? Icons.close : Icons.attach_file,
-                        onTap: () {
+                        onTap: () async {
                           if (isEditing) {
                             context.read<ChatDetailsBloc>().add(
                               ChatDetailsSetEditingMessage(null),
                             );
                           } else {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => const AttachmentBottomSheet(),
-                            ).then((file) {
-                              if (file is File) {
-                                context.read<ChatDetailsBloc>().add(
-                                  ChatDetailsSendMedia(file),
-                                );
-                              }
-                            });
+                            final file = await Navigator.of(context).push(
+                                ModalBottomSheetRoute(
+                                  builder: (_) => const AttachmentBottomSheet(),
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                )
+                            );
+                            if (context.mounted) {
+                              context.read<ChatDetailsBloc>().add(
+                                ChatDetailsSendMedia(file),
+                              );
+                            }
                           }
                         }
                       ),

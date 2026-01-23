@@ -32,8 +32,6 @@ class _AttachmentBottomSheetState extends State<AttachmentBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.65,
       decoration: BoxDecoration(

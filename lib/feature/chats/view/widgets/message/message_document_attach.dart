@@ -60,15 +60,7 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
     final iconBgColor = widget.isMe ? Colors.white.withOpacity(0.2) : appColors.telegramBlue.withOpacity(0.1);
     final iconColor = widget.isMe ? Colors.white : appColors.telegramBlue;
 
-    return BlocConsumer<ChatDetailsBloc, ChatDetailsState>(
-      listenWhen: (previous, current) =>
-          previous.isDownloadSuccess != current.isDownloadSuccess &&
-          current.isDownloadSuccess,
-      listener: (context, state) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(S.of(context).fileDownloaded)),
-        );
-      },
+    return BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
       builder: (context, state) {
         final isDownloading = state.downloadingMessageId == widget.message.id;
         final progress = isDownloading ? state.downloadProgress : null;

@@ -51,6 +51,7 @@ class MessageBubble extends StatelessWidget {
                   if (message.messageType == 'image' && message.media?.thumbnailUrl != null)
                     MessageImageAttachThumbnail(
                       thumbnailUrl: message.media!.thumbnailUrl!,
+                      messageId: message.id,
                     ),
                   if (message.messageType == 'document')
                     MessageDocumentAttach(

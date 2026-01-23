@@ -124,10 +124,30 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
-        builder: (context, state) {
+    return BlocListener<ChatDetailsBloc, ChatDetailsState>(
+      listenWhen: (previous, current) =>
+          (previous.isDownloadSuccess != current.isDownloadSuccess &&
+              current.isDownloadSuccess) ||
+          (previous.status != current.status &&
+              current.status == ChatDetailsStatus.failure &&
+              current.errorMessage != null),
+      listener: (context, state) {
+        if (state.isDownloadSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.s.fileDownloaded)),
+          );
+        }
+        if (state.status == ChatDetailsStatus.failure &&
+            state.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.errorMessage!)),
+          );
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+          builder: (context, state) {
           if (state.status == ChatDetailsStatus.initial ||
               (state.status == ChatDetailsStatus.loading &&
                   state.messages.isEmpty)) {
@@ -168,6 +188,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
           );
         },
       ),
+    ),
     );
   }
 }

@@ -8,6 +8,7 @@ class MessageMenu extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onEdit;
   final VoidCallback onForward;
+  final VoidCallback? onDownload;
 
   const MessageMenu({
     super.key,
@@ -15,13 +16,13 @@ class MessageMenu extends StatelessWidget {
     required this.onCopy,
     required this.onDelete,
     required this.onEdit,
-    required this.onForward
+    required this.onForward,
+    this.onDownload,
   });
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final backgroundColor = appColors.surfaceSecondary;
     final dividerColor = appColors.divider;
 
     return Align(
@@ -42,6 +43,19 @@ class MessageMenu extends StatelessWidget {
               onTap: onCopy,
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
+            if (onDownload != null) ...[
+              MessageMenuItem(
+                title: context.s.download,
+                icon: Icons.download_outlined,
+                onTap: onDownload!,
+              ),
+              Divider(
+                height: 1,
+                indent: 12,
+                endIndent: 12,
+                color: dividerColor,
+              ),
+            ],
             if (isMe) ...[
               MessageMenuItem(
                 title: context.s.edit,

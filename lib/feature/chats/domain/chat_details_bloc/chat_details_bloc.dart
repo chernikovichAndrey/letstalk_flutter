@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:gal/gal.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
@@ -39,6 +41,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsSetAttachedMedia>(_onSetAttachedMedia);
     on<ChatDetailsUpdateMessage>(_onUpdateMessage);
     on<DownloadDocument>(_onDownloadDocument);
+    on<SaveImageToGallery>(_onSaveImageToGallery);
     on<ChatDetailsDownloadProgress>(_onDownloadProgress);
 
     _subscribeToWebSocket();
@@ -62,6 +65,61 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       return m.id == event.message.id ? event.message : m;
     }).toList();
     emit(state.copyWith(messages: messages));
+  }
+
+  Future<void> _onSaveImageToGallery(
+    SaveImageToGallery event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    emit(state.copyWith(
+      downloadingMessageId: event.messageId,
+      downloadProgress: 0,
+      clearDownloadSuccess: true,
+    ));
+
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final savePath = '${tempDir.path}/${event.filename}';
+
+      await _mediaRepository.downloadMedia(
+        event.imageUrl,
+        savePath,
+        onReceiveProgress: (count, total) {
+          add(ChatDetailsDownloadProgress(count, total, event.messageId));
+        },
+      );
+
+      await Gal.putImage(savePath);
+
+      final file = File(savePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+
+      if (state.downloadingMessageId == event.messageId) {
+        emit(state.copyWith(
+          clearDownloadingMessageId: true,
+          clearDownloadProgress: true,
+          isDownloadSuccess: true,
+        ));
+      } else {
+        emit(state.copyWith(isDownloadSuccess: true));
+      }
+    } catch (e) {
+      if (state.downloadingMessageId == event.messageId) {
+        emit(state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+          clearDownloadingMessageId: true,
+          clearDownloadProgress: true,
+        ));
+      } else {
+        emit(state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ));
+      }
+    }
   }
 
   Future<void> _onDownloadDocument(

@@ -30,6 +30,8 @@
 	<string>Camera access is needed for video calls</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to share photos</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need access to save photos to your gallery</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need access to your contacts to help you connect with friends</string>
 	<key>NSMicrophoneUsageDescription</key>

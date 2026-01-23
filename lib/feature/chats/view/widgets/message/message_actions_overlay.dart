@@ -120,6 +120,28 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     }
   }
 
+  void _onDownloadImage() {
+    final media = widget.message.media;
+    if (media == null) return;
+
+    final bloc = context.read<ChatDetailsBloc>();
+    final messageId = widget.message.id;
+    final downloadUrl = media.downloadUrl;
+    final filename = media.filename;
+
+    if (context.mounted) {
+      context.pop();
+    }
+
+    bloc.add(
+      SaveImageToGallery(
+        imageUrl: downloadUrl,
+        filename: filename,
+        messageId: messageId,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -166,6 +188,10 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               onEdit: _onEditMessage,
                               onForward: _onForwardMessage,
                               onDelete: _onDeleteMessage,
+                              onDownload: (widget.message.messageType == 'image' &&
+                                      widget.message.media != null)
+                                  ? _onDownloadImage
+                                  : null,
                             ),
                             const SizedBox(height: 12),
                           ],

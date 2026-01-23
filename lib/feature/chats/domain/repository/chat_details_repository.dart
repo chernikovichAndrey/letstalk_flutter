@@ -6,5 +6,6 @@ abstract class ChatDetailsRepository {
   Future<void> markAsRead(int chatId, int messageId);
   Future<void> sendMessage(int chatId, String text);
   Future<void> sendTyping(int chatId, bool isTyping);
+  Future<void> deleteMessage(int messageId);
   Future<ChatDetailsResponse> getChatDetails(int chatId);
 }

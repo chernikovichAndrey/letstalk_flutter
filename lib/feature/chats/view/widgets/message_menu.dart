@@ -5,11 +5,13 @@ import 'package:lets_talk/feature/chats/view/widgets/message_menu_item.dart';
 class MessageMenu extends StatelessWidget {
   final bool isMe;
   final VoidCallback? onCopy;
+  final VoidCallback? onDelete;
 
   const MessageMenu({
     super.key,
     required this.isMe,
     this.onCopy,
+    this.onDelete,
   });
 
   @override
@@ -59,7 +61,7 @@ class MessageMenu extends StatelessWidget {
               MessageMenuItem(
                 title: context.s.delete,
                 icon: Icons.delete_outline,
-                onTap: () {},
+                onTap: onDelete ?? () {},
                 isDestructive: true,
               ),
           ],

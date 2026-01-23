@@ -48,6 +48,11 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
   }
 
   @override
+  Future<void> deleteMessage(int messageId) async {
+    await _apiService.delete('${ApiConstants.messages}/$messageId');
+  }
+
+  @override
   Future<ChatDetailsResponse> getChatDetails(int chatId) async {
     final response = await _apiService.get(
       '${ApiConstants.chats}/$chatId',

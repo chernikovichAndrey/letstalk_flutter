@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_menu.dart';
 
@@ -17,11 +19,14 @@ class MessageActionsOverlay extends StatefulWidget {
   });
 
   static void show(BuildContext context, Message message, bool isMe) {
+    final chatDetailsBloc = context.read<ChatDetailsBloc>();
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
-        pageBuilder: (context, _, __) =>
-            MessageActionsOverlay(message: message, isMe: isMe),
+        pageBuilder: (context, _, __) => BlocProvider.value(
+          value: chatDetailsBloc,
+          child: MessageActionsOverlay(message: message, isMe: isMe),
+        ),
         transitionsBuilder: (context, animation, _, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -103,6 +108,14 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                                   ClipboardData(
                                     text: widget.message.text ?? '',
                                   ),
+                                );
+                                if (context.mounted) {
+                                  context.pop();
+                                }
+                              },
+                              onDelete: () {
+                                context.read<ChatDetailsBloc>().add(
+                                  ChatDetailsDeleteMessage(widget.message.id),
                                 );
                                 if (context.mounted) {
                                   context.pop();

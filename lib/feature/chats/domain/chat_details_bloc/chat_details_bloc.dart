@@ -26,8 +26,27 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsSendTyping>(_onSendTyping);
     on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
     on<ChatDetailsErrorReceived>(_onErrorReceived);
+    on<ChatDetailsDeleteMessage>(_onDeleteMessage);
 
     _subscribeToWebSocket();
+  }
+
+  Future<void> _onDeleteMessage(
+    ChatDetailsDeleteMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    try {
+      await _chatDetailsRepository.deleteMessage(event.messageId);
+      final messages = state.messages.where((m) => m.id != event.messageId).toList();
+      emit(state.copyWith(messages: messages));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   Future<void> _onSendTyping(

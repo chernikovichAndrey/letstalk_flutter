@@ -32,3 +32,8 @@ class ChatDetailsErrorReceived extends ChatDetailsEvent {
   final String error;
   ChatDetailsErrorReceived(this.error);
 }
+
+class ChatDetailsDeleteMessage extends ChatDetailsEvent {
+  final int messageId;
+  ChatDetailsDeleteMessage(this.messageId);
+}

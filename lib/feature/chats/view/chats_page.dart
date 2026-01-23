@@ -5,12 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/router_observers.dart';
 import 'package:lets_talk/app/router/routes.dart';
-import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
-import 'package:lets_talk/common/widget/c_search_bar.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_list_item.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_list_skeleton.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_slivers.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats_app_bar.dart';
 
 class ChatsPage extends StatefulWidget {
@@ -21,8 +19,6 @@ class ChatsPage extends StatefulWidget {
 }
 
 class _ChatsPageState extends State<ChatsPage> with RouteAware {
-  Timer? _debounce;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -32,22 +28,12 @@ class _ChatsPageState extends State<ChatsPage> with RouteAware {
   @override
   void dispose() {
     chatsRouteObserver.unsubscribe(this);
-    _debounce?.cancel();
     super.dispose();
   }
 
   @override
   void didPopNext() {
     context.read<ChatsBloc>().add(ChatsRefresh());
-  }
-
-  void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        context.read<ChatsBloc>().add(ChatsSearch(query));
-      }
-    });
   }
 
   @override
@@ -70,71 +56,23 @@ class _ChatsPageState extends State<ChatsPage> with RouteAware {
                 edgeOffset: topPadding,
                 onRefresh: () => _onRefresh(context),
                 slivers: [
-
-                  SliverToBoxAdapter(
-                    child: CSearchBar(
-                      hintText: context.s.search,
-                      onChanged: _onSearchChanged,
-                    ),
+                  ChatSlivers(
+                    state: state,
+                    onSelectChat: (id) async {
+                      context.push(
+                        '${Routes.chats.path}/${Routes.chatDetails.path}'
+                            .replaceFirst(':id', id.toString()),
+                      );
+                      if (context.mounted) {
+                        context.read<ChatsBloc>().add(ChatUpdated(id));
+                      }
+                    },
                   ),
-                  if (state is ChatsError)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(child: Text(state.message)),
-                    )
-                  else if (state is ChatsLoaded)
-                    if (state.chats.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(child: Text(context.s.noChats)),
-                      )
-                    else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((
-                          context,
-                          index,
-                        ) {
-                          final chat = state.chats[index];
-                          final isTyping =
-                              state.typingUsers[chat.id]?.isNotEmpty ?? false;
-                          final isSelectionMode = state.isSelectionMode;
-                          final isSelected =
-                              state.selectedChatIds.contains(chat.id);
-
-                          return ChatListItem(
-                            chat: chat,
-                            isTyping: isTyping,
-                            isSelectionMode: isSelectionMode,
-                            isSelected: isSelected,
-                            onSelect: (_) => context
-                                .read<ChatsBloc>()
-                                .add(ChatsToggleChatSelection(chat.id)),
-                            onTap: () async {
-                              context.push(
-                                '${Routes.chats.path}/${Routes.chatDetails.path}'
-                                    .replaceFirst(':id', chat.id.toString()),
-                              );
-                              if (context.mounted) {
-                                context
-                                    .read<ChatsBloc>()
-                                    .add(ChatUpdated(chat.id));
-                              }
-                            },
-                          );
-                        }, childCount: state.chats.length),
-                      )
-                  else
-                    const SliverToBoxAdapter(child: SizedBox.shrink()),
                 ],
               );
             },
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: const ChatsAppBar(),
-          ),
+          Positioned(top: 0, left: 0, right: 0, child: const ChatsAppBar()),
         ],
       ),
     );

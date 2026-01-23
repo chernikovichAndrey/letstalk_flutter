@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/sheet/call_contacts_sheet.dart';
 import 'package:lets_talk/common/sheet/chat_contact_sheet.dart';
+import 'package:lets_talk/common/sheet/forward_message_sheet.dart';
 import 'package:lets_talk/common/widget/c_alert_dialog.dart';
 import 'package:lets_talk/feature/auth/view/login_page.dart';
 import 'package:lets_talk/feature/call/view/call_page.dart';
@@ -27,6 +28,7 @@ extension RoutesExt on Routes {
       Routes.createContact => const CreateContactPageScope(),
       Routes.callContacts => const CallContactsSheet(),
       Routes.chatContacts => const ChatContactsSheet(),
+      Routes.forwardMessage => const ForwardMessageSheet(),
       Routes.callDetails => const SizedBox(),
     };
   }

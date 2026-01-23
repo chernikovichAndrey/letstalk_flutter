@@ -4,16 +4,18 @@ import 'package:lets_talk/feature/chats/view/widgets/message_menu_item.dart';
 
 class MessageMenu extends StatelessWidget {
   final bool isMe;
-  final VoidCallback? onCopy;
-  final VoidCallback? onDelete;
-  final VoidCallback? onEdit;
+  final VoidCallback onCopy;
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
+  final VoidCallback onForward;
 
   const MessageMenu({
     super.key,
     required this.isMe,
-    this.onCopy,
-    this.onDelete,
-    this.onEdit,
+    required this.onCopy,
+    required this.onDelete,
+    required this.onEdit,
+    required this.onForward
   });
 
   @override
@@ -37,14 +39,14 @@ class MessageMenu extends StatelessWidget {
             MessageMenuItem(
               title: context.s.copy,
               icon: Icons.file_copy_outlined,
-              onTap: onCopy ?? () {},
+              onTap: onCopy,
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
-            if (isMe && onEdit != null) ...[
+            if (isMe) ...[
               MessageMenuItem(
                 title: context.s.edit,
                 icon: Icons.edit_note_outlined,
-                onTap: onEdit!,
+                onTap: onEdit,
               ),
               Divider(
                 height: 1,
@@ -56,14 +58,14 @@ class MessageMenu extends StatelessWidget {
             MessageMenuItem(
               title: context.s.forward,
               icon: Icons.reply_outlined,
-              onTap: () {},
+              onTap: onForward,
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
             if (isMe)
               MessageMenuItem(
                 title: context.s.delete,
                 icon: Icons.delete_outline,
-                onTap: onDelete ?? () {},
+                onTap: onDelete,
                 isDestructive: true,
               ),
           ],

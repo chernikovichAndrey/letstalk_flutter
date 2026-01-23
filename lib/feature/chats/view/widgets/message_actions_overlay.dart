@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
@@ -84,6 +85,11 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     }
   }
 
+  void _onForwardMessage() {
+    context.pop();
+    context.push(Routes.forwardMessage.path);
+  }
+
   void _onDeleteMessage() {
     context.read<ChatDetailsBloc>().add(
       ChatDetailsDeleteMessage(widget.message.id),
@@ -137,6 +143,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               isMe: widget.isMe,
                               onCopy: _onCopyMessage,
                               onEdit: _onEditMessage,
+                              onForward: _onForwardMessage,
                               onDelete: _onDeleteMessage,
                             ),
                             const SizedBox(height: 12),

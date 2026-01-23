@@ -38,8 +38,13 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
   }
 
   @override
-  Future<void> sendMessage(int chatId, String text) async {
-    WebSocketService().sendMessage(chatId, text);
+  Future<void> sendMessage(int chatId, String text, {int? mediaId, String? messageType}) async {
+    WebSocketService().sendMessage(
+      chatId,
+      text,
+      mediaId: mediaId,
+      messageType: messageType ?? 'text',
+    );
   }
 
   @override

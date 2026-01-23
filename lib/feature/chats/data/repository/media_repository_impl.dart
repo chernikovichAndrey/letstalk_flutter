@@ -32,4 +32,17 @@ class MediaRepositoryImpl implements MediaRepository {
     final mediaResponse = MediaUploadResponse.fromJson(response.data);
     return mediaResponse.media;
   }
+
+  @override
+  Future<void> downloadMedia(
+    String url,
+    String savePath, {
+    void Function(int, int)? onReceiveProgress,
+  }) async {
+    await _apiService.download(
+      url,
+      savePath,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
 }

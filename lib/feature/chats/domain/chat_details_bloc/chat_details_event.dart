@@ -23,6 +23,26 @@ class ChatDetailsSendMedia extends ChatDetailsEvent {
   ChatDetailsSendMedia(this.file);
 }
 
+class DownloadDocument extends ChatDetailsEvent {
+  final String mediaUrl;
+  final String savePath;
+  final int messageId;
+
+  DownloadDocument({
+    required this.mediaUrl,
+    required this.savePath,
+    required this.messageId,
+  });
+}
+
+class ChatDetailsDownloadProgress extends ChatDetailsEvent {
+  final int count;
+  final int total;
+  final int messageId;
+
+  ChatDetailsDownloadProgress(this.count, this.total, this.messageId);
+}
+
 class ChatDetailsSendTyping extends ChatDetailsEvent {
   final bool isTyping;
   ChatDetailsSendTyping(this.isTyping);

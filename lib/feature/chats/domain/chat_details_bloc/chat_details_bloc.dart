@@ -38,6 +38,8 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsSetEditingMessage>(_onSetEditingMessage);
     on<ChatDetailsSetAttachedMedia>(_onSetAttachedMedia);
     on<ChatDetailsUpdateMessage>(_onUpdateMessage);
+    on<DownloadDocument>(_onDownloadDocument);
+    on<ChatDetailsDownloadProgress>(_onDownloadProgress);
 
     _subscribeToWebSocket();
   }
@@ -60,6 +62,62 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       return m.id == event.message.id ? event.message : m;
     }).toList();
     emit(state.copyWith(messages: messages));
+  }
+
+  Future<void> _onDownloadDocument(
+    DownloadDocument event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    emit(state.copyWith(
+      downloadingMessageId: event.messageId,
+      downloadProgress: 0,
+      clearDownloadSuccess: true,
+    ));
+
+    try {
+      await _mediaRepository.downloadMedia(
+        event.mediaUrl,
+        event.savePath,
+        onReceiveProgress: (count, total) {
+          add(ChatDetailsDownloadProgress(count, total, event.messageId));
+        },
+      );
+      
+      if (state.downloadingMessageId == event.messageId) {
+        emit(state.copyWith(
+          clearDownloadingMessageId: true,
+          clearDownloadProgress: true,
+          isDownloadSuccess: true,
+        ));
+      } else {
+        emit(state.copyWith(isDownloadSuccess: true));
+      }
+    } catch (e) {
+      if (state.downloadingMessageId == event.messageId) {
+        emit(state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+          clearDownloadingMessageId: true,
+          clearDownloadProgress: true,
+        ));
+      } else {
+         emit(state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ));
+      }
+    }
+  }
+
+  void _onDownloadProgress(
+    ChatDetailsDownloadProgress event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    if (state.downloadingMessageId == event.messageId && event.total != -1) {
+      emit(state.copyWith(
+        downloadProgress: event.count / event.total,
+      ));
+    }
   }
 
   void _onSetEditingMessage(

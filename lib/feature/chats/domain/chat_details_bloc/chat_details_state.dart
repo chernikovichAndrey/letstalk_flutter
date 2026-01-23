@@ -12,6 +12,9 @@ class ChatDetailsState {
   final List<ChatMember> members;
   final Message? messageToEdit;
   final Media? attachedMedia;
+  final int? downloadingMessageId;
+  final double? downloadProgress;
+  final bool isDownloadSuccess;
 
   const ChatDetailsState({
     this.status = ChatDetailsStatus.initial,
@@ -23,6 +26,9 @@ class ChatDetailsState {
     this.members = const [],
     this.messageToEdit,
     this.attachedMedia,
+    this.downloadingMessageId,
+    this.downloadProgress,
+    this.isDownloadSuccess = false,
   });
 
   ChatDetailsState copyWith({
@@ -37,6 +43,12 @@ class ChatDetailsState {
     bool clearMessageToEdit = false,
     Media? attachedMedia,
     bool clearAttachedMedia = false,
+    int? downloadingMessageId,
+    bool clearDownloadingMessageId = false,
+    double? downloadProgress,
+    bool clearDownloadProgress = false,
+    bool? isDownloadSuccess,
+    bool clearDownloadSuccess = false,
   }) {
     return ChatDetailsState(
       status: status ?? this.status,
@@ -48,6 +60,9 @@ class ChatDetailsState {
       members: members ?? this.members,
       messageToEdit: clearMessageToEdit ? null : (messageToEdit ?? this.messageToEdit),
       attachedMedia: clearAttachedMedia ? null : (attachedMedia ?? this.attachedMedia),
+      downloadingMessageId: clearDownloadingMessageId ? null : (downloadingMessageId ?? this.downloadingMessageId),
+      downloadProgress: clearDownloadProgress ? null : (downloadProgress ?? this.downloadProgress),
+      isDownloadSuccess: clearDownloadSuccess ? false : (isDownloadSuccess ?? this.isDownloadSuccess),
     );
   }
 }

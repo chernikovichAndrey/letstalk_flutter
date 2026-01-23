@@ -68,5 +68,7 @@
   "contact": "Контакт",
   "selectFromGallery": "Выбрать из галереи",
   "selectFromFiles": "Выбрать из файлов",
-  "recentFiles": "Недавние файлы"
+  "recentFiles": "Недавние файлы",
+  "fileDownloaded": "Файл скачан",
+  "downloadError": "Ошибка скачивания: {error}"
 }

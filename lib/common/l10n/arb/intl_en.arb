@@ -96,5 +96,14 @@
   "contact": "Contact",
   "selectFromGallery": "Select from Gallery",
   "selectFromFiles": "Select from Files",
-  "recentFiles": "Recent files"
+  "recentFiles": "Recent files",
+  "fileDownloaded": "File downloaded",
+  "downloadError": "Download error: {error}",
+  "@downloadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -7,4 +7,10 @@ abstract class MediaRepository {
     required int chatId,
     required String fileType,
   });
+
+  Future<void> downloadMedia(
+    String url,
+    String savePath, {
+    void Function(int, int)? onReceiveProgress,
+  });
 }

@@ -224,7 +224,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     } else if (['mp3', 'wav', 'aac', 'm4a'].contains(ext)) {
       return 'audio';
     }
-    return 'file';
+    return 'document';
   }
 
   Future<void> _onLoad(

@@ -4,6 +4,7 @@ import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble_info.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_image_attach_thumbnail.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_actions_overlay.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_document_attach.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -51,6 +52,12 @@ class MessageBubble extends StatelessWidget {
                     MessageImageAttachThumbnail(
                       thumbnailUrl: message.media!.thumbnailUrl!,
                     ),
+                  if (message.messageType == 'document')
+                    MessageDocumentAttach(
+                      message: message,
+                      isMe: isMe,
+                    ),
+
                   Text(
                     message.text ?? '',
                     style: context.text.bodyMedium?.copyWith(

@@ -7,8 +7,8 @@ import 'package:lets_talk/app/router/arg/forward_message_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message_menu.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_menu.dart';
 
 class MessageActionsOverlay extends StatefulWidget {
   final Message message;
@@ -61,6 +61,20 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  bool _canEdit(Message message) {
+    if (!widget.isMe) return false;
+    if (message.text == null || message.text!.isEmpty) return false;
+
+    try {
+      final dateStr = message.createdAt.replaceAll(' ', 'T');
+      final date = DateTime.parse(dateStr);
+      final difference = DateTime.now().difference(date);
+      return difference.inHours < 48;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> _onCopyMessage() async {
@@ -166,21 +180,5 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
         ),
       ),
     );
-  }
-
-  bool _canEdit(Message message) {
-    if (!widget.isMe) return false;
-    // Check if message text is empty (already handled by model but good to check)
-    if (message.text == null || message.text!.isEmpty) return false;
-    
-    try {
-      // Handle date format "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
-      final dateStr = message.createdAt.replaceAll(' ', 'T');
-      final date = DateTime.parse(dateStr);
-      final difference = DateTime.now().difference(date);
-      return difference.inHours < 48;
-    } catch (_) {
-      return false;
-    }
   }
 }

@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_details_app_bar.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_details_date_seporator.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_details_skeleton.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message_input.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_date_seporator.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_skeleton.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message_input/message_input.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;

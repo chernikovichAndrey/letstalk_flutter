@@ -33,41 +33,48 @@ class ChatsAppBar extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    BlocBuilder<ChatsBloc, ChatsState>(
-                      builder: (context, state) {
-                        if (state is ChatsLoaded && state.isSelectionMode) {
-                          return Row(
-                            children: [
-                              GlassButton(
-                                icon: Icons.close,
-                                onTap: () => context
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          BlocBuilder<ChatsBloc, ChatsState>(
+                            builder: (context, state) {
+                              if (state is ChatsLoaded && state.isSelectionMode) {
+                                return Row(
+                                  children: [
+                                    GlassButton(
+                                      icon: Icons.close,
+                                      onTap: () => context
+                                          .read<ChatsBloc>()
+                                          .add(ChatsToggleSelectionMode()),
+                                    ),
+                                    if (state.selectedChatIds.isNotEmpty) ...[
+                                      const SizedBox(width: 4),
+                                      GlassButton(
+                                        icon: Icons.delete,
+                                        onTap: () => context
+                                            .read<ChatsBloc>()
+                                            .add(ChatsDeleteSelected()),
+                                      ),
+                                    ],
+                                  ],
+                                );
+                              }
+
+                              final hasChats = state is ChatsLoaded && state.chats.isNotEmpty;
+
+                              return GlassButton(
+                                icon: Icons.edit,
+                                onTap: hasChats
+                                    ? () => context
                                     .read<ChatsBloc>()
-                                    .add(ChatsToggleSelectionMode()),
-                              ),
-                              if (state.selectedChatIds.isNotEmpty) ...[
-                                const SizedBox(width: 4),
-                                GlassButton(
-                                  icon: Icons.delete,
-                                  onTap: () => context
-                                      .read<ChatsBloc>()
-                                      .add(ChatsDeleteSelected()),
-                                ),
-                              ],
-                            ],
-                          );
-                        }
-                        
-                        final hasChats = state is ChatsLoaded && state.chats.isNotEmpty;
-                        
-                        return GlassButton(
-                          icon: Icons.edit,
-                          onTap: hasChats
-                              ? () => context
-                                  .read<ChatsBloc>()
-                                  .add(ChatsToggleSelectionMode())
-                              : () {},
-                        );
-                      },
+                                    .add(ChatsToggleSelectionMode())
+                                    : () {},
+                              );
+                            },
+                          )
+                        ],
+                      ),
                     ),
                     Center(
                       child: ClipRRect(
@@ -96,11 +103,18 @@ class ChatsAppBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    GlassButton(
-                      icon: Icons.chat_bubble_outline,
-                      onTap: () {
-                        context.push(Routes.chatContacts.path);
-                      },
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GlassButton(
+                            icon: Icons.chat_bubble_outline,
+                            onTap: () {
+                              context.push(Routes.chatContacts.path);
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),

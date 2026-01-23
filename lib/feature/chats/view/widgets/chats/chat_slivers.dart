@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_search_bar.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_list_item.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_item.dart';
 
 class ChatSlivers extends StatefulWidget {
   final ChatsState state;

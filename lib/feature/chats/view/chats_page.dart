@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_talk/app/router/router_observers.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_list_skeleton.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_slivers.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chats_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_skeleton.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_slivers.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chats_app_bar.dart';
 
 class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
@@ -18,22 +17,26 @@ class ChatsPage extends StatefulWidget {
   State<ChatsPage> createState() => _ChatsPageState();
 }
 
-class _ChatsPageState extends State<ChatsPage> with RouteAware {
+class _ChatsPageState extends State<ChatsPage>{
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    chatsRouteObserver.subscribe(this, ModalRoute.of(context)!);
+  void initState() {
+    super.initState();
+    GoRouter.of(context).routerDelegate.addListener(_onRouteChanged);
+
   }
 
   @override
   void dispose() {
-    chatsRouteObserver.unsubscribe(this);
+    GoRouter.of(context).routerDelegate.removeListener(_onRouteChanged);
     super.dispose();
   }
 
-  @override
-  void didPopNext() {
-    context.read<ChatsBloc>().add(ChatsRefresh());
+  void _onRouteChanged() {
+    final location = GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+    if (location == Routes.chats.path && mounted) {
+      context.read<ChatsBloc>().add(ChatsRefresh());
+    }
   }
 
   @override

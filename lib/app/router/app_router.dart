@@ -6,7 +6,6 @@ import 'package:lets_talk/common/extension/routes_ext.dart';
 import 'package:lets_talk/feature/calls_history/view/call_details_sheet.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
 import 'package:lets_talk/feature/shell/view/bottom_navigation_shell.dart';
-import 'package:lets_talk/app/router/router_observers.dart';
 import 'package:lets_talk/feature/shell/view/shell_holder.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -39,14 +38,21 @@ class AppRouter {
               StatefulShellBranch(routes: [buildRoute(Routes.contacts)]),
               StatefulShellBranch(routes: [buildRoute(Routes.callsHistory)]),
               StatefulShellBranch(
-                observers: [chatsRouteObserver],
-                routes: [
-                GoRoute(
-                  path: Routes.chats.path,
-                  pageBuilder: (final _, final state) => buildPage(Routes.chats, state),
-                  routes: [buildRoute(Routes.chatDetails)],
-                )
-              ]),
+                  routes: [
+                    GoRoute(
+                      path: Routes.chats.path,
+                      pageBuilder: (final _, final state) =>
+                          buildPage(Routes.chats, state),
+                      routes: [
+                        GoRoute(
+                          path: Routes.chatDetails.path,
+                          parentNavigatorKey: navigatorKey,
+                          pageBuilder: (context, state) =>
+                              buildPage(Routes.chatDetails, state),
+                        )
+                      ],
+                    )
+                  ]),
               StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
             ],
           ),

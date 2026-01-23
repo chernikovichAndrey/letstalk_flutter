@@ -7,8 +7,8 @@ import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_list_skeleton.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_slivers.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_skeleton.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_slivers.dart';
 
 class ForwardMessageSheet extends StatelessWidget {
   const ForwardMessageSheet({super.key});

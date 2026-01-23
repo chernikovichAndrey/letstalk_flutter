@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/app/router/router_observers.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_app_bar.dart';

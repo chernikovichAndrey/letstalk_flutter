@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message_menu_item.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_menu_item.dart';
 
 class MessageMenu extends StatelessWidget {
   final bool isMe;

@@ -30,7 +30,7 @@ class MessageMenu extends StatelessWidget {
         width: 250,
         margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: context.theme.scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(

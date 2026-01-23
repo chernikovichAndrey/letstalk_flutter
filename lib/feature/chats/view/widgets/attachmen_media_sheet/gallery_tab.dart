@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/asset_thumbnail.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class GalleryTab extends StatefulWidget {
@@ -17,11 +20,38 @@ class _GalleryTabState extends State<GalleryTab> {
   final List<AssetEntity> _images = [];
   bool _isLoadingImages = true;
   bool _hasPermission = false;
+  CameraController? _cameraController;
 
   @override
   void initState() {
     super.initState();
     _fetchImages();
+    _initializeCamera();
+  }
+
+  Future<void> _initializeCamera() async {
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isNotEmpty) {
+        _cameraController = CameraController(
+          cameras.first,
+          ResolutionPreset.medium,
+          enableAudio: false,
+        );
+        await _cameraController?.initialize();
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      debugPrint('Error initializing camera: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchImages() async {
@@ -115,7 +145,23 @@ class _GalleryTabState extends State<GalleryTab> {
                     onTap: openCamera,
                     child: Container(
                       color: Colors.grey[800],
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 32),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if (_cameraController != null && _cameraController!.value.isInitialized)
+                            FittedBox(
+                              fit: BoxFit.cover,
+                              child: SizedBox(
+                                width: _cameraController!.value.previewSize?.height ?? 1,
+                                height: _cameraController!.value.previewSize?.width ?? 1,
+                                child: CameraPreview(_cameraController!),
+                              ),
+                            ),
+                          const Center(
+                            child: Icon(Icons.camera_alt, color: Colors.white, size: 32),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }

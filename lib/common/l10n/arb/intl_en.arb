@@ -87,5 +87,6 @@
   "copy": "Copy",
   "edit": "Edit",
   "forward": "Forward",
-  "delete": "Delete"
+  "delete": "Delete",
+  "edited": "edited"
 }

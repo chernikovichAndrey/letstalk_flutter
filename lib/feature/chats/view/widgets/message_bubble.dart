@@ -16,7 +16,6 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final appColors = context.appColors;
     
     final timeFormat = DateFormat('HH:mm');
@@ -65,16 +64,26 @@ class MessageBubble extends StatelessWidget {
             children: [
               Text(
                 message.text ?? '',
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: context.text.bodyMedium?.copyWith(
                   color: textColor,
                 ),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (message.isEdited) ...[
+                    Text(
+                      context.s.edited,
+                      style: context.text.labelSmall?.copyWith(
+                        color: timeColor,
+                        fontSize: 9,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
                   Text(
                     time,
-                    style: theme.textTheme.labelSmall?.copyWith(
+                    style: context.text.labelSmall?.copyWith(
                       color: timeColor,
                       fontSize: 9,
                     ),

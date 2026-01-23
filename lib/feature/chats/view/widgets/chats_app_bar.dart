@@ -1,11 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 
 class ChatsAppBar extends StatelessWidget {
   const ChatsAppBar({super.key});
@@ -31,9 +33,41 @@ class ChatsAppBar extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GlassButton(
-                      icon: Icons.edit,
-                      onTap: () {},
+                    BlocBuilder<ChatsBloc, ChatsState>(
+                      builder: (context, state) {
+                        if (state is ChatsLoaded && state.isSelectionMode) {
+                          return Row(
+                            children: [
+                              GlassButton(
+                                icon: Icons.close,
+                                onTap: () => context
+                                    .read<ChatsBloc>()
+                                    .add(ChatsToggleSelectionMode()),
+                              ),
+                              if (state.selectedChatIds.isNotEmpty) ...[
+                                const SizedBox(width: 4),
+                                GlassButton(
+                                  icon: Icons.delete,
+                                  onTap: () => context
+                                      .read<ChatsBloc>()
+                                      .add(ChatsDeleteSelected()),
+                                ),
+                              ],
+                            ],
+                          );
+                        }
+                        
+                        final hasChats = state is ChatsLoaded && state.chats.isNotEmpty;
+                        
+                        return GlassButton(
+                          icon: Icons.edit,
+                          onTap: hasChats
+                              ? () => context
+                                  .read<ChatsBloc>()
+                                  .add(ChatsToggleSelectionMode())
+                              : () {},
+                        );
+                      },
                     ),
                     Center(
                       child: ClipRRect(

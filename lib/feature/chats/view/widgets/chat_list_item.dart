@@ -7,12 +7,18 @@ class ChatListItem extends StatelessWidget {
   final Chat chat;
   final bool isTyping;
   final VoidCallback? onTap;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final ValueChanged<bool?>? onSelect;
 
   const ChatListItem({
     super.key,
     required this.chat,
     this.isTyping = false,
     this.onTap,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.onSelect,
   });
 
   String _formatTime(String? dateTimeStr) {
@@ -37,8 +43,12 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canSelect = chat.role == 'admin';
+
     return InkWell(
-      onTap: onTap,
+      onTap: isSelectionMode
+          ? (canSelect ? () => onSelect?.call(!isSelected) : null)
+          : onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -117,6 +127,15 @@ class ChatListItem extends StatelessWidget {
                 ],
               ),
             ),
+            if (isSelectionMode && canSelect) ...[
+              const SizedBox(width: 12),
+              Icon(
+                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: isSelected
+                    ? context.color.primary
+                    : context.color.onSurface.withValues(alpha: 0.3),
+              ),
+            ],
           ],
         ),
       ),

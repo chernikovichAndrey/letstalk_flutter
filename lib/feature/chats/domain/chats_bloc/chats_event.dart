@@ -33,3 +33,13 @@ class ChatTypingUpdated extends ChatsEvent {
     required this.isTyping,
   });
 }
+
+class ChatsToggleSelectionMode extends ChatsEvent {}
+
+class ChatsToggleChatSelection extends ChatsEvent {
+  final int chatId;
+
+  ChatsToggleChatSelection(this.chatId);
+}
+
+class ChatsDeleteSelected extends ChatsEvent {}

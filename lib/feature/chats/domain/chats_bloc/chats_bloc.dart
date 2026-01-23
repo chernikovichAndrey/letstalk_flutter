@@ -20,7 +20,63 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsSearch>(_onSearch);
     on<ChatUpdated>(_onChatUpdated);
     on<ChatTypingUpdated>(_onChatTypingUpdated);
+    on<ChatsToggleSelectionMode>(_onToggleSelectionMode);
+    on<ChatsToggleChatSelection>(_onToggleChatSelection);
+    on<ChatsDeleteSelected>(_onDeleteSelected);
     _subscribeToWebSocket();
+  }
+
+  void _onToggleSelectionMode(
+    ChatsToggleSelectionMode event,
+    Emitter<ChatsState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      emit(ChatsLoaded(
+        currentState.chats,
+        typingUsers: currentState.typingUsers,
+        isSelectionMode: !currentState.isSelectionMode,
+        selectedChatIds: {},
+      ));
+    }
+  }
+
+  void _onToggleChatSelection(
+    ChatsToggleChatSelection event,
+    Emitter<ChatsState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      final selectedChatIds = Set<int>.from(currentState.selectedChatIds);
+      if (selectedChatIds.contains(event.chatId)) {
+        selectedChatIds.remove(event.chatId);
+      } else {
+        selectedChatIds.add(event.chatId);
+      }
+      emit(ChatsLoaded(
+        currentState.chats,
+        typingUsers: currentState.typingUsers,
+        isSelectionMode: currentState.isSelectionMode,
+        selectedChatIds: selectedChatIds,
+      ));
+    }
+  }
+
+  Future<void> _onDeleteSelected(
+    ChatsDeleteSelected event,
+    Emitter<ChatsState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      try {
+        for (final chatId in currentState.selectedChatIds) {
+          await _chatsRepository.deleteChat(chatId);
+        }
+        add(ChatsRefresh());
+      } catch (e) {
+        emit(ChatsError(e.toString()));
+      }
+    }
   }
 
   void _subscribeToWebSocket() {
@@ -67,7 +123,12 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         newTypingUsers[event.chatId] = chatTyping;
       }
 
-      emit(ChatsLoaded(currentState.chats, typingUsers: newTypingUsers));
+      emit(ChatsLoaded(
+        currentState.chats,
+        typingUsers: newTypingUsers,
+        isSelectionMode: currentState.isSelectionMode,
+        selectedChatIds: currentState.selectedChatIds,
+      ));
     }
   }
 
@@ -79,7 +140,12 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         final updatedChats = currentState.chats.map((chat) {
           return chat.id == event.chatId ? chatDetails.chat : chat;
         }).toList();
-        emit(ChatsLoaded(updatedChats, typingUsers: currentState.typingUsers));
+        emit(ChatsLoaded(
+          updatedChats,
+          typingUsers: currentState.typingUsers,
+          isSelectionMode: currentState.isSelectionMode,
+          selectedChatIds: currentState.selectedChatIds,
+        ));
       } catch (_) {}
     }
   }

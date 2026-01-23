@@ -1,14 +1,21 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
 
 class ChatDetailsAppBar extends StatelessWidget {
   final String chatTitle;
+  final int? memberId;
 
-  const ChatDetailsAppBar(this.chatTitle, {super.key});
+  const ChatDetailsAppBar({
+    super.key,
+    required this.chatTitle,
+    this.memberId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +40,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                   children: [
                     GlassButton(
                       icon: Icons.arrow_back,
-                      onTap: () => Navigator.of(context).pop(),
+                      onTap: context.pop,
                     ),
                     const SizedBox(width: 8),
                     ClipRRect(
@@ -64,7 +71,11 @@ class ChatDetailsAppBar extends StatelessWidget {
                     const SizedBox(width: 8),
                     GlassButton(
                       icon: Icons.call,
-                      onTap: () {},
+                      onTap: () {
+                        if (memberId != null) {
+                          SelectCallTypeDialog(memberId!, context);
+                        }
+                      },
                     ),
                   ],
                 ),

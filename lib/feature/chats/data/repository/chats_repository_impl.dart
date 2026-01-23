@@ -44,4 +44,9 @@ class ChatsRepositoryImpl implements ChatsRepository {
     );
     return CreateChatResponse.fromJson(response.data);
   }
+
+  @override
+  Future<void> deleteChat(int chatId) async {
+    await _apiService.delete('${ApiConstants.chats}/$chatId');
+  }
 }

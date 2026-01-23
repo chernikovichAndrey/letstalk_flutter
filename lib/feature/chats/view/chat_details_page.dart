@@ -137,6 +137,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               state.messages.isEmpty) {
             return Center(child: Text(state.errorMessage ?? 'Error'));
           }
+          final member = state.members.firstWhere((member) => member.userId != state.currentUser?.id);
 
           return Stack(
             children: [
@@ -157,10 +158,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: ChatDetailsAppBar(state.chat?.title ?? state.members
-                    .firstWhere((member) =>
-                member.userId != state.currentUser?.id)
-                    .phone ?? ''),
+                child: ChatDetailsAppBar(
+                  chatTitle: state.chat?.title ?? member.phone ?? '',
+                  memberId: member.userId,
+                ),
               ),
               const Positioned(bottom: 0, left: 0, right: 0, child: MessageInput()),
             ],

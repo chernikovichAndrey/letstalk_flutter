@@ -97,9 +97,18 @@ class _ChatsPageState extends State<ChatsPage> with RouteAware {
                           final chat = state.chats[index];
                           final isTyping =
                               state.typingUsers[chat.id]?.isNotEmpty ?? false;
+                          final isSelectionMode = state.isSelectionMode;
+                          final isSelected =
+                              state.selectedChatIds.contains(chat.id);
+
                           return ChatListItem(
                             chat: chat,
                             isTyping: isTyping,
+                            isSelectionMode: isSelectionMode,
+                            isSelected: isSelected,
+                            onSelect: (_) => context
+                                .read<ChatsBloc>()
+                                .add(ChatsToggleChatSelection(chat.id)),
                             onTap: () async {
                               context.push(
                                 '${Routes.chats.path}/${Routes.chatDetails.path}'

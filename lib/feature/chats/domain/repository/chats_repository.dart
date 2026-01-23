@@ -6,4 +6,5 @@ abstract class ChatsRepository {
   Future<List<Chat>> searchChats(String query);
   Future<ChatDetailsResponse> getChatDetails(int chatId);
   Future<CreateChatResponse> createPrivateChat(int userId);
+  Future<void> deleteChat(int chatId);
 }

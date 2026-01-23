@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/asset_thumbnail.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -89,31 +90,67 @@ class _GalleryTabState extends State<GalleryTab> {
       }
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(2),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 2,
-        mainAxisSpacing: 2,
-      ),
-      itemCount: _images.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return GestureDetector(
-            onTap: openCamera,
-            child: Container(
-              color: Colors.grey[800],
-              child: const Icon(Icons.camera_alt, color: Colors.white, size: 32),
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(2),
+          sliver: SliverGrid(
+            gridDelegate: SliverQuiltedGridDelegate(
+              crossAxisCount: 3,
+              mainAxisSpacing: 2,
+              crossAxisSpacing: 2,
+              repeatPattern: QuiltedGridRepeatPattern.same,
+              pattern: [
+                const QuiltedGridTile(2, 1),
+                const QuiltedGridTile(1, 1),
+                const QuiltedGridTile(1, 1),
+                const QuiltedGridTile(1, 1),
+                const QuiltedGridTile(1, 1),
+              ],
             ),
-          );
-        }
-        final asset = _images[index - 1];
-        return GestureDetector(
-          onTap: () => onImageTap(asset),
-          child: AssetThumbnail(asset: asset),
-        );
-      },
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                if (index == 0) {
+                  return GestureDetector(
+                    onTap: openCamera,
+                    child: Container(
+                      color: Colors.grey[800],
+                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 32),
+                    ),
+                  );
+                }
+                final asset = _images[index - 1];
+                return GestureDetector(
+                  onTap: () => onImageTap(asset),
+                  child: AssetThumbnail(asset: asset),
+                );
+              },
+              childCount: (_images.length + 1).clamp(0, 5),
+            ),
+          ),
+        ),
+        if (_images.length > 4)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final asset = _images[index + 4];
+                  return GestureDetector(
+                    onTap: () => onImageTap(asset),
+                    child: AssetThumbnail(asset: asset),
+                  );
+                },
+                childCount: _images.length - 4,
+              ),
+            ),
+          ),
+      ],
     );
-
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_bubble.dart';
@@ -88,8 +89,6 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             const SizedBox(height: 60),
-                            // Add padding at top to allow scroll down
-                            // Message Bubble
                             IgnorePointer(
                               child: MessageBubble(
                                 message: widget.message,
@@ -97,7 +96,19 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            MessageMenu(isMe: widget.isMe),
+                            MessageMenu(
+                              isMe: widget.isMe,
+                              onCopy: () async {
+                                await Clipboard.setData(
+                                  ClipboardData(
+                                    text: widget.message.text ?? '',
+                                  ),
+                                );
+                                if (context.mounted) {
+                                  context.pop();
+                                }
+                              },
+                            ),
                             const SizedBox(height: 12),
                           ],
                         ),

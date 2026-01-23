@@ -4,8 +4,13 @@ import 'package:lets_talk/feature/chats/view/widgets/message_menu_item.dart';
 
 class MessageMenu extends StatelessWidget {
   final bool isMe;
+  final VoidCallback? onCopy;
 
-  const MessageMenu({super.key, required this.isMe});
+  const MessageMenu({
+    super.key,
+    required this.isMe,
+    this.onCopy,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,7 @@ class MessageMenu extends StatelessWidget {
             MessageMenuItem(
               title: context.s.copy,
               icon: Icons.file_copy_outlined,
-              onTap: () {},
+              onTap: onCopy ?? () {},
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
             if (isMe) ...[

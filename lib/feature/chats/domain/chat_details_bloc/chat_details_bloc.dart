@@ -27,8 +27,48 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
     on<ChatDetailsErrorReceived>(_onErrorReceived);
     on<ChatDetailsDeleteMessage>(_onDeleteMessage);
+    on<ChatDetailsEditMessage>(_onEditMessage);
+    on<ChatDetailsSetEditingMessage>(_onSetEditingMessage);
+    on<ChatDetailsUpdateMessage>(_onUpdateMessage);
 
     _subscribeToWebSocket();
+  }
+
+  void _onUpdateMessage(
+    ChatDetailsUpdateMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    final messages = state.messages.map((m) {
+      return m.id == event.message.id ? event.message : m;
+    }).toList();
+    emit(state.copyWith(messages: messages));
+  }
+
+  void _onSetEditingMessage(
+    ChatDetailsSetEditingMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    emit(state.copyWith(
+      messageToEdit: event.message,
+      clearMessageToEdit: event.message == null,
+    ));
+  }
+
+  Future<void> _onEditMessage(
+    ChatDetailsEditMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    try {
+      await _chatDetailsRepository.editMessage(event.messageId, event.text);
+      emit(state.copyWith(clearMessageToEdit: true));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   Future<void> _onDeleteMessage(
@@ -85,6 +125,9 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
             case 'message_sent':
               final msg = Message.fromJson(decoded['message']);
               add(ChatDetailsNewMessageReceived(msg));
+            case 'message_edit_success':
+              final msg = Message.fromJson(decoded['message']);
+              add(ChatDetailsUpdateMessage(msg));
             default:
               return;
           }

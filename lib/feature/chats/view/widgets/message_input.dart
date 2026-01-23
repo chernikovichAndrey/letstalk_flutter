@@ -15,6 +15,7 @@ class MessageInput extends StatefulWidget {
 
 class _MessageInputState extends State<MessageInput> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _inputFocus = FocusNode();
   bool _showSendButton = false;
   Timer? _typingTimer;
   bool _isTyping = false;
@@ -60,74 +61,118 @@ class _MessageInputState extends State<MessageInput> {
   void dispose() {
     _typingTimer?.cancel();
     _controller.dispose();
+    _inputFocus.dispose();
     super.dispose();
+  }
+
+  void _onSendMessage(ChatDetailsState state, bool isEditing) {
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      if (isEditing) {
+        context.read<ChatDetailsBloc>().add(
+          ChatDetailsEditMessage(
+            state.messageToEdit!.id,
+            text,
+          ),
+        );
+      } else {
+        context.read<ChatDetailsBloc>().add(
+          ChatDetailsSendMessage(text),
+        );
+      }
+      _controller.clear();
+
+      if (_isTyping) {
+        _isTyping = false;
+        _typingTimer?.cancel();
+        context.read<ChatDetailsBloc>().add(
+          ChatDetailsSendTyping(false),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
 
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-        child: Container(
-          color: appColors.glassBackground,
-          padding: EdgeInsets.only(
-            left: 8,
-            right: 16,
-            top: 8,
-            bottom: MediaQuery.of(context).padding.bottom + 8,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              GlassButton(icon: Icons.attach_file, onTap: () {}),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  minLines: 1,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    hintText: context.s.messageInputHint,
-                    filled: true,
-                    fillColor: appColors.inputSecondaryFill,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    suffixIcon: _showSendButton
-                        ? IconButton(
-                            onPressed: () {
-                              final text = _controller.text.trim();
-                              if (text.isNotEmpty) {
-                                context
-                                    .read<ChatDetailsBloc>()
-                                    .add(ChatDetailsSendMessage(text));
-                                _controller.clear();
-                                
-                                if (_isTyping) {
-                                  _isTyping = false;
-                                  _typingTimer?.cancel();
-                                  context.read<ChatDetailsBloc>().add(ChatDetailsSendTyping(false));
-                                }
-                              }
-                            },
-                            icon: const Icon(Icons.send),
-                            color: appColors.telegramBlue,
-                          )
-                        : null,
-                  ),
-                ),
+    return BlocConsumer<ChatDetailsBloc, ChatDetailsState>(
+      listenWhen: (previous, current) =>
+          previous.messageToEdit != current.messageToEdit,
+      listener: (context, state) {
+        if (state.messageToEdit != null) {
+          _controller.text = state.messageToEdit!.text ?? '';
+          _inputFocus.requestFocus();
+        } else {
+          _controller.clear();
+        }
+      },
+      builder: (context, state) {
+        final isEditing = state.messageToEdit != null;
+
+        return ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+            child: Container(
+              color: appColors.glassBackground,
+              padding: EdgeInsets.only(
+                left: 8,
+                right: 16,
+                top: 8,
+                bottom: MediaQuery.of(context).padding.bottom + 8,
               ),
-            ],
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  GlassButton(
+                    icon: isEditing ? Icons.close : Icons.attach_file,
+                    onTap: () {
+                      if (isEditing) {
+                        context.read<ChatDetailsBloc>().add(
+                          ChatDetailsSetEditingMessage(null),
+                        );
+                      } else {
+                        //TODO: attach
+                      }
+                    }
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      focusNode: _inputFocus,
+                      controller: _controller,
+                      minLines: 1,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        hintText: isEditing
+                            ? context.s.edit
+                            : context.s.messageInputHint,
+                        filled: true,
+                        fillColor: appColors.inputSecondaryFill,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        suffixIcon: _showSendButton
+                            ? IconButton(
+                                onPressed: () => _onSendMessage(state, isEditing),
+                                icon: Icon(Icons.send),
+                                color: appColors.telegramBlue,
+                              )
+                            : null,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

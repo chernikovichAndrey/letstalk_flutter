@@ -61,6 +61,38 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     super.dispose();
   }
 
+  Future<void> _onCopyMessage() async {
+    await Clipboard.setData(
+      ClipboardData(
+        text: widget.message.text ?? '',
+      ),
+    );
+    if (context.mounted) {
+      context.pop();
+    }
+  }
+
+  void _onEditMessage() {
+    if (_canEdit(widget.message)) {
+      context.read<ChatDetailsBloc>().add(
+        ChatDetailsSetEditingMessage(
+            widget.message),
+      );
+      if (context.mounted) {
+        context.pop();
+      }
+    }
+  }
+
+  void _onDeleteMessage() {
+    context.read<ChatDetailsBloc>().add(
+      ChatDetailsDeleteMessage(widget.message.id),
+    );
+    if (context.mounted) {
+      context.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -103,24 +135,9 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                             const SizedBox(height: 8),
                             MessageMenu(
                               isMe: widget.isMe,
-                              onCopy: () async {
-                                await Clipboard.setData(
-                                  ClipboardData(
-                                    text: widget.message.text ?? '',
-                                  ),
-                                );
-                                if (context.mounted) {
-                                  context.pop();
-                                }
-                              },
-                              onDelete: () {
-                                context.read<ChatDetailsBloc>().add(
-                                  ChatDetailsDeleteMessage(widget.message.id),
-                                );
-                                if (context.mounted) {
-                                  context.pop();
-                                }
-                              },
+                              onCopy: _onCopyMessage,
+                              onEdit: _onEditMessage,
+                              onDelete: _onDeleteMessage,
                             ),
                             const SizedBox(height: 12),
                           ],
@@ -135,5 +152,21 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
         ),
       ),
     );
+  }
+
+  bool _canEdit(Message message) {
+    if (!widget.isMe) return false;
+    // Check if message text is empty (already handled by model but good to check)
+    if (message.text == null || message.text!.isEmpty) return false;
+    
+    try {
+      // Handle date format "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
+      final dateStr = message.createdAt.replaceAll(' ', 'T');
+      final date = DateTime.parse(dateStr);
+      final difference = DateTime.now().difference(date);
+      return difference.inHours < 48;
+    } catch (_) {
+      return false;
+    }
   }
 }

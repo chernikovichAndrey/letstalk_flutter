@@ -6,12 +6,14 @@ class MessageMenu extends StatelessWidget {
   final bool isMe;
   final VoidCallback? onCopy;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const MessageMenu({
     super.key,
     required this.isMe,
     this.onCopy,
     this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -38,11 +40,11 @@ class MessageMenu extends StatelessWidget {
               onTap: onCopy ?? () {},
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
-            if (isMe) ...[
+            if (isMe && onEdit != null) ...[
               MessageMenuItem(
                 title: context.s.edit,
                 icon: Icons.edit_note_outlined,
-                onTap: () {},
+                onTap: onEdit!,
               ),
               Divider(
                 height: 1,

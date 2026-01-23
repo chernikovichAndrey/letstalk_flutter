@@ -6,6 +6,10 @@ class Message {
   final String? text;
   final bool read;
   final String createdAt;
+  final bool isEdited;
+  final String? originalText;
+  final String? editedAt;
+  final int editCount;
 
   Message({
     required this.id,
@@ -15,6 +19,10 @@ class Message {
     this.text,
     required this.read,
     required this.createdAt,
+    this.isEdited = false,
+    this.originalText,
+    this.editedAt,
+    this.editCount = 0,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -26,6 +34,10 @@ class Message {
       text: json['text'] as String?,
       read: json['read'] as bool? ?? false,
       createdAt: json['created_at'] as String? ?? '',
+      isEdited: json['is_edited'] as bool? ?? false,
+      originalText: json['original_text'] as String?,
+      editedAt: json['edited_at'] as String?,
+      editCount: int.tryParse(json['edit_count'].toString()) ?? 0,
     );
   }
 
@@ -37,6 +49,10 @@ class Message {
     String? text,
     bool? read,
     String? createdAt,
+    bool? isEdited,
+    String? originalText,
+    String? editedAt,
+    int? editCount,
   }) {
     return Message(
       id: id ?? this.id,
@@ -46,6 +62,10 @@ class Message {
       text: text ?? this.text,
       read: read ?? this.read,
       createdAt: createdAt ?? this.createdAt,
+      isEdited: isEdited ?? this.isEdited,
+      originalText: originalText ?? this.originalText,
+      editedAt: editedAt ?? this.editedAt,
+      editCount: editCount ?? this.editCount,
     );
   }
 }

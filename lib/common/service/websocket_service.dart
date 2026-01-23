@@ -126,4 +126,12 @@ class WebSocketService {
       "message_id": messageId
     });
   }
+
+  void editMessage(int messageId, String newText) {
+    send({
+      "type": "edit_message",
+      "message_id": messageId,
+      "new_text": newText,
+    });
+  }
 }

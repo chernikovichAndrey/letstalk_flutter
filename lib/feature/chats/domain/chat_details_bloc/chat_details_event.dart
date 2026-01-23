@@ -37,3 +37,19 @@ class ChatDetailsDeleteMessage extends ChatDetailsEvent {
   final int messageId;
   ChatDetailsDeleteMessage(this.messageId);
 }
+
+class ChatDetailsEditMessage extends ChatDetailsEvent {
+  final int messageId;
+  final String text;
+  ChatDetailsEditMessage(this.messageId, this.text);
+}
+
+class ChatDetailsSetEditingMessage extends ChatDetailsEvent {
+  final Message? message;
+  ChatDetailsSetEditingMessage(this.message);
+}
+
+class ChatDetailsUpdateMessage extends ChatDetailsEvent {
+  final Message message;
+  ChatDetailsUpdateMessage(this.message);
+}

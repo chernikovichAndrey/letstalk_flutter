@@ -10,6 +10,7 @@ class ChatDetailsState {
   final UserModel? currentUser;
   final Chat? chat;
   final List<ChatMember> members;
+  final Message? messageToEdit;
 
   const ChatDetailsState({
     this.status = ChatDetailsStatus.initial,
@@ -19,6 +20,7 @@ class ChatDetailsState {
     this.currentUser,
     this.chat,
     this.members = const [],
+    this.messageToEdit,
   });
 
   ChatDetailsState copyWith({
@@ -29,6 +31,8 @@ class ChatDetailsState {
     UserModel? currentUser,
     Chat? chat,
     List<ChatMember>? members,
+    Message? messageToEdit,
+    bool clearMessageToEdit = false,
   }) {
     return ChatDetailsState(
       status: status ?? this.status,
@@ -38,6 +42,7 @@ class ChatDetailsState {
       currentUser: currentUser ?? this.currentUser,
       chat: chat ?? this.chat,
       members: members ?? this.members,
+      messageToEdit: clearMessageToEdit ? null : (messageToEdit ?? this.messageToEdit),
     );
   }
 }

@@ -53,6 +53,11 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
   }
 
   @override
+  Future<void> editMessage(int messageId, String text) async {
+    _wsService.editMessage(messageId, text);
+  }
+
+  @override
   Future<ChatDetailsResponse> getChatDetails(int chatId) async {
     final response = await _apiService.get(
       '${ApiConstants.chats}/$chatId',

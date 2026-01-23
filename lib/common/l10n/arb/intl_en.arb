@@ -83,5 +83,9 @@
   "phone": "Phone",
   "callDirection": "Direction",
   "callDirectionIncoming": "Incoming",
-  "callDirectionOutgoing": "Outgoing"
+  "callDirectionOutgoing": "Outgoing",
+  "copy": "Copy",
+  "edit": "Edit",
+  "forward": "Forward",
+  "delete": "Delete"
 }

@@ -8,6 +8,7 @@ extension BuildContextExt on BuildContext {
   double get h => MediaQuery.sizeOf(this).height;
   ThemeData get theme => Theme.of(this);
   TextTheme get text => Theme.of(this).textTheme;
+  IconThemeData get icon => Theme.of(this).iconTheme;
   ColorScheme get color => Theme.of(this).colorScheme;
   AppColorsExtension get appColors => Theme.of(this).extension<AppColorsExtension>()!;
   AppGradientsExtension get appGradients => Theme.of(this).extension<AppGradientsExtension>()!;

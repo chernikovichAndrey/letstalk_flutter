@@ -55,5 +55,9 @@
   "phone": "Телефон",
   "callDirection": "Направление",
   "callDirectionIncoming": "Входящий",
-  "callDirectionOutgoing": "Исходящий"
+  "callDirectionOutgoing": "Исходящий",
+  "copy": "Скопировать",
+  "edit": "Изменить",
+  "forward": "Переслать",
+  "delete": "Удалить"
 }

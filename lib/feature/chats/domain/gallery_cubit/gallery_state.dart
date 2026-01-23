@@ -10,8 +10,9 @@ final class GalleryLoading extends GalleryState {}
 
 final class GalleryLoaded extends GalleryState {
   final List<AssetEntity> images;
+  final bool hasReachedMax;
 
-  const GalleryLoaded(this.images);
+  const GalleryLoaded(this.images, {this.hasReachedMax = false});
 }
 
 final class GalleryPermissionDenied extends GalleryState {}

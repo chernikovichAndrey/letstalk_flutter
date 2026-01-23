@@ -5,7 +5,13 @@ import 'gallery_state.dart';
 class GalleryCubit extends Cubit<GalleryState> {
   GalleryCubit() : super(GalleryInitial());
 
+  int _page = 0;
+  static const int _size = 80;
+  AssetPathEntity? _currentPath;
+  bool _isFetchingMore = false;
+
   Future<void> loadImages() async {
+    if (state is GalleryLoading) return;
     emit(GalleryLoading());
     try {
       final PermissionState ps = await PhotoManager.requestPermissionExtend();
@@ -14,20 +20,63 @@ class GalleryCubit extends Cubit<GalleryState> {
           type: RequestType.image,
         );
         if (paths.isNotEmpty) {
-          // Fetch recently added images from the first album (usually "Recent")
-          final List<AssetEntity> entities = await paths[0].getAssetListPaged(
-            page: 0,
-            size: 80,
+          _currentPath = paths[0];
+          _page = 0;
+          
+          final List<AssetEntity> entities = await _currentPath!.getAssetListPaged(
+            page: _page,
+            size: _size,
           );
-          emit(GalleryLoaded(entities));
+          
+          emit(GalleryLoaded(
+            entities,
+            hasReachedMax: entities.length < _size,
+          ));
         } else {
-          emit(const GalleryLoaded([]));
+          emit(const GalleryLoaded([], hasReachedMax: true));
         }
       } else {
         emit(GalleryPermissionDenied());
       }
     } catch (e) {
       emit(GalleryError(e.toString()));
+    }
+  }
+
+  Future<void> loadMoreImages() async {
+    if (state is! GalleryLoaded) return;
+    if (_isFetchingMore) return;
+    
+    final currentState = state as GalleryLoaded;
+    if (currentState.hasReachedMax) return;
+    if (_currentPath == null) return;
+
+    _isFetchingMore = true;
+
+    try {
+      final nextPage = _page + 1;
+      final List<AssetEntity> newEntities = await _currentPath!.getAssetListPaged(
+        page: nextPage,
+        size: _size,
+      );
+
+      _page = nextPage;
+      _isFetchingMore = false;
+
+      if (newEntities.isEmpty) {
+        emit(GalleryLoaded(
+          currentState.images,
+          hasReachedMax: true,
+        ));
+      } else {
+        emit(GalleryLoaded(
+          currentState.images + newEntities,
+          hasReachedMax: newEntities.length < _size,
+        ));
+      }
+    } catch (e) {
+      _isFetchingMore = false;
+      // Keep previous state on error
     }
   }
 }

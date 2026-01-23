@@ -112,6 +112,14 @@ class WebSocketService {
     });
   }
 
+  void forwardMessage(int messageId, int targetChatId) {
+    send({
+      'type': 'forward_message',
+      'message_id': messageId,
+      'target_chat_id': targetChatId,
+    });
+  }
+
   void authenticate(String token) {
     send({
       'type': 'auth',

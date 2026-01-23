@@ -10,10 +10,12 @@ import 'package:lets_talk/feature/chats/view/widgets/chat_list_item.dart';
 class ChatSlivers extends StatefulWidget {
   final ChatsState state;
   final ValueChanged<int> onSelectChat;
+  final int? forwardChatId;
 
   const ChatSlivers({
     required this.state,
     required this.onSelectChat,
+    this.forwardChatId,
     super.key,
   });
 
@@ -65,7 +67,7 @@ class _ChatSliversState extends State<ChatSlivers> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final chat = state.chats[index];
+                  final chat = state.chats.where((chat) => chat.id != widget.forwardChatId).toList()[index];
                   final isTyping =
                       state.typingUsers[chat.id]?.isNotEmpty ?? false;
                   final isSelectionMode = state.isSelectionMode;
@@ -81,7 +83,7 @@ class _ChatSliversState extends State<ChatSlivers> {
                     onTap: () => widget.onSelectChat(chat.id),
                   );
                 },
-                childCount: state.chats.length,
+                childCount: state.chats.length - (widget.forwardChatId == null ? 0 : 1),
               ),
             )
         else

@@ -88,5 +88,6 @@
   "edit": "Edit",
   "forward": "Forward",
   "delete": "Delete",
-  "edited": "edited"
+  "edited": "edited",
+  "messageForwarded": "Message forwarded"
 }

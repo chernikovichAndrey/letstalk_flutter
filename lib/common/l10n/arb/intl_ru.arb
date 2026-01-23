@@ -61,5 +61,12 @@
   "forward": "Переслать",
   "delete": "Удалить",
   "edited": "изменено",
-  "messageForwarded": "Сообщение переслано"
+  "messageForwarded": "Сообщение переслано",
+  "gallery": "Галерея",
+  "file": "Файл",
+  "location": "Геопозиция",
+  "contact": "Контакт",
+  "selectFromGallery": "Выбрать из галереи",
+  "selectFromFiles": "Выбрать из файлов",
+  "recentFiles": "Недавние файлы"
 }

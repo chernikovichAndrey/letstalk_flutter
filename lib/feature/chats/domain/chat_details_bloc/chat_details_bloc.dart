@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chat_details_repository.dart';
+import 'package:lets_talk/feature/chats/domain/repository/media_repository.dart';
 import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 
 part 'chat_details_event.dart';
@@ -14,24 +17,39 @@ part 'chat_details_state.dart';
 
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final ChatDetailsRepository _chatDetailsRepository;
+  final MediaRepository _mediaRepository;
   final WebSocketService _wsService = WebSocketService();
   StreamSubscription? _wsSubscription;
   static const int _limit = 20;
 
-  ChatDetailsBloc(this._chatDetailsRepository)
-    : super(const ChatDetailsState()) {
+  ChatDetailsBloc(
+    this._chatDetailsRepository,
+    this._mediaRepository,
+  ) : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
     on<ChatDetailsSendMessage>(_onSendMessage);
+    on<ChatDetailsSendMedia>(_onSendMedia);
     on<ChatDetailsSendTyping>(_onSendTyping);
     on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
     on<ChatDetailsErrorReceived>(_onErrorReceived);
     on<ChatDetailsDeleteMessage>(_onDeleteMessage);
     on<ChatDetailsEditMessage>(_onEditMessage);
     on<ChatDetailsSetEditingMessage>(_onSetEditingMessage);
+    on<ChatDetailsSetAttachedMedia>(_onSetAttachedMedia);
     on<ChatDetailsUpdateMessage>(_onUpdateMessage);
 
     _subscribeToWebSocket();
+  }
+
+  void _onSetAttachedMedia(
+    ChatDetailsSetAttachedMedia event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    emit(state.copyWith(
+      attachedMedia: event.media,
+      clearAttachedMedia: event.media == null,
+    ));
   }
 
   void _onUpdateMessage(
@@ -155,7 +173,13 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     if (chatId == null) return;
 
     try {
-      await _chatDetailsRepository.sendMessage(chatId, event.text);
+      await _chatDetailsRepository.sendMessage(
+        chatId,
+        event.text,
+        mediaId: state.attachedMedia?.id,
+        messageType: state.attachedMedia?.type,
+      );
+      emit(state.copyWith(clearAttachedMedia: true));
     } catch (e) {
       emit(
         state.copyWith(
@@ -164,6 +188,43 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         ),
       );
     }
+  }
+
+  Future<void> _onSendMedia(
+    ChatDetailsSendMedia event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    final chatId = state.chat?.id;
+    if (chatId == null) return;
+
+    try {
+      final fileType = _getFileType(event.file.path);
+      final media = await _mediaRepository.uploadMedia(
+        file: event.file,
+        chatId: chatId,
+        fileType: fileType,
+      );
+      emit(state.copyWith(attachedMedia: media));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  String _getFileType(String path) {
+    final ext = path.split('.').last.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].contains(ext)) {
+      return 'image';
+    } else if (['mp4', 'mov', 'avi', 'mkv'].contains(ext)) {
+      return 'video';
+    } else if (['mp3', 'wav', 'aac', 'm4a'].contains(ext)) {
+      return 'audio';
+    }
+    return 'file';
   }
 
   Future<void> _onLoad(

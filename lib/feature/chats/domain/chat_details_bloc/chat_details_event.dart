@@ -18,6 +18,11 @@ class ChatDetailsSendMessage extends ChatDetailsEvent {
   ChatDetailsSendMessage(this.text);
 }
 
+class ChatDetailsSendMedia extends ChatDetailsEvent {
+  final File file;
+  ChatDetailsSendMedia(this.file);
+}
+
 class ChatDetailsSendTyping extends ChatDetailsEvent {
   final bool isTyping;
   ChatDetailsSendTyping(this.isTyping);
@@ -42,6 +47,11 @@ class ChatDetailsEditMessage extends ChatDetailsEvent {
   final int messageId;
   final String text;
   ChatDetailsEditMessage(this.messageId, this.text);
+}
+
+class ChatDetailsSetAttachedMedia extends ChatDetailsEvent {
+  final Media? media;
+  ChatDetailsSetAttachedMedia(this.media);
 }
 
 class ChatDetailsSetEditingMessage extends ChatDetailsEvent {

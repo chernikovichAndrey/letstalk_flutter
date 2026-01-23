@@ -89,5 +89,12 @@
   "forward": "Forward",
   "delete": "Delete",
   "edited": "edited",
-  "messageForwarded": "Message forwarded"
+  "messageForwarded": "Message forwarded",
+  "gallery": "Gallery",
+  "file": "File",
+  "location": "Location",
+  "contact": "Contact",
+  "selectFromGallery": "Select from Gallery",
+  "selectFromFiles": "Select from Files",
+  "recentFiles": "Recent files"
 }

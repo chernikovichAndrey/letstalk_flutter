@@ -11,6 +11,7 @@ class ChatDetailsState {
   final Chat? chat;
   final List<ChatMember> members;
   final Message? messageToEdit;
+  final Media? attachedMedia;
 
   const ChatDetailsState({
     this.status = ChatDetailsStatus.initial,
@@ -21,6 +22,7 @@ class ChatDetailsState {
     this.chat,
     this.members = const [],
     this.messageToEdit,
+    this.attachedMedia,
   });
 
   ChatDetailsState copyWith({
@@ -33,6 +35,8 @@ class ChatDetailsState {
     List<ChatMember>? members,
     Message? messageToEdit,
     bool clearMessageToEdit = false,
+    Media? attachedMedia,
+    bool clearAttachedMedia = false,
   }) {
     return ChatDetailsState(
       status: status ?? this.status,
@@ -43,6 +47,7 @@ class ChatDetailsState {
       chat: chat ?? this.chat,
       members: members ?? this.members,
       messageToEdit: clearMessageToEdit ? null : (messageToEdit ?? this.messageToEdit),
+      attachedMedia: clearAttachedMedia ? null : (attachedMedia ?? this.attachedMedia),
     );
   }
 }

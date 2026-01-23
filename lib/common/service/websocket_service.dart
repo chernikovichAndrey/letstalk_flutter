@@ -96,12 +96,22 @@ class WebSocketService {
     }
   }
 
-  void sendMessage(int chatId, String text) {
-    send({
+  void sendMessage(
+    int chatId,
+    String text, {
+    String messageType = 'text',
+    int? mediaId,
+  }) {
+    final Map<String, dynamic> data = {
       'type': 'message',
       'chat_id': chatId,
       'text': text,
-    });
+      'message_type': messageType,
+    };
+    if (mediaId != null) {
+      data['media_id'] = mediaId;
+    }
+    send(data);
   }
 
   void sendTyping(int chatId, bool isTyping) {

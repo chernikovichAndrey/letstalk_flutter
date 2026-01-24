@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/model/call_signaling_type.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
 
+@LazySingleton(as: CallRepository)
 class CallRepositoryImpl implements CallRepository {
-  final WebSocketService _wsService = WebSocketService();
+  final WebSocketService _wsService;
+
+  CallRepositoryImpl(this._wsService);
 
   @override
   Stream<Map<String, dynamic>> get signalingStream => _wsService.signalingStream;

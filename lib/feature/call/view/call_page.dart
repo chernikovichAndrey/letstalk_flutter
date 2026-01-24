@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
-import 'package:lets_talk/common/widget/toasts.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/call/view/widgets/call_action_button.dart';
 
@@ -24,7 +24,7 @@ class _CallPageState extends State<CallPage> {
   bool _isMuted = false;
   Timer? _callTimer;
   Duration _duration = Duration.zero;
-  final _webRTCService = WebRTCService();
+  final _webRTCService = getIt<WebRTCService>();
 
   @override
   void initState() {

@@ -1,16 +1,20 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl extends AuthRepository {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
   static const String _tokenKey = 'auth_token';
   static const String _didKey = 'device_id';
+
+  AuthRepositoryImpl(this._apiService);
 
   @override
   Future<void> sendPhone(String countryCode, String phoneNumber) async {

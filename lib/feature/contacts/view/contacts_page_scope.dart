@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
-import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
-import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,18 +26,10 @@ class ContactsPageScope extends StatelessWidget {
             prefs.getBool('contacts_synced_first_time') ?? false;
 
         return BlocProvider(
-          create: (context) {
-            final bloc = ContactsBloc(
-              ContactsRepositoryImpl(),
-              ChatsRepositoryImpl(),
-            );
-            if (!contactsSynced) {
-              bloc.add(ContactsSyncPhoneContacts());
-            } else {
-              bloc.add(ContactsLoad());
-            }
-            return bloc;
-          },
+          create: (context) => getIt<ContactsBloc>()
+            ..add(
+              !contactsSynced ? ContactsSyncPhoneContacts() : ContactsLoad()
+            ),
           child: BlocListener<ContactsBloc, ContactsState>(
             listener: (context, state) {
               if (state is ContactsLoaded && !contactsSynced) {

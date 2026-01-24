@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
 import 'package:lets_talk/feature/calls_history/domain/repository/calls_history_repository.dart';
 
 part 'call_details_state.dart';
 
+@injectable
 class CallDetailsCubit extends Cubit<CallDetailsState> {
   final CallsHistoryRepository repository;
 

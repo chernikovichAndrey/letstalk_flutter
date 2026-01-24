@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/feature/calls_history/data/repository/calls_repository_impl.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/calls_history/domain/call_details_cubit/call_details_cubit.dart';
 
 import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
@@ -21,7 +20,7 @@ class CallDetailsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          CallDetailsCubit(CallsRepositoryImpl())..loadCallDetails(callId),
+          getIt<CallDetailsCubit>()..loadCallDetails(callId),
       child: const _CallDetailsView(),
     );
   }

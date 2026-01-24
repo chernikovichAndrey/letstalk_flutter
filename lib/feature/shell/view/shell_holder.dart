@@ -9,7 +9,7 @@ import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/call/view/widgets/incoming_call_banner.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:lets_talk/app/router/routes.dart';
-import 'package:lets_talk/common/l10n/generated/l10n.dart';
+import 'package:lets_talk/di/injection.dart';
 
 class ShellHolder extends StatelessWidget {
   const ShellHolder({required this.child, super.key});
@@ -24,7 +24,7 @@ class ShellHolder extends StatelessWidget {
             listener: (context, state) {
               if (state is AuthAuthenticated) {
                 if (state.token != null) {
-                  WebSocketService().authenticate(state.token!);
+                  getIt<WebSocketService>().authenticate(state.token!);
                 }
                 context.read<ProfileBloc>().add(ProfileLoadEvent());
                 context.go(Routes.contacts.path);

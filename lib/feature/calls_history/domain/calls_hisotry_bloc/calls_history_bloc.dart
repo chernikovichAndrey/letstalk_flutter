@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
 import 'package:lets_talk/feature/calls_history/domain/repository/calls_history_repository.dart';
 
 part 'calls_history_event.dart';
 part 'calls_history_state.dart';
 
+@injectable
 class CallsHistoryBloc extends Bloc<CallsHistoryEvent, CallsHistoryState> {
   final CallsHistoryRepository callsRepository;
 

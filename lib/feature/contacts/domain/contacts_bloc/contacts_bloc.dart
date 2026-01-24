@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/phone_contacts_service.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
@@ -9,6 +10,7 @@ import 'package:lets_talk/feature/contacts/domain/repository/contacts_repository
 part 'contacts_event.dart';
 part 'contacts_state.dart';
 
+@injectable
 class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   final ContactsRepository _contactsRepository;
   final ChatsRepository _chatsRepository;
@@ -16,10 +18,9 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
 
   ContactsBloc(
     this._contactsRepository,
-    this._chatsRepository, {
-    PhoneContactsService? phoneContactsService,
-  })  : _phoneContactsService = phoneContactsService ?? PhoneContactsService(),
-        super(ContactsInitial()) {
+    this._chatsRepository,
+    this._phoneContactsService,
+  )  : super(ContactsInitial()) {
     on<ContactsLoad>(_onLoad);
     on<ContactsRefresh>(_onRefresh);
     on<ContactsSearch>(_onSearch);

@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
-import 'package:meta/meta.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+@singleton
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
   
@@ -54,5 +56,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authRepository.deleteToken();
       emit(AuthUnauthenticated());
     });
+  }
+
+  @postConstruct
+  void init() {
+    add(AuthCheckStatus());
   }
 }

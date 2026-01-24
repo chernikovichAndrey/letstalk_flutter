@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/service/ringtone_service.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
@@ -9,19 +10,22 @@ import 'package:lets_talk/feature/call/domain/model/signaling_event.dart';
 part 'call_event.dart';
 part 'call_state.dart';
 
+@singleton
 class CallBloc extends Bloc<CallEvent, CallState> {
   final CallRepository _callRepository;
-  final WebRTCService _webRTCService = WebRTCService();
-  final RingtoneService _ringtoneService = RingtoneService();
+  final WebRTCService _webRTCService;
+  final RingtoneService _ringtoneService;
   StreamSubscription? _signalingSubscription;
 
   // Track current call details internally for callbacks
   int? _currentCallId;
   int? _currentTargetUserId;
 
-  CallBloc({required CallRepository callRepository})
-      : _callRepository = callRepository,
-        super(CallInitial()) {
+  CallBloc(
+    this._callRepository,
+    this._webRTCService,
+    this._ringtoneService,
+  ) : super(CallInitial()) {
     on<CallInitiated>(_onCallInitiated);
     on<CallIncomingReceived>(_onCallIncomingReceived);
     on<CallOfferedReceived>(_onCallOfferedReceived);
@@ -29,7 +33,10 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     on<CallRejected>(_onCallRejected);
     on<CallHangup>(_onCallHangup);
     on<CallSignalingReceived>(_onCallSignalingReceived);
+  }
 
+  @postConstruct
+  void init() {
     _init();
   }
 

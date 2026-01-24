@@ -1,10 +1,14 @@
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
 import 'package:lets_talk/feature/calls_history/domain/repository/calls_history_repository.dart';
 
+@LazySingleton(as: CallsHistoryRepository)
 class CallsRepositoryImpl implements CallsHistoryRepository {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
+
+  CallsRepositoryImpl(this._apiService);
 
   @override
   Future<List<CallHistory>> getCalls() async {

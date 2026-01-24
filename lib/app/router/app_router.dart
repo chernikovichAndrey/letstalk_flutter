@@ -5,7 +5,6 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/routes_ext.dart';
 import 'package:lets_talk/feature/calls_history/view/call_details_sheet.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
-import 'package:lets_talk/feature/chats/view/full_screen_media_sheet.dart';
 import 'package:lets_talk/feature/shell/view/bottom_navigation_shell.dart';
 import 'package:lets_talk/feature/shell/view/shell_holder.dart';
 

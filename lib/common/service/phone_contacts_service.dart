@@ -1,10 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
 import '../../feature/contacts/data/model/contact_model.dart';
 
+@singleton
 class PhoneContactsService {
-  static final PhoneContactsService _instance = PhoneContactsService._internal();
-  factory PhoneContactsService() => _instance;
-  PhoneContactsService._internal();
+  PhoneContactsService();
 
   Future<bool> requestPermission() async {
     return await fc.FlutterContacts.requestPermission();

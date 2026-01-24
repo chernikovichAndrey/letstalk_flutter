@@ -9,9 +9,12 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 //   await Firebase.initializeApp();
 // }
 
+import 'package:lets_talk/di/injection.dart';
+
 void main() async {
   await dotenv.load(fileName: '.env');
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);

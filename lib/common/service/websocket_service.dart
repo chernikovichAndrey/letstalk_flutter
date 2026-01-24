@@ -2,32 +2,28 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:injectable/injectable.dart';
+import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/model/call_signaling_type.dart';
 import 'package:logger/logger.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
+@singleton
 class WebSocketService {
-  static final WebSocketService _instance = WebSocketService._internal();
-  factory WebSocketService() => _instance;
-  WebSocketService._internal();
+  WebSocketService();
 
   WebSocketChannel? _channel;
-  Stream<dynamic>? _broadcastStream;
+  final StreamController<dynamic> _controller = StreamController<dynamic>.broadcast();
+  StreamSubscription? _socketSubscription;
   final Logger _logger = Logger();
 
-  Stream<dynamic> get stream {
-    if (_channel == null) {
-      throw Exception('WebSocket connection not established');
-    }
-    return _broadcastStream!;
-  }
+  Stream<dynamic> get stream => _controller.stream;
 
   Stream<Map<String, dynamic>> get signalingStream {
     return stream.transform<Map<String, dynamic>>(
       StreamTransformer.fromHandlers(
         handleData: (data, sink) {
-          print('11111 $data');
           try {
             final Map<String, dynamic> map;
             if (data is String) {
@@ -52,16 +48,31 @@ class WebSocketService {
     ).asBroadcastStream();
   }
 
-  void connect(String url, {Iterable<String>? protocols}) {
+  void connect({Iterable<String>? protocols}) {
     if (_channel != null) return;
 
     try {
       _channel = WebSocketChannel.connect(
-        Uri.parse(url),
+        Uri.parse(Env.wsUrl),
         protocols: protocols,
       );
-      _broadcastStream = _channel!.stream.asBroadcastStream();
-      _logger.i('WebSocket connected to $url');
+      
+      _socketSubscription = _channel!.stream.listen(
+        (data) {
+          _controller.add(data);
+        },
+        onError: (error) {
+          _logger.e('WebSocket stream error: $error');
+          _controller.addError(error);
+        },
+        onDone: () {
+          _logger.i('WebSocket stream closed');
+          _channel = null;
+          _socketSubscription = null;
+        },
+      );
+      
+      _logger.i('WebSocket connected to ${Env.wsUrl}');
     } catch (e) {
       _logger.e('WebSocket connection error: $e');
       rethrow;
@@ -73,12 +84,14 @@ class WebSocketService {
     String? closeReason,
   }) async {
     if (_channel != null) {
+      await _socketSubscription?.cancel();
+      _socketSubscription = null;
+
       await _channel!.sink.close(
         closeCode ?? status.goingAway,
         closeReason,
       );
       _channel = null;
-      _broadcastStream = null;
       _logger.i('WebSocket disconnected');
     }
   }

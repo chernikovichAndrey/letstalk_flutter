@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
 typedef OnIceCandidateCallback = void Function(RTCIceCandidate candidate);
@@ -8,10 +9,9 @@ typedef OnConnectionStateChangeCallback = void Function(RTCPeerConnectionState s
 
 enum CallType { audio, video }
 
+@singleton
 class WebRTCService {
-  static final WebRTCService _instance = WebRTCService._internal();
-  factory WebRTCService() => _instance;
-  WebRTCService._internal();
+  WebRTCService();
 
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;

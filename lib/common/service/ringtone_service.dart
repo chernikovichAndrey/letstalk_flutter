@@ -1,10 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
+@singleton
 class RingtoneService {
-  static final RingtoneService _instance = RingtoneService._internal();
-  factory RingtoneService() => _instance;
-  RingtoneService._internal();
+  RingtoneService();
 
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Logger _logger = Logger();

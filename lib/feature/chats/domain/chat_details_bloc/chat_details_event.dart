@@ -91,6 +91,11 @@ class ChatDetailsSetEditingMessage extends ChatDetailsEvent {
   ChatDetailsSetEditingMessage(this.message);
 }
 
+class ChatDetailsReplyToMessage extends ChatDetailsEvent {
+  final Message? message;
+  ChatDetailsReplyToMessage(this.message);
+}
+
 class ChatDetailsUpdateMessage extends ChatDetailsEvent {
   final Message message;
   ChatDetailsUpdateMessage(this.message);

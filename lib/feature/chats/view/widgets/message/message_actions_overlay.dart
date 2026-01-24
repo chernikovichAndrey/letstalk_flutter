@@ -151,7 +151,12 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
   }
 
   void _onReply() {
-
+    context.read<ChatDetailsBloc>().add(
+      ChatDetailsReplyToMessage(widget.message),
+    );
+    if (context.mounted) {
+      context.pop();
+    }
   }
 
   @override

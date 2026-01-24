@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble_info.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_image_attach_thumbnail.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_actions_overlay.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_document_attach.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_reply.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -48,6 +52,11 @@ class MessageBubble extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  if (message.replyTo != null)
+                    MessageReplay(
+                      replyTo: message.replyTo!,
+                      isMe: isMe,
+                    ),
                   if (message.messageType == 'image' && message.media?.thumbnailUrl != null)
                     MessageImageAttachThumbnail(
                       thumbnailUrl: message.media!.thumbnailUrl!,

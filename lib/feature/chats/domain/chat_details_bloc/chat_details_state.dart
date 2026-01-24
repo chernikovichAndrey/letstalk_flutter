@@ -11,6 +11,7 @@ class ChatDetailsState {
   final Chat? chat;
   final List<ChatMember> members;
   final Message? messageToEdit;
+  final Message? replyMessage;
   final Media? attachedMedia;
   final int? downloadingMessageId;
   final double? downloadProgress;
@@ -25,6 +26,7 @@ class ChatDetailsState {
     this.chat,
     this.members = const [],
     this.messageToEdit,
+    this.replyMessage,
     this.attachedMedia,
     this.downloadingMessageId,
     this.downloadProgress,
@@ -41,6 +43,8 @@ class ChatDetailsState {
     List<ChatMember>? members,
     Message? messageToEdit,
     bool clearMessageToEdit = false,
+    Message? replyMessage,
+    bool clearReplyMessage = false,
     Media? attachedMedia,
     bool clearAttachedMedia = false,
     int? downloadingMessageId,
@@ -59,6 +63,7 @@ class ChatDetailsState {
       chat: chat ?? this.chat,
       members: members ?? this.members,
       messageToEdit: clearMessageToEdit ? null : (messageToEdit ?? this.messageToEdit),
+      replyMessage: clearReplyMessage ? null : (replyMessage ?? this.replyMessage),
       attachedMedia: clearAttachedMedia ? null : (attachedMedia ?? this.attachedMedia),
       downloadingMessageId: clearDownloadingMessageId ? null : (downloadingMessageId ?? this.downloadingMessageId),
       downloadProgress: clearDownloadProgress ? null : (downloadProgress ?? this.downloadProgress),

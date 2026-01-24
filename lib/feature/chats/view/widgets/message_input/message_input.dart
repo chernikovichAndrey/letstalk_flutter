@@ -6,6 +6,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
+import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/attachment_bottom_sheet.dart';
 
@@ -114,10 +115,7 @@ class _MessageInputState extends State<MessageInput> {
       builder: (context, state) {
         final isEditing = state.messageToEdit != null;
         final hasAttachment = state.attachedMedia != null;
-        // We rely on _showSendButton for text changes, but for attachment we use state.
-        
-        // We need to determine if send button should be shown.
-        // It should be shown if _showSendButton (text > 0) OR hasAttachment.
+        final hasReply = state.replyMessage != null;
         final canSend = _showSendButton || hasAttachment;
 
         return ClipRRect(
@@ -134,6 +132,8 @@ class _MessageInputState extends State<MessageInput> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (hasReply)
+                    _buildReplyPreview(context, state.replyMessage!),
                   if (hasAttachment)
                     _buildAttachmentPreview(context, state.attachedMedia!),
                   Row(
@@ -201,6 +201,64 @@ class _MessageInputState extends State<MessageInput> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildReplyPreview(BuildContext context, Message message) {
+    final content = (message.text != null && message.text!.isNotEmpty)
+        ? message.text!
+        : message.messageType;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.black12,
+        borderRadius: BorderRadius.circular(12),
+        border: Border(
+          left: BorderSide(
+            color: context.appColors.telegramBlue,
+            width: 4,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.reply, color: Colors.white70, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.s.reply,
+                  style: TextStyle(
+                    color: context.appColors.telegramBlue,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  content,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.white70, size: 20),
+            onPressed: () {
+              context.read<ChatDetailsBloc>().add(
+                ChatDetailsReplyToMessage(null),
+              );
+            },
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+        ],
+      ),
     );
   }
 

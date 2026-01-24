@@ -38,12 +38,36 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
   }
 
   @override
-  Future<void> sendMessage(int chatId, String text, {int? mediaId, String? messageType}) async {
-    WebSocketService().sendMessage(
-      chatId,
-      text,
-      mediaId: mediaId,
-      messageType: messageType ?? 'text',
+  Future<void> sendMessage(
+    int chatId,
+    String text, {
+    int? mediaId,
+    String? messageType,
+    int? replyToMessageId,
+  }) async {
+    final Map<String, dynamic> data = {
+      'chat_id': chatId,
+      'text': text,
+    };
+
+    if (replyToMessageId != null) {
+      data['reply_to_message_id'] = replyToMessageId;
+    }
+    
+    // Note: The user's request example didn't include mediaId or messageType, 
+    // but the previous implementation did. 
+    // If the REST API supports them, we should include them.
+    // Assuming standard structure based on usage:
+    if (mediaId != null) {
+      data['media_id'] = mediaId;
+    }
+    if (messageType != null) {
+      data['message_type'] = messageType;
+    }
+
+    await _apiService.post(
+      ApiConstants.messages,
+      data: data,
     );
   }
 

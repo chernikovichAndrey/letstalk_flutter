@@ -38,6 +38,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsDeleteMessage>(_onDeleteMessage);
     on<ChatDetailsEditMessage>(_onEditMessage);
     on<ChatDetailsSetEditingMessage>(_onSetEditingMessage);
+    on<ChatDetailsReplyToMessage>(_onReplyToMessage);
     on<ChatDetailsSetAttachedMedia>(_onSetAttachedMedia);
     on<ChatDetailsUpdateMessage>(_onUpdateMessage);
     on<DownloadDocument>(_onDownloadDocument);
@@ -185,6 +186,18 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     emit(state.copyWith(
       messageToEdit: event.message,
       clearMessageToEdit: event.message == null,
+      clearReplyMessage: true,
+    ));
+  }
+
+  void _onReplyToMessage(
+    ChatDetailsReplyToMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    emit(state.copyWith(
+      replyMessage: event.message,
+      clearReplyMessage: event.message == null,
+      clearMessageToEdit: true,
     ));
   }
 
@@ -294,8 +307,12 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         event.text,
         mediaId: state.attachedMedia?.id,
         messageType: state.attachedMedia?.type,
+        replyToMessageId: state.replyMessage?.id,
       );
-      emit(state.copyWith(clearAttachedMedia: true));
+      emit(state.copyWith(
+        clearAttachedMedia: true,
+        clearReplyMessage: true,
+      ));
     } catch (e) {
       emit(
         state.copyWith(

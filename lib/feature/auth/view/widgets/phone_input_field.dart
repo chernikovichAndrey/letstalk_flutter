@@ -1,11 +1,7 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
-import 'package:lets_talk/feature/contacts/domain/add_contact_bloc/add_contact_bloc.dart';
 
 class PhoneInputField extends StatelessWidget {
   const PhoneInputField({
@@ -69,7 +65,7 @@ class PhoneInputField extends StatelessWidget {
                 hintText: context.s.enterPhoneNumber,
                 border: InputBorder.none,
                 hintStyle: textTheme.bodyMedium?.copyWith(
-                  color: appColors.hintText,
+                  color: Colors.black.withValues(alpha: 0.5),
                   letterSpacing: 0,
                 ),
               ),

@@ -4,7 +4,8 @@ import 'package:lets_talk/feature/chats/view/widgets/message/message_menu_item.d
 
 class MessageMenu extends StatelessWidget {
   final bool isMe;
-  final VoidCallback onCopy;
+  final VoidCallback? onCopy;
+  final VoidCallback onReply;
   final VoidCallback onDelete;
   final VoidCallback onEdit;
   final VoidCallback onForward;
@@ -14,6 +15,7 @@ class MessageMenu extends StatelessWidget {
     super.key,
     required this.isMe,
     required this.onCopy,
+    required this.onReply,
     required this.onDelete,
     required this.onEdit,
     required this.onForward,
@@ -38,11 +40,19 @@ class MessageMenu extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             MessageMenuItem(
-              title: context.s.copy,
-              icon: Icons.file_copy_outlined,
-              onTap: onCopy,
+                title: context.s.reply,
+                icon: Icons.reply_outlined,
+                onTap: onReply,
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
+            if (onCopy != null) ...[
+              MessageMenuItem(
+                title: context.s.copy,
+                icon: Icons.file_copy_outlined,
+                onTap: onCopy!,
+              ),
+              Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
+            ],
             if (onDownload != null) ...[
               MessageMenuItem(
                 title: context.s.download,
@@ -71,7 +81,7 @@ class MessageMenu extends StatelessWidget {
             ],
             MessageMenuItem(
               title: context.s.forward,
-              icon: Icons.reply_outlined,
+              icon: Icons.forward_outlined,
               onTap: onForward,
             ),
             Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),

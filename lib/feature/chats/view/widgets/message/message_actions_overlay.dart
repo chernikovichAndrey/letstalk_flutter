@@ -42,6 +42,8 @@ class MessageActionsOverlay extends StatefulWidget {
 
 class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
   final _scrollController = ScrollController();
+  late bool _isCopyVisible;
+  late bool _isDownloadVisible;
 
   @override
   void initState() {
@@ -54,6 +56,12 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
           curve: Curves.easeOut,
         );
       }
+    });
+
+    setState(() {
+      _isCopyVisible = widget.message.text != null && widget.message.text!.isNotEmpty;
+      _isDownloadVisible = widget.message.messageType == 'image' &&
+          widget.message.media != null;
     });
   }
 
@@ -142,6 +150,10 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     );
   }
 
+  void _onReply() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -184,12 +196,12 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                             const SizedBox(height: 8),
                             MessageMenu(
                               isMe: widget.isMe,
-                              onCopy: _onCopyMessage,
+                              onCopy: _isCopyVisible ? _onCopyMessage : null,
+                              onReply: _onReply,
                               onEdit: _onEditMessage,
                               onForward: _onForwardMessage,
                               onDelete: _onDeleteMessage,
-                              onDownload: (widget.message.messageType == 'image' &&
-                                      widget.message.media != null)
+                              onDownload: _isDownloadVisible
                                   ? _onDownloadImage
                                   : null,
                             ),

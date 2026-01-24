@@ -35,7 +35,6 @@ extension RoutesExt on Routes {
       Routes.callDetails => const SizedBox(),
       Routes.attachSheet => const AttachmentBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),
-      Routes.messageActionOverlay => const MessageActionsOverlay(),
     };
   }
 }

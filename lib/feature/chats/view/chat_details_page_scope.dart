@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/feature/chats/data/repository/chat_details_repository_impl.dart';
-import 'package:lets_talk/feature/chats/data/repository/media_repository_impl.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
@@ -16,11 +15,8 @@ class ChatDetailsPageScope extends StatelessWidget {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (cx, state) {
         if (state is ProfileLoaded) {
-          return BlocProvider(
-            create: (context) => ChatDetailsBloc(
-              ChatDetailsRepositoryImpl(),
-              MediaRepositoryImpl(),
-            )..add(ChatDetailsLoad(chatId, state.user)),
+          return BlocProvider<ChatDetailsBloc>.value(
+            value: getIt()..add(ChatDetailsLoad(chatId, state.user)),
             child: ChatDetailsPage(chatId: chatId),
           );
         }

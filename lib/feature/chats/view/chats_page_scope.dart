@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/chats_page.dart';
 
@@ -10,7 +10,7 @@ class ChatsPageScope extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ChatsBloc(ChatsRepositoryImpl())..add(ChatsLoad()),
+      create: (context) => getIt<ChatsBloc>()..add(ChatsLoad()),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: const ChatsPage(),

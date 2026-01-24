@@ -6,7 +6,7 @@ import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
-import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_slivers.dart';
@@ -17,7 +17,7 @@ class ForwardMessageSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ChatsBloc(ChatsRepositoryImpl())..add(ChatsLoad()),
+      create: (context) => getIt<ChatsBloc>()..add(ChatsLoad()),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: Scaffold(
@@ -57,7 +57,7 @@ class ForwardMessageSheet extends StatelessWidget {
                     forwardChatId: args?.chatId,
                     onSelectChat: (id) {
                       if (args != null) {
-                        WebSocketService().forwardMessage(args.messageId, id);
+                        getIt<WebSocketService>().forwardMessage(args.messageId, id);
                         showSuccessToast(context.s.messageForwarded);
                         context.pop();
                       }

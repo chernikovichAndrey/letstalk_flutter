@@ -9,7 +9,6 @@ import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/attachment_bottom_sheet.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/replay_preview.dart';
 
 

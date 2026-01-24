@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/gallery_cubit/gallery_cubit.dart';
 import 'package:lets_talk/feature/chats/domain/gallery_cubit/gallery_state.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/asset_thumbnail.dart';
@@ -16,7 +17,7 @@ class GalleryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GalleryCubit()..loadImages(),
+      create: (context) => getIt<GalleryCubit>()..loadImages(),
       child: const _GalleryContent(),
     );
   }

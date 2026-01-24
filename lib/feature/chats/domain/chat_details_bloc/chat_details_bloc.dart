@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:gal/gal.dart';
+import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
@@ -17,16 +18,18 @@ part 'chat_details_event.dart';
 
 part 'chat_details_state.dart';
 
+@singleton
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final ChatDetailsRepository _chatDetailsRepository;
   final MediaRepository _mediaRepository;
-  final WebSocketService _wsService = WebSocketService();
+  final WebSocketService _wsService;
   StreamSubscription? _wsSubscription;
   static const int _limit = 20;
 
   ChatDetailsBloc(
     this._chatDetailsRepository,
     this._mediaRepository,
+    this._wsService,
   ) : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);

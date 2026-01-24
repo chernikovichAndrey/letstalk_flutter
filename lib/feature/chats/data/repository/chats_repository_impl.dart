@@ -1,12 +1,14 @@
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
-import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
-import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 
+@LazySingleton(as: ChatsRepository)
 class ChatsRepositoryImpl implements ChatsRepository {
-  final _apiService = ApiService();
+  final ApiService _apiService;
+
+  ChatsRepositoryImpl(this._apiService);
 
   @override
   Future<List<Chat>> getChats() async {

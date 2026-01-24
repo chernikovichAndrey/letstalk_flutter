@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'gallery_state.dart';
 
+@injectable
 class GalleryCubit extends Cubit<GalleryState> {
   GalleryCubit() : super(GalleryInitial());
 

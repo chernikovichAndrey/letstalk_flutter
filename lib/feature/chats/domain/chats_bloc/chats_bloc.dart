@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
@@ -9,12 +10,16 @@ import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart'
 part 'chats_event.dart';
 part 'chats_state.dart';
 
+@injectable
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final ChatsRepository _chatsRepository;
-  final WebSocketService _wsService = WebSocketService();
+  final WebSocketService _wsService;
   StreamSubscription? _wsSubscription;
 
-  ChatsBloc(this._chatsRepository) : super(ChatsInitial()) {
+  ChatsBloc(
+    this._chatsRepository,
+    this._wsService,
+  ) : super(ChatsInitial()) {
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
     on<ChatsSearch>(_onSearch);

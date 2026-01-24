@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/media_repository.dart';
 
+@LazySingleton(as: MediaRepository)
 class MediaRepositoryImpl implements MediaRepository {
-  final _apiService = ApiService();
+  final ApiService _apiService;
+
+  MediaRepositoryImpl(this._apiService);
 
   @override
   Future<Media> uploadMedia({

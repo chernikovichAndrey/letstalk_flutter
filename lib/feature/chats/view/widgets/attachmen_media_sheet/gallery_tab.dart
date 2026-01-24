@@ -68,13 +68,6 @@ class _GalleryContentState extends State<_GalleryContent> {
     }
   }
 
-  void onImageTap(AssetEntity asset) async {
-    final file = await asset.file;
-    if (file != null && mounted) {
-      Navigator.pop(context, file);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GalleryCubit, GalleryState>(
@@ -130,10 +123,7 @@ class _GalleryContentState extends State<_GalleryContent> {
                   }
                   if (images.isEmpty && index > 0) return const SizedBox();
                   final asset = images[index - 1];
-                  return GestureDetector(
-                    onTap: () => onImageTap(asset),
-                    child: AssetThumbnail(asset: asset),
-                  );
+                  return AssetThumbnail(asset: asset);
                 }, childCount: (images.length + 1).clamp(0, 5)),
               ),
             ),
@@ -149,10 +139,7 @@ class _GalleryContentState extends State<_GalleryContent> {
                   ),
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final asset = images[index + 4];
-                    return GestureDetector(
-                      onTap: () => onImageTap(asset),
-                      child: AssetThumbnail(asset: asset),
-                    );
+                    return AssetThumbnail(asset: asset);
                   }, childCount: images.length - 4),
                 ),
               ),

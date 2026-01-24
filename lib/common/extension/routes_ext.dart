@@ -8,6 +8,9 @@ import 'package:lets_talk/feature/auth/view/login_page.dart';
 import 'package:lets_talk/feature/call/view/call_page.dart';
 import 'package:lets_talk/feature/calls_history/view/calls_history_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/chats_page_scope.dart';
+import 'package:lets_talk/feature/chats/view/attachment_bottom_sheet.dart';
+import 'package:lets_talk/feature/chats/view/full_screen_media_sheet.dart';
+import 'package:lets_talk/feature/chats/view/message_actions_overlay.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
 import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
 import 'package:lets_talk/feature/settings/view/settings_page.dart';
@@ -30,6 +33,9 @@ extension RoutesExt on Routes {
       Routes.chatContacts => const ChatContactsSheet(),
       Routes.forwardMessage => const ForwardMessageSheet(),
       Routes.callDetails => const SizedBox(),
+      Routes.attachSheet => const AttachmentBottomSheet(),
+      Routes.fullScreenMedia => const FullScreenMediaSheet(),
+      Routes.messageActionOverlay => const MessageActionsOverlay(),
     };
   }
 }

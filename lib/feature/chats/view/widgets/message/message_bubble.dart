@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/arg/message_actions_args.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble_info.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_image_attach_thumbnail.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message/message_actions_overlay.dart';
+import 'package:lets_talk/feature/chats/view/message_actions_overlay.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_document_attach.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_reply.dart';
 
@@ -27,7 +30,13 @@ class MessageBubble extends StatelessWidget {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
-        onLongPress: () => MessageActionsOverlay.show(context, message, isMe),
+        onLongPress: () => context.push(
+          Routes.messageActionOverlay.path,
+          extra: MessageActionsArgs(
+            message: message,
+            isMe: isMe,
+          ),
+        ),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

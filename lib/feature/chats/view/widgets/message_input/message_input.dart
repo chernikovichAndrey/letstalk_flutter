@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/attachment_bottom_sheet.dart';
+import 'package:lets_talk/feature/chats/view/attachment_bottom_sheet.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/replay_preview.dart';
 
 
@@ -154,18 +156,23 @@ class _MessageInputState extends State<MessageInput> {
                               ChatDetailsSetEditingMessage(null),
                             );
                           } else {
-                            final file = await Navigator.of(context).push(
-                                ModalBottomSheetRoute(
-                                  builder: (_) => const AttachmentBottomSheet(),
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.transparent,
-                                )
-                            );
-                            if (context.mounted && file != null) {
-                              context.read<ChatDetailsBloc>().add(
-                                ChatDetailsSendMedia(file),
-                              );
-                            }
+                            context.router.push(Routes.attachSheet.path);
+                            // final 
+                            // final file = await Navigator.of(context).push(
+                            //     ModalBottomSheetRoute(
+                            //       builder: (_) => BlocProvider.value(
+                            //         value: BlocProvider.of<ChatDetailsBloc>(context),
+                            //         child: const AttachmentBottomSheet(),
+                            //       ),
+                            //       isScrollControlled: true,
+                            //       backgroundColor: Colors.transparent,
+                            //     )
+                            // );
+                            // if (context.mounted && file != null) {
+                            //   context.read<ChatDetailsBloc>().add(
+                            //     ChatDetailsSendMedia(file),
+                            //   );
+                            // }
                           }
                         }
                       ),

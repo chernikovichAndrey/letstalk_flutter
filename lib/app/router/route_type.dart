@@ -1,1 +1,1 @@
-enum RouteType { page, dialog, sheet }
+enum RouteType { page, dialog, sheet, bottomSheet }

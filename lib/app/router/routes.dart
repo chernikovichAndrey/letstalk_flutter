@@ -16,7 +16,10 @@ enum Routes {
   callContacts(path: _Paths.callContacts, type: RouteType.sheet),
   chatContacts(path: _Paths.chatContacts, type: RouteType.sheet),
   callDetails(path: _Paths.callDetails, type: RouteType.sheet),
-  forwardMessage(path: _Paths.forwardMessage, type: RouteType.sheet);
+  forwardMessage(path: _Paths.forwardMessage, type: RouteType.sheet),
+  fullScreenMedia(path: _Paths.fullScreenMedia, type: RouteType.sheet),
+  messageActionOverlay(path: _Paths.messageActionsOverlay, type: RouteType.sheet),
+  attachSheet(path: _Paths.attachSheet, type: RouteType.bottomSheet);
 
   const Routes({required this.path, required this.type});
 
@@ -27,7 +30,9 @@ enum Routes {
       Routes.values.where((e) => e.type == RouteType.page).toList();
 
   static List<Routes> get sheetRoutes =>
-      Routes.values.where((e) => e.type == RouteType.sheet).toList();
+      Routes.values.where((e) =>
+        e.type == RouteType.sheet || e.type == RouteType.bottomSheet
+      ).toList();
 
   static List<Routes> get dialogRoutes =>
       Routes.values.where((e) => e.type == RouteType.dialog).toList();
@@ -48,4 +53,7 @@ abstract class _Paths {
   static const String settings = '/settings';
   static const String chatDetails = 'details/:id';
   static const String calls = '/calls';
+  static const String attachSheet = '/attach_sheet';
+  static const String fullScreenMedia = '/full_screen_media';
+  static const String messageActionsOverlay = '/message_action_overlay';
 }

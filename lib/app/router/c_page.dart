@@ -40,6 +40,13 @@ class CPage extends Page {
           settings: this,
           builder: (BuildContext context) => child,
         );
+      case RouteType.bottomSheet:
+        return ModalBottomSheetRoute(
+          settings: this,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (BuildContext context) => child,
+        );
     }
   }
 }

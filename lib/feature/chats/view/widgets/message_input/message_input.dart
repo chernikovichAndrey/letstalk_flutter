@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,11 +7,10 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message_input/pure_message_input.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/replay_preview.dart';
-
 
 class MessageInput extends StatefulWidget {
   final ScrollController controller;
@@ -78,15 +78,10 @@ class _MessageInputState extends State<MessageInput> {
     if (text.isNotEmpty || state.attachedMedia != null) {
       if (isEditing) {
         context.read<ChatDetailsBloc>().add(
-          ChatDetailsEditMessage(
-            state.messageToEdit!.id,
-            text,
-          ),
+          ChatDetailsEditMessage(state.messageToEdit!.id, text),
         );
       } else {
-        context.read<ChatDetailsBloc>().add(
-          ChatDetailsSendMessage(text),
-        );
+        context.read<ChatDetailsBloc>().add(ChatDetailsSendMessage(text));
       }
       widget.controller.animateTo(
         0,
@@ -98,9 +93,7 @@ class _MessageInputState extends State<MessageInput> {
       if (_isTyping) {
         _isTyping = false;
         _typingTimer?.cancel();
-        context.read<ChatDetailsBloc>().add(
-          ChatDetailsSendTyping(false),
-        );
+        context.read<ChatDetailsBloc>().add(ChatDetailsSendTyping(false));
       }
     }
   }
@@ -140,73 +133,36 @@ class _MessageInputState extends State<MessageInput> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (hasReply)
-                    ReplayPreview(message: state.replyMessage!),
+                  if (hasReply) ReplayPreview(message: state.replyMessage!),
                   if (hasAttachment)
                     _buildAttachmentPreview(context, state.attachedMedia!),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      GlassButton(
-                        icon: isEditing ? Icons.close : Icons.attach_file,
-                        onTap: () async {
-                          if (isEditing) {
+                  PureMessageInput(
+                    inputFocus: _inputFocus,
+                    controller: _controller,
+                    hintText: isEditing
+                        ? context.s.edit
+                        : context.s.messageInputHint,
+                    showSendButton: canSend,
+                    onSendMessage: () => _onSendMessage(state, isEditing),
+                    leftAction: GlassButton(
+                      icon: isEditing ? Icons.close : Icons.attach_file,
+                      onTap: () async {
+                        if (isEditing) {
+                          context.read<ChatDetailsBloc>().add(
+                            ChatDetailsSetEditingMessage(null),
+                          );
+                        } else {
+                          final file = await context.router.push(
+                            Routes.attachSheet.path,
+                          );
+                          if (context.mounted && file != null) {
                             context.read<ChatDetailsBloc>().add(
-                              ChatDetailsSetEditingMessage(null),
+                              ChatDetailsSendMedia(file as File),
                             );
-                          } else {
-                            context.router.push(Routes.attachSheet.path);
-                            // final 
-                            // final file = await Navigator.of(context).push(
-                            //     ModalBottomSheetRoute(
-                            //       builder: (_) => BlocProvider.value(
-                            //         value: BlocProvider.of<ChatDetailsBloc>(context),
-                            //         child: const AttachmentBottomSheet(),
-                            //       ),
-                            //       isScrollControlled: true,
-                            //       backgroundColor: Colors.transparent,
-                            //     )
-                            // );
-                            // if (context.mounted && file != null) {
-                            //   context.read<ChatDetailsBloc>().add(
-                            //     ChatDetailsSendMedia(file),
-                            //   );
-                            // }
                           }
                         }
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          focusNode: _inputFocus,
-                          controller: _controller,
-                          minLines: 1,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            hintText: isEditing
-                                ? context.s.edit
-                                : context.s.messageInputHint,
-                            filled: true,
-                            fillColor: appColors.inputSecondaryFill,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            suffixIcon: canSend
-                                ? IconButton(
-                                    onPressed: () => _onSendMessage(state, isEditing),
-                                    icon: Icon(Icons.send),
-                                    color: appColors.telegramBlue,
-                                  )
-                                : null,
-                          ),
-                        ),
-                      ),
-                    ],
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -218,9 +174,6 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   Widget _buildAttachmentPreview(BuildContext context, Media media) {
-    final isImage = media.type == 'image';
-    final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -230,22 +183,6 @@ class _MessageInputState extends State<MessageInput> {
       ),
       child: Row(
         children: [
-          if (isImage && media.thumbnailUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                headers: {'Authorization': 'Bearer ${token}'},
-                media.thumbnailUrl!,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.image, color: Colors.white70, size: 20),
-              ),
-            )
-          else
-            const Icon(Icons.attach_file, color: Colors.white70, size: 20),
-          const SizedBox(width: 8),
           Expanded(
             child: Text(
               media.filename,

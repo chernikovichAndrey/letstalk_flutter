@@ -24,6 +24,12 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   final _scrollController = ScrollController();
 
   @override
+  void deactivate() {
+    context.read<ChatDetailsBloc>().add(RefreshStateEvent());
+    super.deactivate();
+  }
+
+  @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);

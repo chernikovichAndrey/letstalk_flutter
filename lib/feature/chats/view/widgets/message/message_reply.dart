@@ -30,10 +30,7 @@ class MessageReplay extends StatelessWidget {
             color: isMe
                 ? Colors.black.withValues(alpha: 0.1)
                 : Colors.white.withValues(alpha: 0.1),
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(8),
-              bottomRight: Radius.circular(8),
-            ),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
             border: Border(
               left: BorderSide(
                 color: Colors.white,

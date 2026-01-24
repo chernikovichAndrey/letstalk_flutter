@@ -47,6 +47,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<DownloadDocument>(_onDownloadDocument);
     on<SaveImageToGallery>(_onSaveImageToGallery);
     on<ChatDetailsDownloadProgress>(_onDownloadProgress);
+    on<RefreshStateEvent>(_onRefreshState);
 
     _subscribeToWebSocket();
   }
@@ -435,6 +436,13 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         ),
       );
     }
+  }
+
+  Future<void> _onRefreshState(
+    RefreshStateEvent event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    emit(const ChatDetailsState());
   }
 
   @override

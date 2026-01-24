@@ -10,7 +10,6 @@ import 'package:lets_talk/feature/chats/view/chats_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/sheet/attachment_bottom_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/forward_message_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/full_screen_media_sheet.dart';
-import 'package:lets_talk/feature/chats/view/sheet/message_actions_overlay.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
 import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
 import 'package:lets_talk/feature/settings/view/settings_page.dart';

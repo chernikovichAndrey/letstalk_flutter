@@ -148,47 +148,53 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
         resizeToAvoidBottomInset: true,
         body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
           builder: (context, state) {
-          if (state.status == ChatDetailsStatus.initial ||
-              (state.status == ChatDetailsStatus.loading &&
-                  state.messages.isEmpty)) {
-            return const ChatDetailsSkeleton();
-          }
-          if (state.status == ChatDetailsStatus.failure &&
-              state.messages.isEmpty) {
-            return Center(child: Text(state.errorMessage ?? 'Error'));
-          }
-          final member = state.members.firstWhere((member) => member.userId != state.currentUser?.id);
-
-          return Stack(
-            children: [
-              ListView.builder(
+            late Widget content;
+            if (state.status == ChatDetailsStatus.initial ||
+                (state.status == ChatDetailsStatus.loading &&
+                    state.messages.isEmpty)) {
+              content = const ChatDetailsSkeleton();
+            }
+            if (state.status == ChatDetailsStatus.failure &&
+                state.messages.isEmpty) {
+              content = Center(child: Text(state.errorMessage ?? 'Error'));
+            }
+            if (state.status == ChatDetailsStatus.success) {
+              content = ListView.builder(
                 reverse: true,
                 controller: _scrollController,
                 padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 60,
-                  bottom: MediaQuery.of(context).padding.bottom + 80,
+                  top: context.padding.top + 60,
+                  bottom: context.padding.bottom + 80,
                 ),
                 itemCount: state.hasReachedMax
                     ? state.messages.length
                     : state.messages.length + 1,
                 itemBuilder: (context, index) =>
                     _renderItem(context, index, state),
-              ),
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: ChatDetailsAppBar(
-                  chatTitle: state.chat?.title ?? member.phone ?? '',
-                  memberId: member.userId,
+              );
+            }
+            final member = state.members.firstWhere((member) =>
+            member.userId != state.currentUser?.id);
+
+            return Stack(
+              children: [
+                content,
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: ChatDetailsAppBar(
+                    chatTitle: state.chat?.title ?? member.phone ?? '',
+                    memberId: member.userId,
+                  ),
                 ),
-              ),
-              const Positioned(bottom: 0, left: 0, right: 0, child: MessageInput()),
-            ],
-          );
-        },
+                const Positioned(
+                    bottom: 0, left: 0, right: 0, child: MessageInput()),
+              ],
+            );
+          },
+        ),
       ),
-    ),
     );
   }
 }

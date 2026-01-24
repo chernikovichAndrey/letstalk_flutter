@@ -11,7 +11,7 @@ class AttachmentBottomTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).padding.bottom + 16,
+        bottom: context.padding.bottom + 16,
         top: 16,
       ),
       child: Center(

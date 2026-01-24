@@ -42,7 +42,7 @@ class ForwardMessageSheet extends StatelessWidget {
               if (state is ChatsLoading) {
                 return Padding(
                   padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).padding.top + 66,
+                    top: context.padding.top + 66,
                   ),
                   child: const ChatListSkeleton(),
                 );

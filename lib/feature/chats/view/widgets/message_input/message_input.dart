@@ -129,7 +129,7 @@ class _MessageInputState extends State<MessageInput> {
                 left: 8,
                 right: 16,
                 top: 8,
-                bottom: MediaQuery.of(context).padding.bottom + 8,
+                bottom: context.padding.bottom + 8,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

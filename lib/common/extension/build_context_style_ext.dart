@@ -6,6 +6,8 @@ import 'package:lets_talk/common/l10n/generated/l10n.dart';
 extension BuildContextExt on BuildContext {
   double get w => MediaQuery.sizeOf(this).width;
   double get h => MediaQuery.sizeOf(this).height;
+  Size get size => MediaQuery.of(this).size;
+  EdgeInsets get padding => MediaQuery.of(this).padding;
   ThemeData get theme => Theme.of(this);
   TextTheme get text => Theme.of(this).textTheme;
   IconThemeData get icon => Theme.of(this).iconTheme;

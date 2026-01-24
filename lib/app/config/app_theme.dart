@@ -40,7 +40,7 @@ class AppTheme {
           dateSeparatorText: Colors.black54,
           surfaceSecondary: const Color(0xFFF2F2F7),
           messageReadIcon: Colors.white,
-          skeletonColor: Colors.grey[300]!,
+          skeletonColor: Colors.grey[200]!,
           skeletonShimmerColor: Colors.white,
         ),
         const AppGradientsExtension(
@@ -93,8 +93,8 @@ class AppTheme {
           dateSeparatorText: Colors.white70,
           surfaceSecondary: Colors.black,
           messageReadIcon: Colors.blue,
-          skeletonColor: Colors.white54,
-          skeletonShimmerColor: Colors.white70,
+          skeletonColor: Colors.white10,
+          skeletonShimmerColor: Colors.white30,
         ),
         const AppGradientsExtension(
           backgroundGradient: LinearGradient(

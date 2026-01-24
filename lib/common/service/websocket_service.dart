@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:lets_talk/common/model/call_signaling_type.dart';
 import 'package:logger/logger.dart';
@@ -26,6 +27,7 @@ class WebSocketService {
     return stream.transform<Map<String, dynamic>>(
       StreamTransformer.fromHandlers(
         handleData: (data, sink) {
+          print('11111 $data');
           try {
             final Map<String, dynamic> map;
             if (data is String) {
@@ -81,8 +83,15 @@ class WebSocketService {
     }
   }
 
-  void send(dynamic data) {
+  void send(dynamic data) async {
     if (_channel != null) {
+       try {
+         await _channel!.ready;
+       } on SocketException catch (e) {
+         _logger.e('SocketException: $e');
+       } on WebSocketChannelException catch (e) {
+         _logger.e('WebSocketChannelException: $e');
+       }
       if (data is Map || data is List) {
         final jsonStr = jsonEncode(data);
         _channel!.sink.add(jsonStr);
@@ -99,17 +108,23 @@ class WebSocketService {
   void sendMessage(
     int chatId,
     String text, {
-    String messageType = 'text',
+    String? messageType,
     int? mediaId,
+    int? replyToMessageId,
   }) {
     final Map<String, dynamic> data = {
       'type': 'message',
       'chat_id': chatId,
       'text': text,
-      'message_type': messageType,
     };
+    if (messageType != null) {
+      data['message_type'] = messageType;
+    }
     if (mediaId != null) {
       data['media_id'] = mediaId;
+    }
+    if (replyToMessageId != null) {
+      data['reply_to_message_id'] = replyToMessageId;
     }
     send(data);
   }

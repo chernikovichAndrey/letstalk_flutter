@@ -175,11 +175,11 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     memberId: member.userId,
                   ),
                 ),
-                const Positioned(
+                Positioned(
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: MessageInput(),
+                  child: MessageInput(controller: _scrollController),
                 ),
               ],
             );

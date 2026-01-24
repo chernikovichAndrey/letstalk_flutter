@@ -45,29 +45,12 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
     String? messageType,
     int? replyToMessageId,
   }) async {
-    final Map<String, dynamic> data = {
-      'chat_id': chatId,
-      'text': text,
-    };
-
-    if (replyToMessageId != null) {
-      data['reply_to_message_id'] = replyToMessageId;
-    }
-    
-    // Note: The user's request example didn't include mediaId or messageType, 
-    // but the previous implementation did. 
-    // If the REST API supports them, we should include them.
-    // Assuming standard structure based on usage:
-    if (mediaId != null) {
-      data['media_id'] = mediaId;
-    }
-    if (messageType != null) {
-      data['message_type'] = messageType;
-    }
-
-    await _apiService.post(
-      ApiConstants.messages,
-      data: data,
+    _wsService.sendMessage(
+      chatId,
+      text,
+      messageType: messageType,
+      mediaId: mediaId,
+      replyToMessageId: replyToMessageId,
     );
   }
 

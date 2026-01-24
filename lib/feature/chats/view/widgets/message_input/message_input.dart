@@ -12,7 +12,9 @@ import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/attac
 
 
 class MessageInput extends StatefulWidget {
-  const MessageInput({super.key});
+  final ScrollController controller;
+
+  const MessageInput({super.key, required this.controller});
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -85,6 +87,11 @@ class _MessageInputState extends State<MessageInput> {
           ChatDetailsSendMessage(text),
         );
       }
+      widget.controller.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
       _controller.clear();
 
       if (_isTyping) {

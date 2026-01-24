@@ -185,8 +185,24 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: MessageInput(controller: _scrollController),
-                ),
+                  child: Column(
+                    children: [
+                      if (state.typingUserIds.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            context.s.typing,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      MessageInput(controller: _scrollController),
+                    ],
+                  ),
+                )
               ],
             );
           },

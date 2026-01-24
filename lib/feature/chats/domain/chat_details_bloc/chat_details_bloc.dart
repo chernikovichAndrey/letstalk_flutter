@@ -36,6 +36,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsSendMessage>(_onSendMessage);
     on<ChatDetailsSendMedia>(_onSendMedia);
     on<ChatDetailsSendTyping>(_onSendTyping);
+    on<ChatDetailsUserTyping>(_onUserTyping);
     on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
     on<ChatDetailsErrorReceived>(_onErrorReceived);
     on<ChatDetailsDeleteMessage>(_onDeleteMessage);
@@ -250,6 +251,28 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     }
   }
 
+  Future<void> _onUserTyping(
+    ChatDetailsUserTyping event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    if (event.isTyping) {
+      emit(
+        state.copyWith(
+          typingUserIds: {event.userId},
+        )
+      );
+    } else {
+      final typingIds = state.typingUserIds;
+      typingIds.remove(event.userId);
+      emit(
+        state.copyWith(
+          typingUserIds: typingIds,
+        )
+      );
+    }
+
+  }
+
   void _onErrorReceived(
     ChatDetailsErrorReceived event,
     Emitter<ChatDetailsState> emit,
@@ -279,6 +302,14 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
             case 'message_edit_success':
               final msg = Message.fromJson(decoded['message']);
               add(ChatDetailsUpdateMessage(msg));
+            case 'user_typing':
+              final chatId = decoded['chat_id'] as int;
+              if (state.chat?.id == chatId) {
+                add(ChatDetailsUserTyping(
+                  decoded['user_id'] as int,
+                  decoded['is_typing'] as bool,
+                ));
+              }
             default:
               return;
           }

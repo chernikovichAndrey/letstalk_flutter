@@ -173,6 +173,7 @@ class _MessageInputState extends State<MessageInput> {
     );
   }
 
+  //TODO: remove in future
   Widget _buildAttachmentPreview(BuildContext context, Media media) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),

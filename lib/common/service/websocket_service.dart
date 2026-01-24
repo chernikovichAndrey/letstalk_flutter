@@ -34,12 +34,7 @@ class WebSocketService {
               return;
             }
 
-            final type = map['type'];
-            final signalingTypes = CallSignalingType.values.map((e) => e.value).toSet();
-
-            if (signalingTypes.contains(type)) {
-              sink.add(map);
-            }
+            sink.add(map);
           } catch (e) {
             _logger.e('Error parsing signaling message: $e');
           }

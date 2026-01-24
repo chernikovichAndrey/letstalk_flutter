@@ -16,6 +16,7 @@ class ChatDetailsState {
   final int? downloadingMessageId;
   final double? downloadProgress;
   final bool isDownloadSuccess;
+  final Set<int> typingUserIds;
 
   const ChatDetailsState({
     this.status = ChatDetailsStatus.initial,
@@ -31,6 +32,7 @@ class ChatDetailsState {
     this.downloadingMessageId,
     this.downloadProgress,
     this.isDownloadSuccess = false,
+    this.typingUserIds = const {},
   });
 
   ChatDetailsState copyWith({
@@ -53,6 +55,7 @@ class ChatDetailsState {
     bool clearDownloadProgress = false,
     bool? isDownloadSuccess,
     bool clearDownloadSuccess = false,
+    Set<int>? typingUserIds,
   }) {
     return ChatDetailsState(
       status: status ?? this.status,
@@ -68,6 +71,7 @@ class ChatDetailsState {
       downloadingMessageId: clearDownloadingMessageId ? null : (downloadingMessageId ?? this.downloadingMessageId),
       downloadProgress: clearDownloadProgress ? null : (downloadProgress ?? this.downloadProgress),
       isDownloadSuccess: clearDownloadSuccess ? false : (isDownloadSuccess ?? this.isDownloadSuccess),
+      typingUserIds: typingUserIds ?? this.typingUserIds,
     );
   }
 }

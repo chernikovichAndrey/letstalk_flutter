@@ -60,6 +60,12 @@ class ChatDetailsSendTyping extends ChatDetailsEvent {
   ChatDetailsSendTyping(this.isTyping);
 }
 
+class ChatDetailsUserTyping extends ChatDetailsEvent {
+  final int userId;
+  final bool isTyping;
+  ChatDetailsUserTyping(this.userId, this.isTyping);
+}
+
 class ChatDetailsNewMessageReceived extends ChatDetailsEvent {
   final Message message;
   ChatDetailsNewMessageReceived(this.message);

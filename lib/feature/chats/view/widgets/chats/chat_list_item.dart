@@ -93,7 +93,7 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          isTyping ? 'Typing...' : (chat.lastMessageText ?? ''),
+                          isTyping ? context.s.typing : (chat.lastMessageText ?? ''),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

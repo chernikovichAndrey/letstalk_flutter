@@ -61,6 +61,7 @@ class CallContactsSheet extends StatelessWidget {
                   ContactsSlivers(
                     state: state,
                     onSelectContact:(id) => _onSelectContact(id, context),
+                    isRegisteredOnly: true,
                   ),
                 ],
               );

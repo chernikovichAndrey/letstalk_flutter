@@ -5,7 +5,6 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
-import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/contacts/data/repository/contacts_repository_impl.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
@@ -61,7 +60,7 @@ class ChatContactsSheet extends StatelessWidget {
                   return const ContactsSceleton();
                 }
                 return CustomScrollView(
-                  slivers: [ContactsSlivers(state: state)],
+                  slivers: [ContactsSlivers(state: state, isRegisteredOnly: true)],
                 );
               },
             ),

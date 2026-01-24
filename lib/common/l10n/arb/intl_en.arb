@@ -63,6 +63,8 @@
   "video": "Video",
   "mute": "Mute",
   "endCall": "End",
+  "endedCall": "Ended",
+  "rejected": "Rejected",
   "defaultUserName": "User",
   "selectCallType": "Select call type",
   "audioCall": "Audio call",

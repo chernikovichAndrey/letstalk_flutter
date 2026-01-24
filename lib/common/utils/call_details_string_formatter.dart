@@ -21,6 +21,7 @@ String getTypeText(BuildContext context, String type) {
 
 String getStatusText(BuildContext context, String status) {
   if (status == 'missed') return context.s.missedCalls;
-  if (status == 'ended') return context.s.endCall;
+  if (status == 'ended') return context.s.endedCall;
+  if (status == 'rejected') return context.s.rejected;
   return status;
 }

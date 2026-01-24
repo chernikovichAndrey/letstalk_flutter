@@ -7,11 +7,13 @@ import 'package:lets_talk/feature/contacts/view/widgets/contact_item.dart';
 
 class ContactsSlivers extends StatelessWidget {
   final Function(int? id)? onSelectContact;
+  final bool isRegisteredOnly;
 
   const ContactsSlivers({
     super.key,
     required this.state,
     this.onSelectContact,
+    this.isRegisteredOnly = false,
   });
 
   final ContactsState state;
@@ -20,6 +22,9 @@ class ContactsSlivers extends StatelessWidget {
   Widget build(BuildContext context) {
     if (state is ContactsLoaded) {
       final loadedState = state as ContactsLoaded;
+      final contacts = isRegisteredOnly
+          ? loadedState.contacts.where((contact) => contact.isRegistered).toList()
+          : loadedState.contacts;
       return SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
@@ -45,15 +50,15 @@ class ContactsSlivers extends StatelessWidget {
           else
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final contact = loadedState.contacts[index];
+                    (context, index) {
+                  final contact = contacts[index];
                   return ContactItem(
                     contact: contact,
                     state: loadedState,
                     onTap: onSelectContact,
                   );
                 },
-                childCount: loadedState.contacts.length,
+                childCount: contacts.length,
               ),
             ),
         ],

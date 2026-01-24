@@ -42,6 +42,8 @@
   "video": "Видео",
   "mute": "Убрать звук",
   "endCall": "Завершить",
+  "endedCall": "Завершен",
+  "rejected": "Отменен",
   "defaultUserName": "Пользователь",
   "selectCallType": "Выберите тип звонка",
   "audioCall": "Аудио звонок",

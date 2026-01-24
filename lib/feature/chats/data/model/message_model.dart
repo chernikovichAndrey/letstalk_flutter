@@ -1,5 +1,60 @@
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 
+class ReplyTo {
+  final int messageId;
+  final int fromUserId;
+  final String fromName;
+  final String textPreview;
+
+  ReplyTo({
+    required this.messageId,
+    required this.fromUserId,
+    required this.fromName,
+    required this.textPreview,
+  });
+
+  factory ReplyTo.fromJson(Map<String, dynamic> json) {
+    return ReplyTo(
+      messageId: int.tryParse(json['message_id'].toString()) ?? 0,
+      fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
+      fromName: json['from_name'] as String? ?? '',
+      textPreview: json['text_preview'] as String? ?? '',
+    );
+  }
+}
+
+class ForwardedFrom {
+  final int messageId;
+  final int chatId;
+  final int fromUserId;
+  final String? fromPhone;
+  final String fromName;
+  final String? text;
+  final String createdAt;
+
+  ForwardedFrom({
+    required this.messageId,
+    required this.chatId,
+    required this.fromUserId,
+    this.fromPhone,
+    required this.fromName,
+    this.text,
+    required this.createdAt,
+  });
+
+  factory ForwardedFrom.fromJson(Map<String, dynamic> json) {
+    return ForwardedFrom(
+      messageId: int.tryParse(json['message_id'].toString()) ?? 0,
+      chatId: int.tryParse(json['chat_id'].toString()) ?? 0,
+      fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
+      fromPhone: json['from_phone'] as String?,
+      fromName: json['from_name'] as String? ?? '',
+      text: json['text'] as String?,
+      createdAt: json['created_at'] as String? ?? '',
+    );
+  }
+}
+
 class Message {
   final int id;
   final int chatId;
@@ -13,8 +68,8 @@ class Message {
   final bool isEdited;
   final String? editedAt;
   final int editCount;
-  final dynamic replyTo;
-  final dynamic forwardedFrom;
+  final ReplyTo? replyTo;
+  final ForwardedFrom? forwardedFrom;
 
   Message({
     required this.id,
@@ -47,8 +102,11 @@ class Message {
       isEdited: json['is_edited'] as bool? ?? false,
       editedAt: json['edited_at'] as String?,
       editCount: int.tryParse(json['edit_count'].toString()) ?? 0,
-      replyTo: json['reply_to'],
-      forwardedFrom: json['forwarded_from'],
+      replyTo:
+          json['reply_to'] != null ? ReplyTo.fromJson(json['reply_to']) : null,
+      forwardedFrom: json['forwarded_from'] != null
+          ? ForwardedFrom.fromJson(json['forwarded_from'])
+          : null,
     );
   }
 
@@ -65,8 +123,8 @@ class Message {
     bool? isEdited,
     String? editedAt,
     int? editCount,
-    dynamic replyTo,
-    dynamic forwardedFrom,
+    ReplyTo? replyTo,
+    ForwardedFrom? forwardedFrom,
   }) {
     return Message(
       id: id ?? this.id,

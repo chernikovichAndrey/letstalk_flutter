@@ -35,7 +35,7 @@ class ContactsSlivers extends StatelessWidget {
               },
             ),
           ),
-          if (loadedState.contacts.isEmpty)
+          if (contacts.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,
               child: Center(

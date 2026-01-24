@@ -34,6 +34,7 @@ class ShellHolder extends StatelessWidget {
             },
           ),
           BlocListener<CallBloc, CallState>(
+            listenWhen: (previous, current) => previous.toString() != current.toString(),
             listener: (context, state) {
               if (state is CallIncoming) {
                 showGeneralDialog(
@@ -59,7 +60,7 @@ class ShellHolder extends StatelessWidget {
                           offer: state.offer,
                           isVideo: state.callType == 'video',
                         ));
-                        context.push(Routes.calls.path);
+                        context.push(Routes.call.path);
                       },
                     );
                   },
@@ -78,10 +79,7 @@ class ShellHolder extends StatelessWidget {
                   transitionDuration: const Duration(milliseconds: 300),
                 );
               } else if (state is CallOutgoing) {
-                final currentPath = GoRouterState.of(context).uri.path;
-                if (currentPath != Routes.calls.path) {
-                  context.push(Routes.calls.path);
-                }
+                context.push(Routes.call.path);
               } else if (state is CallEnded) {
                 if (context.canPop()) {
                    context.pop();

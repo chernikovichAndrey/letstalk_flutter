@@ -25,7 +25,7 @@ extension RoutesExt on Routes {
       Routes.callsHistory => const CallsHistoryPageScope(),
       Routes.chats => const ChatsPageScope(),
       Routes.settings => const SettingsPage(),
-      Routes.calls => const CallPage(),
+      Routes.call => const CallPage(),
       Routes.chatDetails => const SizedBox(),
       Routes.dialog => const CAlertDialog(),
       Routes.createContact => const CreateContactPageScope(),

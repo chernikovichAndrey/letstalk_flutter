@@ -60,7 +60,7 @@ class AppRouter {
       ),
 
       //Call screen
-      buildRoute(Routes.calls),
+      buildRoute(Routes.call),
 
       //Sheets
       ...Routes.sheetRoutes.map(buildRoute),

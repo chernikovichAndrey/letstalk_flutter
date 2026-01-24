@@ -8,7 +8,7 @@ enum Routes {
   chats(path: _Paths.chats, type: RouteType.page),
   settings(path: _Paths.settings, type: RouteType.page),
   chatDetails(path: _Paths.chatDetails, type: RouteType.page),
-  calls(path: _Paths.calls, type: RouteType.page),
+  call(path: _Paths.call, type: RouteType.page),
   // dialogs
   dialog(path: _Paths.dialog, type: RouteType.dialog),
   // sheets
@@ -52,7 +52,7 @@ abstract class _Paths {
   static const String chats = '/chats';
   static const String settings = '/settings';
   static const String chatDetails = 'details/:id';
-  static const String calls = '/calls';
+  static const String call = '/call';
   static const String attachSheet = '/attach_sheet';
   static const String fullScreenMedia = '/full_screen_media';
   static const String messageActionsOverlay = '/message_action_overlay';

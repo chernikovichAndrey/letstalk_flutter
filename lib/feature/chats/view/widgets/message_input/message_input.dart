@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/attachment_bottom_sheet.dart';
-import 'dart:io';
 
 
 class MessageInput extends StatefulWidget {
@@ -206,6 +206,7 @@ class _MessageInputState extends State<MessageInput> {
 
   Widget _buildAttachmentPreview(BuildContext context, Media media) {
     final isImage = media.type == 'image';
+    final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -220,6 +221,7 @@ class _MessageInputState extends State<MessageInput> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
+                headers: {'Authorization': 'Bearer ${token}'},
                 media.thumbnailUrl!,
                 width: 40,
                 height: 40,
@@ -243,8 +245,8 @@ class _MessageInputState extends State<MessageInput> {
             icon: const Icon(Icons.close, color: Colors.white70, size: 20),
             onPressed: () {
               context.read<ChatDetailsBloc>().add(
-                    ChatDetailsSetAttachedMedia(null),
-                  );
+                ChatDetailsSetAttachedMedia(null),
+              );
             },
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

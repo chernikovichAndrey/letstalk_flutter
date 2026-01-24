@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_date_seporator.dart';
@@ -13,10 +14,7 @@ import 'package:lets_talk/feature/chats/view/widgets/message_input/message_input
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;
 
-  const ChatDetailsPage({
-    super.key,
-    required this.chatId,
-  });
+  const ChatDetailsPage({super.key, required this.chatId});
 
   @override
   State<ChatDetailsPage> createState() => _ChatDetailsPageState();
@@ -133,52 +131,41 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               current.errorMessage != null),
       listener: (context, state) {
         if (state.isDownloadSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.s.fileDownloaded)),
-          );
-        }
-        if (state.status == ChatDetailsStatus.failure &&
-            state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          showSuccessToast(context.s.fileDownloaded);
         }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
           builder: (context, state) {
-            late Widget content;
             if (state.status == ChatDetailsStatus.initial ||
                 (state.status == ChatDetailsStatus.loading &&
                     state.messages.isEmpty)) {
-              content = const ChatDetailsSkeleton();
+              return const ChatDetailsSkeleton();
             }
             if (state.status == ChatDetailsStatus.failure &&
                 state.messages.isEmpty) {
-              content = Center(child: Text(state.errorMessage ?? 'Error'));
+              return Center(child: Text(state.errorMessage ?? 'Error'));
             }
-            if (state.status == ChatDetailsStatus.success) {
-              content = ListView.builder(
-                reverse: true,
-                controller: _scrollController,
-                padding: EdgeInsets.only(
-                  top: context.padding.top + 60,
-                  bottom: context.padding.bottom + 80,
-                ),
-                itemCount: state.hasReachedMax
-                    ? state.messages.length
-                    : state.messages.length + 1,
-                itemBuilder: (context, index) =>
-                    _renderItem(context, index, state),
-              );
-            }
-            final member = state.members.firstWhere((member) =>
-            member.userId != state.currentUser?.id);
+            final member = state.members.firstWhere(
+              (member) => member.userId != state.currentUser?.id,
+            );
 
             return Stack(
               children: [
-                content,
+                ListView.builder(
+                  reverse: true,
+                  controller: _scrollController,
+                  padding: EdgeInsets.only(
+                    top: context.padding.top + 60,
+                    bottom: context.padding.bottom + 80,
+                  ),
+                  itemCount: state.hasReachedMax
+                      ? state.messages.length
+                      : state.messages.length + 1,
+                  itemBuilder: (context, index) =>
+                      _renderItem(context, index, state),
+                ),
                 Positioned(
                   top: 0,
                   left: 0,
@@ -189,7 +176,11 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   ),
                 ),
                 const Positioned(
-                    bottom: 0, left: 0, right: 0, child: MessageInput()),
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: MessageInput(),
+                ),
               ],
             );
           },

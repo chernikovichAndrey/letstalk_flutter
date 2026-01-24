@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/call/view/widgets/call_action_button.dart';
 
@@ -102,9 +103,6 @@ class _CallPageState extends State<CallPage> {
             context.pop();
           }
           if (state is CallFailure && context.canPop()) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.s.callFailed(state.reason))),
-            );
             context.pop();
           }
           if (state is CallActive && _callTimer == null) {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/l10n/generated/l10n.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,8 +43,8 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
           );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(S.of(context).downloadError(e.toString()))),
+      showErrorToast(
+        context.s.downloadError(e.toString())
       );
     }
   }

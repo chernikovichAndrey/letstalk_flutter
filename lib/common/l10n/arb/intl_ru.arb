@@ -71,5 +71,6 @@
   "selectFromFiles": "Выбрать из файлов",
   "recentFiles": "Недавние файлы",
   "fileDownloaded": "Файл скачан",
-  "downloadError": "Ошибка скачивания: {error}"
+  "downloadError": "Ошибка скачивания: {error}",
+  "pleaseFillInFirstNameAndPhone": "Пожалуйста, заполните имя и телефон"
 }

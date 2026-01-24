@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lets_talk/app/environment/environment.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,7 +55,25 @@ class ApiService {
             stackTrace: e.stackTrace,
           );
           if (e.response != null) {
-            _logger.e('Error Response Data: ${e.response?.data}');
+            try {
+              final data = e.response?.data;
+              if (data is Map<String, dynamic>) {
+                final messages = data['messages'];
+                String? errorText;
+
+                if (messages is Map<String, dynamic>) {
+                  errorText = messages['error']?.toString();
+                } else if (messages is String) {
+                  errorText = messages;
+                }
+
+                if (errorText != null && errorText.isNotEmpty) {
+                  showErrorToast(errorText);
+                }
+              }
+            } catch (err) {
+              _logger.w('Не удалось распарсить ошибку API: $err');
+            }
           }
           return handler.next(e);
         },

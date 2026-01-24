@@ -7,6 +7,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 // Smoothing factor applied to the device's top padding (which approximates the corner radius)
 // to achieve a smoother end to the corner radius animation.  A value of 1.0 would use
@@ -740,14 +741,14 @@ class _CupertinoDownGestureDetectorState<T>
     _downGestureController.dragUpdate(
       // Divide by size of the sheet.
       details.primaryDelta! /
-          (context.size!.height - (context.size!.height * _kTopGapRatio)),
+          (context.mediaSize.height - (context.mediaSize.height * _kTopGapRatio)),
     );
   }
 
   void _handleDragEnd(DragEndDetails details) {
     assert(mounted);
     _downGestureController.dragEnd(
-      details.velocity.pixelsPerSecond.dy / context.size!.height,
+      details.velocity.pixelsPerSecond.dy / context.mediaSize.height,
     );
   }
 

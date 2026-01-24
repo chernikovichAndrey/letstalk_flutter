@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/gradient_background.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/auth/view/widgets/code_verification_card.dart';
 import 'package:lets_talk/feature/auth/view/widgets/login_card.dart';
@@ -31,14 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
     return Scaffold(
       body: GradientBackground(
-        child: BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthError) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-            }
-          },
+        child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             final String title;
             final String subtitle;
@@ -122,11 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                             AuthSendCode(countryCode: code, phoneNumber: phone),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(context.s.selectCountryError),
-                            ),
-                          );
+                          showWarningToast(context.s.selectCountryError);
                         }
                       },
                     ),

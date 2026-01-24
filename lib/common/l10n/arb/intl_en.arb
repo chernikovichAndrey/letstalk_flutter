@@ -100,6 +100,7 @@
   "recentFiles": "Recent files",
   "fileDownloaded": "File downloaded",
   "downloadError": "Download error: {error}",
+  "pleaseFillInFirstNameAndPhone": "Please fill in first name and phone",
   "@downloadError": {
     "placeholders": {
       "error": {

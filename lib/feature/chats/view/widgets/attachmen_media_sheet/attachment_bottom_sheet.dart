@@ -33,7 +33,7 @@ class _AttachmentBottomSheetState extends State<AttachmentBottomSheet>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: context.size!.height * 0.65,
+      height: context.mediaSize.height * 0.65,
       decoration: BoxDecoration(
         color: context.theme.scaffoldBackgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),

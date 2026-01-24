@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/add_contact_bloc/add_contact_bloc.dart';
 
@@ -40,9 +41,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
     final dialCode = _countryCode?.dialCode ?? '';
 
     if (firstName.isEmpty || phone.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in first name and phone')),
-      );
+      showWarningToast(context.s.pleaseFillInFirstNameAndPhone);
       return;
     }
 
@@ -75,10 +74,6 @@ class _CreateContactPageState extends State<CreateContactPage> {
       listener: (context, state) {
         if (state is AddContactSuccess) {
           Navigator.pop(context, true);
-        } else if (state is AddContactError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
         }
       },
       child: ClipRRect(

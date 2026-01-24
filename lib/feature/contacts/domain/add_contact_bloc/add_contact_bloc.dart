@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/repository/add_contact_repository.dart';

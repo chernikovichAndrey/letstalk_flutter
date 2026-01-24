@@ -5,6 +5,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/chats/data/repository/chats_repository_impl.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_skeleton.dart';
@@ -57,9 +58,7 @@ class ForwardMessageSheet extends StatelessWidget {
                     onSelectChat: (id) {
                       if (args != null) {
                         WebSocketService().forwardMessage(args.messageId, id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(context.s.messageForwarded)),
-                        );
+                        showSuccessToast(context.s.messageForwarded);
                         context.pop();
                       }
                     },

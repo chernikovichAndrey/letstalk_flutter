@@ -57,13 +57,13 @@ class AppRouter {
             ],
           ),
 
-          //Call screen
-          buildRoute(Routes.calls),
-
           //Sheets
           ...Routes.sheetRoutes.map(buildRoute),
         ]
       ),
+
+      //Call screen
+      buildRoute(Routes.calls),
 
       // Dialogs(global)
       ...Routes.dialogRoutes.map(buildRoute),

@@ -43,17 +43,8 @@ class CAvatar extends StatelessWidget {
     return colors[name.hashCode.abs() % colors.length];
   }
 
-  String _getAnimalAvatar(int identifier) {
-    final animals = [
-      'bear',
-      'fox',
-      'cat',
-      'rabbit',
-      'panda',
-      'owl',
-    ];
-    final animalName = animals[identifier];
-    return 'assets/images/animals/$animalName.svg';
+  String _getAnimalAvatar() {
+    return 'assets/images/animals/panda.svg';
   }
 
   @override
@@ -86,7 +77,7 @@ class CAvatar extends StatelessWidget {
       );
     } else {
       avatar = SvgPicture.asset(
-        _getAnimalAvatar(Random().nextInt(5)),
+        _getAnimalAvatar(),
         width: radius * 2,
         height: radius * 2,
         fit: BoxFit.contain,

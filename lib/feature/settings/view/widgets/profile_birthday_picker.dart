@@ -19,10 +19,24 @@ class ProfileBirthdayPicker extends StatelessWidget {
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        final profileState = state as ProfileLoaded;
-        final editingBirthday = profileState.editingBirthday;
-        final selectedBirthday = editingBirthday ?? (profileState.user.birthday != null ? DateTime.tryParse(profileState.user.birthday!) : null);
-        final isBirthdayPickerExpanded = profileState.isBirthdayPickerExpanded;
+        // Handle different state types
+        if (state is! ProfileLoaded && state is! ProfileSaving && state is! AvatarUploadLoading) {
+          return const SizedBox.shrink();
+        }
+
+        // Extract user and profile data based on state type
+        final user = state is ProfileLoaded ? state.user :
+                     state is ProfileSaving ? state.user :
+                     state is AvatarUploadLoading ? state.user : null;
+        
+        if (user == null) {
+          return const SizedBox.shrink();
+        }
+
+        final profileState = state is ProfileLoaded ? state : null;
+        final editingBirthday = profileState?.editingBirthday;
+        final selectedBirthday = editingBirthday ?? (user.birthday != null ? DateTime.tryParse(user.birthday!) : null);
+        final isBirthdayPickerExpanded = profileState?.isBirthdayPickerExpanded ?? false;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -39,6 +53,7 @@ class ProfileBirthdayPicker extends StatelessWidget {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
+                      splashColor: Colors.transparent,
                       onTap: () {
                         context.read<ProfileBloc>().add(
                           ProfileToggleBirthdayPickerEvent(),
@@ -104,6 +119,7 @@ class ProfileBirthdayPicker extends StatelessWidget {
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
+                          splashColor: Colors.transparent,
                           onTap: () {
                             context.read<ProfileBloc>().add(
                               ProfileUpdateBirthdayEvent(null),

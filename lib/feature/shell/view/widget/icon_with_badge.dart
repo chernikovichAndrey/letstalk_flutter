@@ -9,6 +9,7 @@ class IconWithBudge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Badge(
+      isLabelVisible: count > 0,
       label: Text('$count'),
       child: icon,
     );

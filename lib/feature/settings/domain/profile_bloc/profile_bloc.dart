@@ -10,6 +10,7 @@ part 'profile_state.dart';
 @singleton
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository _profileRepository;
+  int _retryCount = 0;
 
   ProfileBloc(this._profileRepository) : super(ProfileInitial()) {
     on<ProfileLoadEvent>(_onProfileLoad);
@@ -24,6 +25,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final user = await _profileRepository.getProfile();
       emit(ProfileLoaded(user));
     } catch (e) {
+      if (_retryCount < 5) {
+        add(ProfileLoadEvent());
+        _retryCount++;
+      }
       emit(ProfileError(e.toString()));
     }
   }

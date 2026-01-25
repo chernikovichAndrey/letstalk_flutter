@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
                 return CustomScrollView(
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.only(top: 20),
+                      padding: EdgeInsets.only(top: 28),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           children: [

@@ -4,3 +4,9 @@ part of 'profile_bloc.dart';
 sealed class ProfileEvent {}
 
 class ProfileLoadEvent extends ProfileEvent {}
+
+class ProfileUpdateAvatarEvent extends ProfileEvent {
+  final String avatarPath;
+  
+  ProfileUpdateAvatarEvent(this.avatarPath);
+}

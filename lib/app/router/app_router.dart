@@ -61,6 +61,7 @@ class AppRouter {
 
       //Call screen
       buildRoute(Routes.call),
+      buildRoute(Routes.photoEditor),
 
       //Sheets
       ...Routes.sheetRoutes.map(buildRoute),
@@ -91,6 +92,14 @@ class AppRouter {
         type: e.type,
         key: state.pageKey,
         child: CallDetailsSheet(callId: id),
+      );
+    }
+    if (e == Routes.photoEditor) {
+      final extra = state.extra;
+      return CPage(
+        type: e.type,
+        key: state.pageKey,
+        child: extra != null ? extra as Widget : const SizedBox(),
       );
     }
     return CPage(

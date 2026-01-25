@@ -36,6 +36,7 @@ extension RoutesExt on Routes {
       Routes.chatAttachSheet => const ChatAttachmentBottomSheet(),
       Routes.profileAvatarSheet => const ProfileAvatarBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),
+      Routes.photoEditor => const SizedBox(),
     };
   }
 }

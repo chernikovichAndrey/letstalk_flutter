@@ -14,6 +14,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc(this._profileRepository) : super(ProfileInitial()) {
     on<ProfileLoadEvent>(_onProfileLoad);
+    on<ProfileUpdateAvatarEvent>(_onProfileUpdateAvatar);
   }
 
   Future<void> _onProfileLoad(
@@ -30,6 +31,28 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         _retryCount++;
       }
       emit(ProfileError(e.toString()));
+    }
+  }
+
+  Future<void> _onProfileUpdateAvatar(
+    ProfileUpdateAvatarEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+    
+    emit(ProfileLoading());
+    try {
+      // TODO: Implement avatar upload to server
+      // await _profileRepository.updateAvatar(event.avatarPath);
+      
+      // For now, just reload the profile
+      final user = await _profileRepository.getProfile();
+      emit(ProfileLoaded(user));
+    } catch (e) {
+      emit(ProfileError(e.toString()));
+      // Restore previous state on error
+      emit(currentState);
     }
   }
 }

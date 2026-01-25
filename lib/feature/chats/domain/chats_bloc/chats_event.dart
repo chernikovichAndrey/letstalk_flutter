@@ -18,8 +18,9 @@ class ChatsSearch extends ChatsEvent {
 
 class ChatUpdated extends ChatsEvent {
   final int chatId;
+  final Message? message;
 
-  ChatUpdated(this.chatId);
+  ChatUpdated(this.chatId, [this.message]);
 }
 
 class ChatTypingUpdated extends ChatsEvent {

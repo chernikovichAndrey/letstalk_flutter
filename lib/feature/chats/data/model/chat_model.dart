@@ -40,6 +40,22 @@ class Chat {
       role: json['role'] as String?,
     );
   }
+
+  Chat copyWith({
+    int? unreadCount,
+    int? lastMessageId,
+    String? lastMessageText,
+  }) {
+    return Chat(
+      id: id,
+      type: type,
+      createdBy: createdBy,
+      membersCount: membersCount,
+      unreadCount: unreadCount ?? this.unreadCount,
+      lastMessageId: lastMessageId ?? this.lastMessageId,
+      lastMessageText: lastMessageText ?? this.lastMessageText,
+    );
+  }
 }
 
 class ChatMember {

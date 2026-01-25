@@ -5,16 +5,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
+import 'package:logger/logger.dart';
 
 part 'chats_event.dart';
 part 'chats_state.dart';
 
 @injectable
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
+  final Logger _logger = Logger();
   final ChatsRepository _chatsRepository;
   final WebSocketService _wsService;
   StreamSubscription? _wsSubscription;
+
+  late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
+    'user_typing': _handleUserTyping,
+    'new_message': _handleNewMessage
+  };
+
 
   ChatsBloc(
     this._chatsRepository,
@@ -29,6 +38,47 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsToggleChatSelection>(_onToggleChatSelection);
     on<ChatsDeleteSelected>(_onDeleteSelected);
     _subscribeToWebSocket();
+  }
+
+  void _subscribeToWebSocket() {
+    _wsSubscription = _wsService.stream.listen(
+          (message) {
+        if (message is String) {
+          final decoded = jsonDecode(message);
+          _handleWebSocketMessage(decoded);
+        }
+      },
+      onError: (error) {
+        _logger.e('WebSocket error in ChatsBloc: $error');
+      },
+    );
+  }
+
+  void _handleWebSocketMessage(Map<String, dynamic> data) {
+    final handler = _messageHandlers[data['type']];
+    handler?.call(data);
+  }
+
+  void _handleUserTyping(Map<String, dynamic> decoded) {
+    add(
+      ChatTypingUpdated(
+        chatId: decoded['chat_id'],
+        userId: decoded['user_id'],
+        isTyping: decoded['is_typing'],
+      ),
+    );
+  }
+
+  void _handleNewMessage(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['message']);
+    add(
+      ChatTypingUpdated(
+        chatId: msg.chatId,
+        userId: msg.fromUserId,
+        isTyping: false,
+      ),
+    );
+    add(ChatUpdated(msg.chatId, msg));
   }
 
   void _onToggleSelectionMode(
@@ -84,23 +134,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     }
   }
 
-  void _subscribeToWebSocket() {
-    _wsSubscription = _wsService.stream.listen((message) {
-      if (message is String) {
-        try {
-          final decoded = jsonDecode(message);
-          if (decoded['type'] == 'user_typing') {
-            add(ChatTypingUpdated(
-              chatId: decoded['chat_id'],
-              userId: decoded['user_id'],
-              isTyping: decoded['is_typing'],
-            ));
-          }
-        } catch (_) {}
-      }
-    });
-  }
-
   @override
   Future<void> close() {
     _wsSubscription?.cancel();
@@ -141,10 +174,24 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     final currentState = state;
     if (currentState is ChatsLoaded) {
       try {
-        final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
-        final updatedChats = currentState.chats.map((chat) {
-          return chat.id == event.chatId ? chatDetails.chat : chat;
-        }).toList();
+        late List<Chat> updatedChats;
+        if (event.message == null) {
+          final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
+          updatedChats = currentState.chats.map((chat) {
+            return chat.id == event.chatId ? chatDetails.chat : chat;
+          }).toList();
+        } else {
+          updatedChats = currentState.chats.map((chat) {
+            if (chat.id == event.chatId) {
+              return chat.copyWith(
+                unreadCount: chat.unreadCount + 1,
+                lastMessageId: event.message!.id,
+                lastMessageText: event.message!.text,
+              );
+            }
+            return chat;
+          }).toList();
+        }
         emit(ChatsLoaded(
           updatedChats,
           typingUsers: currentState.typingUsers,

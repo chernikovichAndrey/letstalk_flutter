@@ -68,7 +68,6 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   void _subscribeToWebSocket() {
     _wsSubscription = _wsService.stream.listen(
       (message) {
-        _logger.d('WebSocket received in ChatDetailsBloc: $message');
         if (message is String) {
           final decoded = jsonDecode(message);
           _handleWebSocketMessage(decoded);

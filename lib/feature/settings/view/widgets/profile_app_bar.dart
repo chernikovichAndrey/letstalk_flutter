@@ -4,7 +4,7 @@ import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
-class ProfileAppBar extends StatelessWidget{
+class ProfileAppBar extends StatelessWidget {
   const ProfileAppBar({super.key});
 
   @override
@@ -25,10 +25,7 @@ class ProfileAppBar extends StatelessWidget{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GlassButton(
-                    icon: Icons.close,
-                    onTap: context.pop,
-                  ),
+                  GlassButton(icon: Icons.close, onTap: context.pop),
                   if (state is ProfileSaving)
                     const Padding(
                       padding: EdgeInsets.all(12.0),
@@ -45,7 +42,12 @@ class ProfileAppBar extends StatelessWidget{
                         context.read<ProfileBloc>().add(
                           ProfileSaveChangesEvent(),
                         );
+                        FocusScope.of(context).unfocus();
                       },
+                      isEnabled:
+                          (state as ProfileLoaded).editingBirthday != null ||
+                          state.editingFirstName != null ||
+                          state.editingLastName != null,
                     ),
                 ],
               ),

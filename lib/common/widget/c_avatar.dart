@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class CAvatar extends StatelessWidget {
   final String? imageUrl;
   final String? name;
   final double radius;
   final VoidCallback? onTap;
+  final bool isLoading;
 
   const CAvatar({
     super.key,
@@ -15,6 +17,7 @@ class CAvatar extends StatelessWidget {
     this.name,
     this.radius = 24,
     this.onTap,
+    this.isLoading = false,
   });
 
   String _getInitials(String? name) {
@@ -90,9 +93,32 @@ class CAvatar extends StatelessWidget {
       );
     }
 
+    if (isLoading) {
+      avatar = Stack(
+        alignment: Alignment.center,
+        children: [
+          avatar,
+          Container(
+            width: radius * 2,
+            height: radius * 2,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black.withValues(alpha:  0.5),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: context.appColors.secondaryBackground,
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     if (onTap != null) {
       return GestureDetector(
-        onTap: onTap,
+        onTap: isLoading ? null : onTap,
         child: avatar,
       );
     }

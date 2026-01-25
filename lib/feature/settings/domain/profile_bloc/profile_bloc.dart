@@ -41,17 +41,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
     
-    emit(ProfileLoading());
+    emit(AvatarUploadLoading(currentState.user));
     try {
-      // TODO: Implement avatar upload to server
-      // await _profileRepository.updateAvatar(event.avatarPath);
-      
-      // For now, just reload the profile
+      await _profileRepository.updateAvatar(event.avatarPath);
       final user = await _profileRepository.getProfile();
       emit(ProfileLoaded(user));
     } catch (e) {
       emit(ProfileError(e.toString()));
-      // Restore previous state on error
       emit(currentState);
     }
   }

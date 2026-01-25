@@ -8,10 +8,12 @@ import 'package:lets_talk/feature/settings/view/widgets/profile_action_button.da
 
 class ProfileWidget extends StatelessWidget {
   final UserModel user;
+  final bool isAvatarUploading;
 
   const ProfileWidget({
     super.key,
     required this.user,
+    this.isAvatarUploading = false,
   });
 
   String _getUserDisplayName() {
@@ -40,6 +42,7 @@ class ProfileWidget extends StatelessWidget {
             imageUrl: user.avatarUrl,
             name: displayName,
             radius: 60,
+            isLoading: isAvatarUploading,
           ),
           const SizedBox(height: 16),
           if (displayName.isNotEmpty) ...[

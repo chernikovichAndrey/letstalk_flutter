@@ -7,6 +7,12 @@ final class ProfileInitial extends ProfileState {}
 
 final class ProfileLoading extends ProfileState {}
 
+final class AvatarUploadLoading extends ProfileState {
+  final UserModel user;
+
+  AvatarUploadLoading(this.user);
+}
+
 final class ProfileLoaded extends ProfileState {
   final UserModel user;
 

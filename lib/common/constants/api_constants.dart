@@ -9,4 +9,5 @@ class ApiConstants {
   static const String chatsSearch = '/chats/search';
   static const String messages = '/messages';
   static const String mediaUpload = '/media/upload';
+  static const String profileAvatar = '/profile/avatar';
 }

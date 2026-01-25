@@ -10,7 +10,7 @@ import 'package:lets_talk/feature/contacts/domain/repository/contacts_repository
 part 'contacts_event.dart';
 part 'contacts_state.dart';
 
-@injectable
+@singleton
 class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   final ContactsRepository _contactsRepository;
   final ChatsRepository _chatsRepository;

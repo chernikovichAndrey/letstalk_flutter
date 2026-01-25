@@ -39,7 +39,7 @@ class ChatContactsSheet extends StatelessWidget {
                 child: GlassButton(icon: Icons.close, onTap: context.pop),
               ),
               title: Text(
-                'Написать сообщение',
+                context.s.writeMessage,
                 style: context.text.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: context.appColors.glassForeground,
@@ -61,13 +61,13 @@ class ChatContactsSheet extends StatelessWidget {
                       children: [
                         ChatActionButton(
                           icon: Icons.group_outlined,
-                          title: 'Создать группу',
+                          title: context.s.createGroup,
                           onTap: () {},
                         ),
                         const Divider(height: 1, indent: 12, endIndent: 12,),
                         ChatActionButton(
                             icon: Icons.person_add_outlined,
-                            title: 'Создать контакт',
+                            title: context.s.createContact,
                             onTap: () async {
                               await context.push(Routes.createContact.path);
                               if (context.mounted) {

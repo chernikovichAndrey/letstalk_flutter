@@ -95,5 +95,8 @@
   "selectPhoto": "Выбрать фотографию",
   "birthday": "День рождения",
   "setBirthday": "Указать",
-  "deleteBirthday": "Удалить день рождения"
+  "deleteBirthday": "Удалить день рождения",
+  "writeMessage": "Написать сообщение",
+  "createGroup": "Создать группу",
+  "createContact": "Создать контакт"
 }

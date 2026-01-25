@@ -137,5 +137,8 @@
   "selectPhoto": "Select Photo",
   "birthday": "Birthday",
   "setBirthday": "Set",
-  "deleteBirthday": "Delete Birthday"
+  "deleteBirthday": "Delete Birthday",
+  "writeMessage": "Write message",
+  "createGroup": "Create group",
+  "createContact": "Create contact"
 }

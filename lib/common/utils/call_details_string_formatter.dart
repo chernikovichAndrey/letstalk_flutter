@@ -4,7 +4,8 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 String formatDate(DateTime? date) {
   if (date == null) return '-';
-  return DateFormat('dd/MM/yyyy HH:mm').format(date);
+  final localDate = date.toLocal();
+  return DateFormat('dd/MM/yyyy HH:mm').format(localDate);
 }
 
 String getDirectionText(BuildContext context, String direction) {

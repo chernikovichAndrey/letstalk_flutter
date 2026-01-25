@@ -33,13 +33,13 @@ class CallHistory {
       direction: json['direction'] as String,
       peer: CallHistoryPeer.fromJson(json['peer'] as Map<String, dynamic>),
       startedAt: json['started_at'] != null
-          ? DateTime.parse(json['started_at'] as String)
+          ? DateTime.parse('${json['started_at'] as String}Z')
           : null,
       answeredAt: json['answered_at'] != null
-          ? DateTime.parse(json['answered_at'] as String)
+          ? DateTime.parse('${json['answered_at'] as String}Z')
           : null,
       endedAt: json['ended_at'] != null
-          ? DateTime.parse(json['ended_at'] as String)
+          ? DateTime.parse('${json['ended_at'] as String}Z')
           : null,
       duration: json['duration'] as int?,
       durationFormatted: json['duration_formatted'] as String?,

@@ -2,23 +2,44 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/app/environment/environment.dart';
-import 'package:lets_talk/common/model/call_signaling_type.dart';
+import 'package:lets_talk/feature/shell/connectivity/domain/bloc/connectivity_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
 @singleton
 class WebSocketService {
-  WebSocketService();
+  WebSocketService(this._connectivityBloc);
 
   WebSocketChannel? _channel;
   final StreamController<dynamic> _controller = StreamController<dynamic>.broadcast();
   StreamSubscription? _socketSubscription;
   final Logger _logger = Logger();
 
+  final ConnectivityBloc _connectivityBloc;
+  StreamSubscription? _connectivitySubscription;
+  bool _intentionalDisconnect = false;
+
   Stream<dynamic> get stream => _controller.stream;
+
+  @postConstruct
+  void init() {
+    _connectivitySubscription = _connectivityBloc.stream.listen((state) {
+      if (state is ConnectivitySuccess) {
+        final hasConnection = state.results.any((result) =>
+          result != ConnectivityResult.none
+        );
+
+        if (hasConnection && _channel == null && !_intentionalDisconnect) {
+          _logger.i('Network restored, reconnecting WebSocket...');
+          connect();
+        }
+      }
+    });
+  }
 
   Stream<Map<String, dynamic>> get signalingStream {
     return stream.transform<Map<String, dynamic>>(
@@ -44,6 +65,7 @@ class WebSocketService {
   }
 
   void connect({Iterable<String>? protocols}) {
+    _intentionalDisconnect = false;
     if (_channel != null) return;
 
     try {
@@ -51,7 +73,7 @@ class WebSocketService {
         Uri.parse(Env.wsUrl),
         protocols: protocols,
       );
-      
+
       _socketSubscription = _channel!.stream.listen(
         (data) {
           _controller.add(data);
@@ -66,7 +88,7 @@ class WebSocketService {
           _socketSubscription = null;
         },
       );
-      
+
       _logger.i('WebSocket connected to ${Env.wsUrl}');
     } catch (e) {
       _logger.e('WebSocket connection error: $e');
@@ -78,6 +100,7 @@ class WebSocketService {
     int? closeCode,
     String? closeReason,
   }) async {
+    _intentionalDisconnect = true;
     if (_channel != null) {
       await _socketSubscription?.cancel();
       _socketSubscription = null;
@@ -111,6 +134,10 @@ class WebSocketService {
     } else {
       _logger.w('WebSocket not connected, cannot send data');
     }
+  }
+
+  void dispose() {
+    _connectivitySubscription?.cancel();
   }
 
   void sendMessage(

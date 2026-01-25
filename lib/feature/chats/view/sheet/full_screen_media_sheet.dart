@@ -35,7 +35,7 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
 
   Future<void> _loadFile() async {
     final args = context.getArgsOrNull<MediaPreviewArgs>();
-    final file = await args!.asset.file;
+    final file = args!.file;
     if (mounted) {
       setState(() {
         _file = file;
@@ -92,8 +92,11 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
             });
           } else if (state.attachedMedia != null) {
             getIt<ChatDetailsBloc>().add(
-              ChatDetailsSendMessage(_controller.text!),
+              ChatDetailsSendMessage(_controller.text),
             );
+            //close full screen media sheet
+            context.pop();
+            //close attachment bottom sheet
             context.pop();
           }
         }

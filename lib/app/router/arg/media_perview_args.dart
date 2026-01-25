@@ -1,10 +1,11 @@
-import 'package:photo_manager/photo_manager.dart';
-import 'package:lets_talk/app/router/arg/router_args.dart'; // Если используете базовый класс
+import 'dart:io';
+
+import 'package:lets_talk/app/router/arg/router_args.dart';
 
 class MediaPreviewArgs extends RouterArgs {
-  final AssetEntity asset;
+  final File file;
 
   const MediaPreviewArgs({
-    required this.asset,
+    required this.file,
   });
 }

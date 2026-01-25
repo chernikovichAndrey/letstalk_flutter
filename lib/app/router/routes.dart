@@ -18,7 +18,8 @@ enum Routes {
   callDetails(path: _Paths.callDetails, type: RouteType.sheet),
   forwardMessage(path: _Paths.forwardMessage, type: RouteType.sheet),
   fullScreenMedia(path: _Paths.fullScreenMedia, type: RouteType.sheet),
-  attachSheet(path: _Paths.attachSheet, type: RouteType.bottomSheet);
+  chatAttachSheet(path: _Paths.chatAttachSheet, type: RouteType.bottomSheet),
+  profileAvatarSheet(path: _Paths.profileAvatarSheet, type: RouteType.bottomSheet);
 
   const Routes({required this.path, required this.type});
 
@@ -53,6 +54,7 @@ abstract class _Paths {
   static const String settings = '/settings';
   static const String chatDetails = 'details/:id';
   static const String call = '/call';
-  static const String attachSheet = '/attach_sheet';
+  static const String chatAttachSheet = '/chat_attach_sheet';
+  static const String profileAvatarSheet = '/profile_avatar_sheet';
   static const String fullScreenMedia = '/full_screen_media';
 }

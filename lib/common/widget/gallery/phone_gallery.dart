@@ -4,27 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lets_talk/common/widget/gallery/gallery_cubit/gallery_cubit.dart';
+import 'package:lets_talk/common/widget/gallery/gallery_cubit/gallery_state.dart';
 import 'package:lets_talk/di/injection.dart';
-import 'package:lets_talk/feature/chats/domain/gallery_cubit/gallery_cubit.dart';
-import 'package:lets_talk/feature/chats/domain/gallery_cubit/gallery_state.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/asset_thumbnail.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/galery_camera_preview.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class GalleryTab extends StatelessWidget {
-  const GalleryTab({super.key});
+class PhoneGallery extends StatelessWidget {
+  final Function(File file) onGetMediaFile;
+
+  const PhoneGallery({super.key, required this.onGetMediaFile});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<GalleryCubit>()..loadImages(),
-      child: const _GalleryContent(),
+      child: _GalleryContent(onGetMediaFile: onGetMediaFile),
     );
   }
 }
 
 class _GalleryContent extends StatefulWidget {
-  const _GalleryContent();
+  final Function(File file) onGetMediaFile;
+  const _GalleryContent({required this.onGetMediaFile});
 
   @override
   State<_GalleryContent> createState() => _GalleryContentState();
@@ -65,7 +68,7 @@ class _GalleryContentState extends State<_GalleryContent> {
       source: ImageSource.camera,
     );
     if (photo != null && mounted) {
-      Navigator.pop(context, File(photo.path));
+      widget.onGetMediaFile(File(photo.path));
     }
   }
 
@@ -124,7 +127,15 @@ class _GalleryContentState extends State<_GalleryContent> {
                   }
                   if (images.isEmpty && index > 0) return const SizedBox();
                   final asset = images[index - 1];
-                  return AssetThumbnail(asset: asset);
+                  return AssetThumbnail(
+                    asset: asset,
+                    onTapAsset: (asset) async {
+                      final file = await asset.file;
+                      if (file != null) {
+                        widget.onGetMediaFile(file);
+                      }
+                    },
+                  );
                 }, childCount: (images.length + 1).clamp(0, 5)),
               ),
             ),
@@ -140,7 +151,15 @@ class _GalleryContentState extends State<_GalleryContent> {
                   ),
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final asset = images[index + 4];
-                    return AssetThumbnail(asset: asset);
+                    return AssetThumbnail(
+                      asset: asset,
+                      onTapAsset: (asset) async {
+                        final file = await asset.file;
+                        if (file != null) {
+                          widget.onGetMediaFile(file);
+                        }
+                      },
+                    );
                   }, childCount: images.length - 4),
                 ),
               ),

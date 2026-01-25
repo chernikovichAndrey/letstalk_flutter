@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/routes.dart';
-import 'package:lets_talk/common/sheet/call_contacts_sheet.dart';
-import 'package:lets_talk/common/sheet/chat_contact_sheet.dart';
+import 'package:lets_talk/feature/calls_history/view/sheet/call_contacts_sheet.dart';
+import 'package:lets_talk/feature/chats/view/sheet/chat_contact_sheet.dart';
 import 'package:lets_talk/common/widget/c_alert_dialog.dart';
 import 'package:lets_talk/feature/auth/view/login_page.dart';
 import 'package:lets_talk/feature/call/view/call_page.dart';
 import 'package:lets_talk/feature/calls_history/view/calls_history_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/chats_page_scope.dart';
-import 'package:lets_talk/feature/chats/view/sheet/attachment_bottom_sheet.dart';
+import 'package:lets_talk/feature/chats/view/sheet/chat_attachment_bottom_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/forward_message_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/full_screen_media_sheet.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
 import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
 import 'package:lets_talk/feature/settings/view/settings_page.dart';
+import 'package:lets_talk/feature/settings/view/sheet/profile_avatar_bottom_sheet.dart';
 import 'package:lets_talk/feature/splash/view/splash_page.dart';
 
 extension RoutesExt on Routes {
@@ -32,7 +33,8 @@ extension RoutesExt on Routes {
       Routes.chatContacts => const ChatContactsSheet(),
       Routes.forwardMessage => const ForwardMessageSheet(),
       Routes.callDetails => const SizedBox(),
-      Routes.attachSheet => const AttachmentBottomSheet(),
+      Routes.chatAttachSheet => const ChatAttachmentBottomSheet(),
+      Routes.profileAvatarSheet => const ProfileAvatarBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),
     };
   }

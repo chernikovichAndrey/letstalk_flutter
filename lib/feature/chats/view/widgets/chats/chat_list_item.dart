@@ -24,7 +24,7 @@ class ChatListItem extends StatelessWidget {
   String _formatTime(String? dateTimeStr) {
     if (dateTimeStr == null) return '';
     try {
-      final dateTime = DateTime.parse(dateTimeStr);
+      final dateTime = DateTime.parse('${dateTimeStr}Z').toLocal();
       final now = DateTime.now();
       
       if (dateTime.year == now.year &&

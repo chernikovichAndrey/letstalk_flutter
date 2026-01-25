@@ -93,13 +93,13 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
         message.fromUserId == state.currentUser?.id;
 
     bool showDate = false;
-    final createdAt = DateTime.tryParse(message.createdAt)?.toLocal();
+    final createdAt = DateTime.tryParse('${message.createdAt}Z')?.toLocal();
 
     if (createdAt != null) {
       if (index + 1 < state.messages.length) {
         final nextMessage = state.messages[index + 1];
         final nextCreatedAt = DateTime.tryParse(
-          nextMessage.createdAt,
+          '${nextMessage.createdAt}Z',
         )?.toLocal();
         if (nextCreatedAt != null) {
           showDate = !_isSameDay(createdAt, nextCreatedAt);

@@ -76,8 +76,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     if (message.text == null || message.text!.isEmpty) return false;
 
     try {
-      final dateStr = message.createdAt.replaceAll(' ', 'T');
-      final date = DateTime.parse(dateStr);
+      final date = DateTime.parse('${message.createdAt}Z').toLocal();
       final difference = DateTime.now().difference(date);
       return difference.inHours < 48;
     } catch (_) {

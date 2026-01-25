@@ -27,7 +27,7 @@ class MessageBubbleInfo extends StatelessWidget {
       timeColor = appColors.messageOtherTime;
     }
     final timeFormat = DateFormat('HH:mm');
-    final DateTime? createdAt = DateTime.tryParse(message.createdAt);
+    final DateTime? createdAt = DateTime.tryParse('${message.createdAt}Z');
     final String time = createdAt != null
         ? timeFormat.format(createdAt.toLocal())
         : '';

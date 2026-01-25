@@ -92,7 +92,7 @@ class ProfileWidget extends StatelessWidget {
           const SizedBox(height: 48),
           ProfileActionButton(
             onTap: () => context.push(Routes.profileAvatarSheet.path),
-            label: 'Изменить фотографию',
+            label: context.s.changePhoto,
             labelColor: appColors.telegramBlue,
             icon: Icons.add_a_photo_outlined,
             iconColor: appColors.telegramBlue,

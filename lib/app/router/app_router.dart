@@ -78,14 +78,6 @@ class AppRouter {
   }
 
   Page buildPage(Routes e, GoRouterState state) {
-    if (e == Routes.chatDetails) {
-      final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
-      return CPage(
-        type: e.type,
-        key: state.pageKey,
-        child: ChatDetailsPageScope(chatId: id),
-      );
-    }
     if (e == Routes.callDetails) {
       final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
       return CPage(

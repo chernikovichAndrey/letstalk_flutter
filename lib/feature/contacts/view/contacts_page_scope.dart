@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -37,8 +38,8 @@ class ContactsPageScope extends StatelessWidget {
               }
               if (state is ContactsChatCreated) {
                 context.go(
-                  '${Routes.chats.path}/${Routes.chatDetails.path}'
-                      .replaceFirst(':id', state.chatId.toString()),
+                  '${Routes.chats.path}/${Routes.chatDetails.path}',
+                  extra: ChatDetailsArgs(chatId: state.chatId),
                 );
               }
             },

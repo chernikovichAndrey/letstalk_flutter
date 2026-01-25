@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
@@ -64,8 +65,8 @@ class _ChatsPageState extends State<ChatsPage>{
                     state: state,
                     onSelectChat: (id) async {
                       context.push(
-                        '${Routes.chats.path}/${Routes.chatDetails.path}'
-                            .replaceFirst(':id', id.toString()),
+                        '${Routes.chats.path}/${Routes.chatDetails.path}',
+                        extra: ChatDetailsArgs(chatId: id),
                       );
                       if (context.mounted) {
                         context.read<ChatsBloc>().add(ChatUpdated(id));

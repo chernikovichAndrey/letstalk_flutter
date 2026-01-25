@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
@@ -20,8 +21,8 @@ class ChatContactsSheet extends StatelessWidget {
         listener: (context, state) {
           if (state is ContactsChatCreated) {
             context.go(
-              '${Routes.chats.path}/${Routes.chatDetails.path}'
-                  .replaceFirst(':id', state.chatId.toString()),
+              '${Routes.chats.path}/${Routes.chatDetails.path}',
+              extra: ChatDetailsArgs(chatId: state.chatId),
             );
           }
         },

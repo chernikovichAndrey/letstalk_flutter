@@ -166,7 +166,6 @@ class _CallPageState extends State<CallPage> {
                         const Spacer(flex: 1),
                         CAvatar(
                           radius: 80,
-                          name: context.s.defaultUserName, // Placeholder
                         ),
                         const SizedBox(height: 24),
                         Text(

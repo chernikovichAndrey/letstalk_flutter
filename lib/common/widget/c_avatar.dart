@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CAvatar extends StatelessWidget {
   final String? imageUrl;
@@ -37,26 +40,55 @@ class CAvatar extends StatelessWidget {
     return colors[name.hashCode.abs() % colors.length];
   }
 
+  String _getAnimalAvatar(int identifier) {
+    final animals = [
+      'bear',
+      'fox',
+      'cat',
+      'rabbit',
+      'panda',
+      'owl',
+    ];
+    final animalName = animals[identifier];
+    return 'assets/images/animals/$animalName.svg';
+  }
+
   @override
   Widget build(BuildContext context) {
     final initials = _getInitials(name);
     final backgroundColor = _getBackgroundColor(name);
+    final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
+    final hasName = name != null && name!.isNotEmpty;
 
-    Widget avatar = CircleAvatar(
-      radius: radius,
-      backgroundColor: imageUrl == null ? backgroundColor : Colors.grey[200],
-      backgroundImage: imageUrl != null ? NetworkImage(imageUrl!) : null,
-      child: imageUrl == null
-          ? Text(
-              initials,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: radius * 0.8,
-                fontWeight: FontWeight.bold,
-              ),
-            )
-          : null,
-    );
+    Widget avatar;
+
+    if (hasImage) {
+      avatar = CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.grey[200],
+        backgroundImage: NetworkImage(imageUrl!),
+      );
+    } else if (hasName) {
+      avatar = CircleAvatar(
+        radius: radius,
+        backgroundColor: backgroundColor,
+        child: Text(
+          initials,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: radius * 0.8,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    } else {
+      avatar = SvgPicture.asset(
+        _getAnimalAvatar(Random().nextInt(5)),
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.contain,
+      );
+    }
 
     if (onTap != null) {
       return GestureDetector(

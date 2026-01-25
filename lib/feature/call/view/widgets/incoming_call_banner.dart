@@ -42,7 +42,6 @@ class IncomingCallBanner extends StatelessWidget {
               children: [
                 CAvatar(
                   radius: 24,
-                  name: context.s.unknownUser,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

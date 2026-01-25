@@ -35,7 +35,7 @@ class ProfileWidget extends StatelessWidget {
         children: [
           CAvatar(
             imageUrl: user.avatarUrl,
-            name: displayName.isNotEmpty ? displayName : user.phone,
+            name: displayName,
             radius: 70,
           ),
           const SizedBox(height: 20),

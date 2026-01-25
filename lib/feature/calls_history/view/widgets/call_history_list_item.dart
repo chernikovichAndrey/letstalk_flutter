@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lets_talk/app/router/arg/call_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
@@ -82,7 +83,8 @@ class CallHistoryListItem extends StatelessWidget {
               .add(CallsHistoryToggleCallSelection(call.id));
         } else {
           context.push(
-            Routes.callDetails.path.replaceFirst(':id', call.id.toString()),
+            Routes.callDetails.path,
+            extra: CallDetailsArgs(callId: call.id),
           );
         }
       },

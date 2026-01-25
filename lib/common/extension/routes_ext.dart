@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/feature/calls_history/view/call_details_sheet.dart';
 import 'package:lets_talk/feature/calls_history/view/sheet/call_contacts_sheet.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/sheet/chat_contact_sheet.dart';
@@ -34,7 +35,7 @@ extension RoutesExt on Routes {
       Routes.callContacts => const CallContactsSheet(),
       Routes.chatContacts => const ChatContactsSheet(),
       Routes.forwardMessage => const ForwardMessageSheet(),
-      Routes.callDetails => const SizedBox(),
+      Routes.callDetails => const CallDetailsSheet(),
       Routes.chatAttachSheet => const ChatAttachmentBottomSheet(),
       Routes.profileAvatarSheet => const ProfileAvatarBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),

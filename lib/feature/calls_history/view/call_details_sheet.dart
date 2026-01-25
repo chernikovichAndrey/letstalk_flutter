@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/arg/call_details_args.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
@@ -12,15 +13,15 @@ import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
 import 'package:lets_talk/feature/calls_history/view/widgets/call_details_info_row.dart';
 
 class CallDetailsSheet extends StatelessWidget {
-  final int callId;
-
-  const CallDetailsSheet({super.key, required this.callId});
+  const CallDetailsSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          getIt<CallDetailsCubit>()..loadCallDetails(callId),
+      create: (context) {
+        final callId = context.getArgsOrNull<CallDetailsArgs>()!.callId;
+        return getIt<CallDetailsCubit>()..loadCallDetails(callId);
+      },
       child: const _CallDetailsView(),
     );
   }

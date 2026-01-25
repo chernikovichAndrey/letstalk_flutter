@@ -78,14 +78,6 @@ class AppRouter {
   }
 
   Page buildPage(Routes e, GoRouterState state) {
-    if (e == Routes.callDetails) {
-      final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
-      return CPage(
-        type: e.type,
-        key: state.pageKey,
-        child: CallDetailsSheet(callId: id),
-      );
-    }
     return CPage(
       type: e.type,
       key: state.pageKey,

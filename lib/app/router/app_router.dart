@@ -94,14 +94,6 @@ class AppRouter {
         child: CallDetailsSheet(callId: id),
       );
     }
-    if (e == Routes.photoEditor) {
-      final extra = state.extra;
-      return CPage(
-        type: e.type,
-        key: state.pageKey,
-        child: extra != null ? extra as Widget : const SizedBox(),
-      );
-    }
     return CPage(
       type: e.type,
       key: state.pageKey,

@@ -77,5 +77,17 @@
   "fileDownloaded": "Файл скачан",
   "downloadError": "Ошибка скачивания: {error}",
   "pleaseFillInFirstNameAndPhone": "Пожалуйста, заполните имя и телефон",
-  "changePhoto": "Изменить фотографию"
+  "changePhoto": "Изменить фотографию",
+  "photoEditorBack": "Назад",
+  "photoEditorRotate": "Повернуть",
+  "photoEditorCrop": "Обрезать",
+  "photoEditorFlip": "Отразить",
+  "photoEditorAdjust": "Настройки",
+  "photoEditorDone": "Готово",
+  "photoEditorAdjustments": "Коррекция",
+  "photoEditorReset": "Сбросить",
+  "photoEditorBrightness": "Яркость",
+  "photoEditorContrast": "Контраст",
+  "photoEditorSaturation": "Насыщенность",
+  "photoEditorSaveError": "Не удалось сохранить изображение: {error}"
 }

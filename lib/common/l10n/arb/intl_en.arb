@@ -112,5 +112,24 @@
       }
     }
   },
-  "changePhoto": "Change Photo"
+  "changePhoto": "Change Photo",
+  "photoEditorBack": "Back",
+  "photoEditorRotate": "Rotate",
+  "photoEditorCrop": "Crop",
+  "photoEditorFlip": "Flip",
+  "photoEditorAdjust": "Adjust",
+  "photoEditorDone": "Done",
+  "photoEditorAdjustments": "Adjustments",
+  "photoEditorReset": "Reset",
+  "photoEditorBrightness": "Brightness",
+  "photoEditorContrast": "Contrast",
+  "photoEditorSaturation": "Saturation",
+  "photoEditorSaveError": "Failed to save image: {error}",
+  "@photoEditorSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

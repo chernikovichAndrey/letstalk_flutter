@@ -98,6 +98,27 @@ class CallHistoryListItem extends StatelessWidget {
   }
 
   String _formatDate(DateTime? date) {
-    return DateFormat('dd/MM/yyyy').format(date ?? DateTime.now());
+    if (date == null) return '';
+    
+    final now = DateTime.now();
+    final localDate = date.toLocal();
+    
+    // Check if call was this week
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final startOfWeekDate = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+    
+    if (localDate.isAfter(startOfWeekDate)) {
+      // Show abbreviated day name
+      return DateFormat('EE', 'ru').format(localDate);
+    }
+    
+    // Check if call was this year
+    if (localDate.year == now.year) {
+      // Show day and month (01.12)
+      return DateFormat('dd.MM').format(localDate);
+    }
+    
+    // Call was not this year - show day.month.year (01.12.25)
+    return DateFormat('dd.MM.yy').format(localDate);
   }
 }

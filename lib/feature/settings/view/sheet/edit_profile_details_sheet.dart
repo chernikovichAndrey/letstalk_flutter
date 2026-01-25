@@ -25,7 +25,6 @@ class EditProfileDetailsPage extends StatelessWidget {
             state is! ProfileSaving &&
             state is! AvatarUploadLoading) {
           return Scaffold(
-            backgroundColor: context.appColors.surfaceSecondary,
             body: const Center(child: CircularProgressIndicator()),
           );
         }
@@ -33,7 +32,6 @@ class EditProfileDetailsPage extends StatelessWidget {
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
-            backgroundColor: context.appColors.surfaceSecondary,
             extendBodyBehindAppBar: true,
             body: Stack(
               children: [

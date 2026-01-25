@@ -73,7 +73,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
     return BlocListener<AddContactBloc, AddContactState>(
       listener: (context, state) {
         if (state is AddContactSuccess) {
-          Navigator.pop(context, true);
+          context.pop(context);
         }
       },
       child: ClipRRect(

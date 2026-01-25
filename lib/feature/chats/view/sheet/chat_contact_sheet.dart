@@ -6,6 +6,7 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_action_button.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
@@ -38,7 +39,7 @@ class ChatContactsSheet extends StatelessWidget {
                 child: GlassButton(icon: Icons.close, onTap: context.pop),
               ),
               title: Text(
-                context.s.newCall,
+                'Написать сообщение',
                 style: context.text.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: context.appColors.glassForeground,
@@ -53,7 +54,30 @@ class ChatContactsSheet extends StatelessWidget {
                   return const ContactsSceleton();
                 }
                 return CustomScrollView(
-                  slivers: [ContactsSlivers(state: state, isRegisteredOnly: true)],
+                  slivers: [
+                    ContactsSlivers(
+                      state: state,
+                      isRegisteredOnly: true,
+                      children: [
+                        ChatActionButton(
+                          icon: Icons.group_outlined,
+                          title: 'Создать группу',
+                          onTap: () {},
+                        ),
+                        const Divider(height: 1, indent: 12, endIndent: 12,),
+                        ChatActionButton(
+                            icon: Icons.person_add_outlined,
+                            title: 'Создать контакт',
+                            onTap: () async {
+                              await context.push(Routes.createContact.path);
+                              if (context.mounted) {
+                                context.read<ContactsBloc>().add(ContactsRefresh());
+                              }
+                            }
+                        ),
+                      ],
+                    )
+                  ],
                 );
               },
             ),

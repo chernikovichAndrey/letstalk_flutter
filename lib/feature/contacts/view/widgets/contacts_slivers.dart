@@ -6,6 +6,7 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 import 'package:lets_talk/feature/contacts/view/widgets/contact_item.dart';
 
 class ContactsSlivers extends StatelessWidget {
+  final List<Widget> children;
   final Function(int? id)? onSelectContact;
   final bool isRegisteredOnly;
 
@@ -14,6 +15,7 @@ class ContactsSlivers extends StatelessWidget {
     required this.state,
     this.onSelectContact,
     this.isRegisteredOnly = false,
+    this.children = const [],
   });
 
   final ContactsState state;
@@ -35,6 +37,10 @@ class ContactsSlivers extends StatelessWidget {
               },
             ),
           ),
+          if (children.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Column(children: children),
+            ),
           if (contacts.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,

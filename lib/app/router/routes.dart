@@ -7,7 +7,7 @@ enum Routes {
   callsHistory(path: _Paths.callsHistory, type: RouteType.page),
   chats(path: _Paths.chats, type: RouteType.page),
   settings(path: _Paths.settings, type: RouteType.page),
-  editProfileDetails(path: _Paths.editProfileDetails, type: RouteType.page),
+  editProfileDetails(path: _Paths.editProfileDetails, type: RouteType.sheet),
   chatDetails(path: _Paths.chatDetails, type: RouteType.page),
   call(path: _Paths.call, type: RouteType.page),
   // dialogs

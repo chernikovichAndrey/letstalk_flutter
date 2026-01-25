@@ -47,9 +47,7 @@ class EditProfileDetailsPage extends StatelessWidget {
                             ProfileAvatar(),
                             const SizedBox(height: 16),
                             GestureDetector(
-                              onTap: () => GoRouter.of(
-                                context,
-                              ).push(Routes.profileAvatarSheet.path),
+                              onTap: () => context.push(Routes.profileAvatarSheet.path),
                               child: Text(
                                 context.s.selectPhoto,
                                 style: TextStyle(
@@ -64,8 +62,9 @@ class EditProfileDetailsPage extends StatelessWidget {
                             const SizedBox(height: 24),
                             ProfileBirthdayPicker(),
                             const SizedBox(height: 32),
-                            Padding(
+                            Container(
                               padding: const EdgeInsets.all(16.0),
+                              margin: const EdgeInsets.only(bottom: 18),
                               child: SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(

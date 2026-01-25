@@ -54,9 +54,6 @@ class AppRouter {
               StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
             ],
           ),
-
-          //Edit Profile Details
-          buildRoute(Routes.editProfileDetails),
         ]
       ),
 

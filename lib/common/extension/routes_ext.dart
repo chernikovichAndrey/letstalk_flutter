@@ -14,7 +14,7 @@ import 'package:lets_talk/feature/chats/view/sheet/forward_message_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/full_screen_media_sheet.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
 import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
-import 'package:lets_talk/feature/settings/view/edit_profile_details_page.dart';
+import 'package:lets_talk/feature/settings/view/sheet/edit_profile_details_sheet.dart';
 import 'package:lets_talk/feature/settings/view/photo_editor_page.dart';
 import 'package:lets_talk/feature/settings/view/settings_page.dart';
 import 'package:lets_talk/feature/settings/view/sheet/profile_avatar_bottom_sheet.dart';

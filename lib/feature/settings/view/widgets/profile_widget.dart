@@ -65,27 +65,6 @@ class ProfileWidget extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  if (user.username != null && user.username!.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        '•',
-                        style: TextStyle(
-                          color: appColors.glassForeground.withValues(alpha: 0.7),
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '@${user.username}',
-                      style: TextStyle(
-                        color: appColors.glassForeground.withValues(alpha: 0.7),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
                 ],
               ),
               const SizedBox(height: 48),

@@ -40,6 +40,35 @@ class ProfileRepositoryImpl implements ProfileRepository {
     );
   }
 
+  @override
+  Future<UserModel> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? birthday,
+  }) async {
+    final data = <String, dynamic>{};
+    
+    if (firstName != null) {
+      data['first_name'] = firstName;
+    }
+    if (lastName != null) {
+      data['last_name'] = lastName;
+    }
+    if (birthday != null) {
+      data['birthday'] = birthday;
+    }
+    
+    final response = await _apiService.put(
+      ApiConstants.profile,
+      data: data,
+      options: Options(
+        contentType: Headers.jsonContentType,
+      ),
+    );
+    
+    return UserModel.fromJson(response.data['user']);
+  }
+
   String _getMimeType(String extension) {
     switch (extension) {
       case 'jpg':

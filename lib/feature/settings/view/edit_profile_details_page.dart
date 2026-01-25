@@ -30,74 +30,77 @@ class EditProfileDetailsPage extends StatelessWidget {
           );
         }
 
-        return Scaffold(
-          backgroundColor: context.appColors.surfaceSecondary,
-          extendBodyBehindAppBar: true,
-          body: Stack(
-            children: [
-              CustomScrollView(
-                slivers: [
-                  SliverPadding(
-                    padding: EdgeInsets.only(top: topPadding + 16),
-                    sliver: SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          ProfileAvatar(),
-                          const SizedBox(height: 16),
-                          GestureDetector(
-                            onTap: () => GoRouter.of(
-                              context,
-                            ).push(Routes.profileAvatarSheet.path),
-                            child: Text(
-                              context.s.selectPhoto,
-                              style: TextStyle(
-                                color: appColors.telegramBlue,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          ProfileNamesGroup(),
-                          const SizedBox(height: 24),
-                          ProfileBirthdayPicker(),
-                          const SizedBox(height: 32),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  context.read<AuthBloc>().add(AuthLogout());
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: cardColor,
-                                  foregroundColor: Colors.red,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                                child: Text(
-                                  context.s.logout,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            backgroundColor: context.appColors.surfaceSecondary,
+            extendBodyBehindAppBar: true,
+            body: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: EdgeInsets.only(top: topPadding + 16),
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          children: [
+                            ProfileAvatar(),
+                            const SizedBox(height: 16),
+                            GestureDetector(
+                              onTap: () => GoRouter.of(
+                                context,
+                              ).push(Routes.profileAvatarSheet.path),
+                              child: Text(
+                                context.s.selectPhoto,
+                                style: TextStyle(
+                                  color: appColors.telegramBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 32),
+                            ProfileNamesGroup(),
+                            const SizedBox(height: 24),
+                            ProfileBirthdayPicker(),
+                            const SizedBox(height: 32),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    context.read<AuthBloc>().add(AuthLogout());
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: cardColor,
+                                    foregroundColor: Colors.red,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    context.s.logout,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              ProfileAppBar(),
-            ],
+                  ],
+                ),
+                ProfileAppBar(),
+              ],
+            ),
           ),
         );
       },

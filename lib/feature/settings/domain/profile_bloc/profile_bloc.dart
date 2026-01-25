@@ -111,15 +111,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     
     emit(ProfileSaving(currentState.user));
     try {
-      // TODO: Implement profile update API call
-      // await _profileRepository.updateProfile(
-      //   firstName: currentState.editingFirstName,
-      //   lastName: currentState.editingLastName,
-      //   birthday: currentState.editingBirthday,
-      // );
+      String? birthday;
+      if (currentState.editingBirthday != null) {
+        birthday = '${currentState.editingBirthday!.year}-'
+            '${currentState.editingBirthday!.month.toString().padLeft(2, '0')}-'
+            '${currentState.editingBirthday!.day.toString().padLeft(2, '0')}';
+      }
       
-      final user = await _profileRepository.getProfile();
-      emit(ProfileLoaded(user));
+      final updatedUser = await _profileRepository.updateProfile(
+        firstName: currentState.editingFirstName,
+        lastName: currentState.editingLastName,
+        birthday: birthday,
+      );
+      
+      emit(ProfileLoaded(updatedUser));
     } catch (e) {
       emit(ProfileError(e.toString()));
       emit(currentState);

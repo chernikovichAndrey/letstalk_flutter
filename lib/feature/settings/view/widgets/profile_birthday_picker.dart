@@ -109,43 +109,41 @@ class ProfileBirthdayPicker extends StatelessWidget {
                         },
                       ),
                     ),
-                    if (selectedBirthday != null) ...[
-                      Divider(
-                        height: 1,
-                        color: context.appColors.divider,
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          onTap: () {
-                            context.read<ProfileBloc>().add(
-                              ProfileUpdateBirthdayEvent(null),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  context.s.deleteBirthday,
-                                  style: TextStyle(
-                                    color: context.appColors.telegramBlue,
-                                    fontSize: 16,
-                                  ),
+                    Divider(
+                      height: 1,
+                      color: context.appColors.divider,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          context.read<ProfileBloc>().add(
+                            ProfileUpdateBirthdayEvent(null),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                context.s.deleteBirthday,
+                                style: TextStyle(
+                                  color: context.appColors.telegramBlue,
+                                  fontSize: 16,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ],
                 ],
               ),

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:gal/gal.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
@@ -20,11 +21,21 @@ part 'chat_details_state.dart';
 
 @singleton
 class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
+  final Logger _logger = Logger();
   final ChatDetailsRepository _chatDetailsRepository;
   final MediaRepository _mediaRepository;
   final WebSocketService _wsService;
   StreamSubscription? _wsSubscription;
   static const int _limit = 20;
+
+  late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
+    'new_message': _handleNewMessage,
+    'message_sent': _handleSentMessage,
+    'message_edit_success': _handleEditMessageSuccess,
+    'read_confirmed': _handleReadConfirmed,
+    'message_read': _handleMessageRead,
+    'user_typing': _handleUserTypingMessage,
+  };
 
   ChatDetailsBloc(
     this._chatDetailsRepository,
@@ -45,12 +56,70 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsReplyToMessage>(_onReplyToMessage);
     on<ChatDetailsSetAttachedMedia>(_onSetAttachedMedia);
     on<ChatDetailsUpdateMessage>(_onUpdateMessage);
+    on<ChatDetailsReadMessage>(_onReadMessage);
     on<DownloadDocument>(_onDownloadDocument);
     on<SaveImageToGallery>(_onSaveImageToGallery);
     on<ChatDetailsDownloadProgress>(_onDownloadProgress);
     on<RefreshStateEvent>(_onRefreshState);
 
     _subscribeToWebSocket();
+  }
+
+  void _subscribeToWebSocket() {
+    _wsSubscription = _wsService.stream.listen(
+      (message) {
+        _logger.d('WebSocket received in ChatDetailsBloc: $message');
+        if (message is String) {
+          final decoded = jsonDecode(message);
+          _handleWebSocketMessage(decoded);
+        }
+      },
+      onError: (error) {
+        _logger.e('WebSocket error in ChatDetailsBloc: $error');
+        add(ChatDetailsErrorReceived(error.toString()));
+      },
+    );
+  }
+
+  void _handleWebSocketMessage(Map<String, dynamic> data) {
+    final handler = _messageHandlers[data['type']];
+    handler?.call(data);
+  }
+
+  void _handleNewMessage(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['message']);
+    if (state.chat?.id == msg.chatId) {
+      _chatDetailsRepository.markAsRead(msg.chatId, msg.id);
+    }
+    add(ChatDetailsNewMessageReceived(msg));
+  }
+
+  void _handleSentMessage(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['message']);
+    add(ChatDetailsNewMessageReceived(msg));
+  }
+
+  void _handleEditMessageSuccess(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['message']);
+    add(ChatDetailsUpdateMessage(msg));
+  }
+
+  void _handleReadConfirmed(Map<String, dynamic> decoded) {
+    add(ChatDetailsReadMessage(decoded['chat_id'], decoded['message_id']));
+  }
+
+  void _handleMessageRead(Map<String, dynamic> decoded) {
+    add(ChatDetailsReadMessage(decoded['chat_id'], decoded['message_id']));
+  }
+
+  void _handleUserTypingMessage(Map<String, dynamic> decoded) {
+    final chatId = decoded['chat_id'] as int;
+    if (state.chat?.id == chatId) {
+      add(ChatDetailsUserTyping(
+        decoded['user_id'] as int,
+        decoded['is_typing'] as bool,
+      ));
+    }
   }
 
   void _onSetAttachedMedia(
@@ -71,6 +140,26 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       return m.id == event.message.id ? event.message : m;
     }).toList();
     emit(state.copyWith(messages: messages));
+  }
+
+  void _onReadMessage(
+    ChatDetailsReadMessage event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    if (state.chat?.id != event.chatId) return;
+
+    bool hasChanges = false;
+    final messages = state.messages.map((m) {
+      if (m.id <= event.messageId && !m.read) {
+        hasChanges = true;
+        return m.copyWith(read: true);
+      }
+      return m;
+    }).toList();
+
+    if (hasChanges) {
+      emit(state.copyWith(messages: messages));
+    }
   }
 
   Future<void> _onSaveImageToGallery(
@@ -283,41 +372,6 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         errorMessage: event.error,
       ),
     );
-  }
-
-  void _subscribeToWebSocket() {
-    _wsSubscription = _wsService.stream.listen((message) {
-      try {
-        if (message is String) {
-          final decoded = jsonDecode(message);
-          switch (decoded['type']) {
-            case 'new_message':
-              final msg = Message.fromJson(decoded['message']);
-              _chatDetailsRepository.markAsRead(msg.chatId, msg.id);
-              add(ChatDetailsNewMessageReceived(msg));
-              return;
-            case 'message_sent':
-              final msg = Message.fromJson(decoded['message']);
-              add(ChatDetailsNewMessageReceived(msg));
-            case 'message_edit_success':
-              final msg = Message.fromJson(decoded['message']);
-              add(ChatDetailsUpdateMessage(msg));
-            case 'user_typing':
-              final chatId = decoded['chat_id'] as int;
-              if (state.chat?.id == chatId) {
-                add(ChatDetailsUserTyping(
-                  decoded['user_id'] as int,
-                  decoded['is_typing'] as bool,
-                ));
-              }
-            default:
-              return;
-          }
-        }
-      } catch (e) {
-        // Handle parse error or ignore
-      }
-    });
   }
 
   void _onNewMessageReceived(

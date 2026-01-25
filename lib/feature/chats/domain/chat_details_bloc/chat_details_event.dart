@@ -107,4 +107,10 @@ class ChatDetailsUpdateMessage extends ChatDetailsEvent {
   ChatDetailsUpdateMessage(this.message);
 }
 
+class ChatDetailsReadMessage extends ChatDetailsEvent {
+  final int chatId;
+  final int messageId;
+  ChatDetailsReadMessage(this.chatId, this.messageId);
+}
+
 class RefreshStateEvent extends ChatDetailsEvent {}

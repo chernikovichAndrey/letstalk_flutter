@@ -11,6 +11,7 @@ import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/shell/connectivity/domain/bloc/connectivity_bloc.dart';
+import 'package:lets_talk/feature/shell/domain/navigation_bloc/navigation_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 import 'common/l10n/generated/l10n.dart';
@@ -40,6 +41,7 @@ class _AppState extends State<App> {
         BlocProvider<ProfileBloc>.value(value: getIt()),
         BlocProvider<CallBloc>.value(value: getIt()),
         BlocProvider<ConnectivityBloc>.value(value: getIt()),
+        BlocProvider<NavigationBloc>.value(value: getIt()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

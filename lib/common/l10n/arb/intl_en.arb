@@ -131,5 +131,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "cancel": "Cancel",
+  "done": "Done",
+  "selectPhoto": "Select Photo",
+  "birthday": "Birthday",
+  "setBirthday": "Set",
+  "deleteBirthday": "Delete Birthday"
 }

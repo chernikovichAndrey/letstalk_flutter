@@ -15,6 +15,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc(this._profileRepository) : super(ProfileInitial()) {
     on<ProfileLoadEvent>(_onProfileLoad);
     on<ProfileUpdateAvatarEvent>(_onProfileUpdateAvatar);
+    on<ProfileUpdateFirstNameEvent>(_onProfileUpdateFirstName);
+    on<ProfileUpdateLastNameEvent>(_onProfileUpdateLastName);
+    on<ProfileUpdateBirthdayEvent>(_onProfileUpdateBirthday);
+    on<ProfileToggleBirthdayPickerEvent>(_onToggleBirthdayPicker);
+    on<ProfileSaveChangesEvent>(_onSaveChanges);
   }
 
   Future<void> _onProfileLoad(
@@ -44,6 +49,75 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(AvatarUploadLoading(currentState.user));
     try {
       await _profileRepository.updateAvatar(event.avatarPath);
+      final user = await _profileRepository.getProfile();
+      emit(ProfileLoaded(user));
+    } catch (e) {
+      emit(ProfileError(e.toString()));
+      emit(currentState);
+    }
+  }
+
+  void _onProfileUpdateFirstName(
+    ProfileUpdateFirstNameEvent event,
+    Emitter<ProfileState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+    
+    emit(currentState.copyWith(editingFirstName: event.firstName));
+  }
+
+  void _onProfileUpdateLastName(
+    ProfileUpdateLastNameEvent event,
+    Emitter<ProfileState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+    
+    emit(currentState.copyWith(editingLastName: event.lastName));
+  }
+
+  void _onProfileUpdateBirthday(
+    ProfileUpdateBirthdayEvent event,
+    Emitter<ProfileState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+    
+    emit(currentState.copyWith(
+      editingBirthday: event.birthday,
+      clearBirthday: event.birthday == null,
+    ));
+  }
+
+  void _onToggleBirthdayPicker(
+    ProfileToggleBirthdayPickerEvent event,
+    Emitter<ProfileState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+    
+    emit(currentState.copyWith(
+      isBirthdayPickerExpanded: !currentState.isBirthdayPickerExpanded,
+    ));
+  }
+
+  Future<void> _onSaveChanges(
+    ProfileSaveChangesEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+    
+    emit(ProfileSaving(currentState.user));
+    try {
+      // TODO: Implement profile update API call
+      // await _profileRepository.updateProfile(
+      //   firstName: currentState.editingFirstName,
+      //   lastName: currentState.editingLastName,
+      //   birthday: currentState.editingBirthday,
+      // );
+      
       final user = await _profileRepository.getProfile();
       emit(ProfileLoaded(user));
     } catch (e) {

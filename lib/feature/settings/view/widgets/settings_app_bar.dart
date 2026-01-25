@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
 class SettingsAppBar extends StatelessWidget {
@@ -23,7 +22,7 @@ class SettingsAppBar extends StatelessWidget {
             GlassButton(
               icon: Icons.edit,
               onTap: () {
-                // TODO: implement edit action
+                context.push(Routes.editProfileDetails);
               },
             ),
           ],

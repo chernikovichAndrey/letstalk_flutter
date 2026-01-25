@@ -28,7 +28,7 @@ class SettingsPage extends StatelessWidget {
                 );
               }
 
-              if (state is ProfileLoaded) {
+              if (state is ProfileLoaded || state is AvatarUploadLoading) {
                 return CustomScrollView(
                   slivers: [
                     SliverPadding(
@@ -36,21 +36,7 @@ class SettingsPage extends StatelessWidget {
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           children: [
-                            ProfileWidget(
-                              user: state.user,
-                              isAvatarUploading: false,
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  context.read<AuthBloc>().add(AuthLogout());
-                                },
-                                child: Text(context.s.logout),
-                              ),
-                            ),
-                            const SizedBox(height: 40),
+                            ProfileWidget(),
                           ],
                         ),
                       ),
@@ -58,38 +44,6 @@ class SettingsPage extends StatelessWidget {
                   ],
                 );
               }
-
-              if (state is AvatarUploadLoading) {
-                return CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: 28),
-                      sliver: SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            ProfileWidget(
-                              user: state.user,
-                              isAvatarUploading: true,
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  context.read<AuthBloc>().add(AuthLogout());
-                                },
-                                child: Text(context.s.logout),
-                              ),
-                            ),
-                            const SizedBox(height: 40),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
               return const SizedBox.shrink();
             },
           ),

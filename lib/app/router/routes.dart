@@ -7,6 +7,7 @@ enum Routes {
   callsHistory(path: _Paths.callsHistory, type: RouteType.page),
   chats(path: _Paths.chats, type: RouteType.page),
   settings(path: _Paths.settings, type: RouteType.page),
+  editProfileDetails(path: _Paths.editProfileDetails, type: RouteType.page),
   chatDetails(path: _Paths.chatDetails, type: RouteType.page),
   call(path: _Paths.call, type: RouteType.page),
   // dialogs
@@ -53,6 +54,7 @@ abstract class _Paths {
   static const String callsHistory = '/calls_history';
   static const String chats = '/chats';
   static const String settings = '/settings';
+  static const String editProfileDetails = '/edit_profile_details';
   static const String chatDetails = 'details/:id';
   static const String call = '/call';
   static const String chatAttachSheet = '/chat_attach_sheet';

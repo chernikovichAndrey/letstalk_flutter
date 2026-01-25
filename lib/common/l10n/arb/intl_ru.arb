@@ -89,5 +89,11 @@
   "photoEditorBrightness": "Яркость",
   "photoEditorContrast": "Контраст",
   "photoEditorSaturation": "Насыщенность",
-  "photoEditorSaveError": "Не удалось сохранить изображение: {error}"
+  "photoEditorSaveError": "Не удалось сохранить изображение: {error}",
+  "cancel": "Отмена",
+  "done": "Готово",
+  "selectPhoto": "Выбрать фотографию",
+  "birthday": "День рождения",
+  "setBirthday": "Указать",
+  "deleteBirthday": "Удалить день рождения"
 }

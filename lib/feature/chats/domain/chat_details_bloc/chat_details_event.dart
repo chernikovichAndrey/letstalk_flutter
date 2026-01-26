@@ -114,3 +114,9 @@ class ChatDetailsReadMessage extends ChatDetailsEvent {
 }
 
 class RefreshStateEvent extends ChatDetailsEvent {}
+
+class AddMembersToChat extends ChatDetailsEvent {
+  final int userId;
+
+  AddMembersToChat(this.userId);
+}

@@ -10,6 +10,7 @@ class Chat {
   final int unreadCount;
   final int membersCount;
   final String? role;
+  final List<MemberInfo>? memberInfo;
 
   Chat({
     required this.id,
@@ -23,6 +24,7 @@ class Chat {
     required this.unreadCount,
     required this.membersCount,
     this.role,
+    this.memberInfo,
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,9 @@ class Chat {
       unreadCount: int.tryParse(json['unread_count'].toString()) ?? 0,
       membersCount: int.tryParse(json['members_count'].toString()) ?? 0,
       role: json['role'] as String?,
+      memberInfo: (json['member_info'] as List<dynamic>?)
+          ?.map((e) => MemberInfo.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -54,6 +59,35 @@ class Chat {
       unreadCount: unreadCount ?? this.unreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageText: lastMessageText ?? this.lastMessageText,
+    );
+  }
+}
+
+class MemberInfo {
+  final int id;
+  final String? phone;
+  final String? firstName;
+  final String? lastName;
+  final String? fullName;
+  final String? avatar;
+
+  MemberInfo({
+    required this.id,
+    this.phone,
+    this.firstName,
+    this.lastName,
+    this.fullName,
+    this.avatar,
+  });
+
+  factory MemberInfo.fromJson(Map<String, dynamic> json) {
+    return MemberInfo(
+      id: int.tryParse(json['id'].toString()) ?? 0,
+      phone: json['phone'] as String?,
+      firstName: json['first_name'] as String?,
+      lastName: json['last_name'] as String?,
+      fullName: json['full_name'] as String?,
+      avatar: json['avatar'] as String?,
     );
   }
 }

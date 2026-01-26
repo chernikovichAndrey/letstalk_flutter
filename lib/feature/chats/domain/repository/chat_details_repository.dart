@@ -15,4 +15,9 @@ abstract class ChatDetailsRepository {
   Future<void> deleteMessage(int messageId);
   Future<void> editMessage(int messageId, String text);
   Future<ChatDetailsResponse> getChatDetails(int chatId);
+  Future<void> addMemberToChat({
+    required int chatId,
+    required int userId,
+    String role = 'member',
+  });
 }

@@ -23,7 +23,7 @@ enum Routes {
   profileAvatarSheet(path: _Paths.profileAvatarSheet, type: RouteType.bottomSheet),
   selectContactsFroGroup(path: _Paths.selectContactsFroGroup, type: RouteType.page),
   createChatGroup(path: _Paths.createChatGroup, type: RouteType.page),
-  addContactToGroupSheet(path: _Paths.addContactToGroupSheet, type: RouteType.sheet),
+  addContactToGroupSheet(path: _Paths.addContactToGroupSheet, type: RouteType.bottomSheet),
   photoEditor(path: _Paths.photoEditor, type: RouteType.page);
 
   const Routes({required this.path, required this.type});

@@ -14,8 +14,8 @@ class ChatDetailsPageScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (cx, state) {
-        if (state is ProfileLoaded) {
-          final chatId = context.getArgsOrNull<ChatDetailsArgs>()!.chatId;
+        final chatId = context.getArgsOrNull<ChatDetailsArgs>()?.chatId;
+        if (state is ProfileLoaded && chatId != null) {
           return BlocProvider<ChatDetailsBloc>.value(
             value: getIt()..add(ChatDetailsLoad(chatId, state.user)),
             child: ChatDetailsPage(chatId: chatId),

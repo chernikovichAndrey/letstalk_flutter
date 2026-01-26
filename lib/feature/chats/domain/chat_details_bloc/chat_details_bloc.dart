@@ -61,6 +61,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<SaveImageToGallery>(_onSaveImageToGallery);
     on<ChatDetailsDownloadProgress>(_onDownloadProgress);
     on<RefreshStateEvent>(_onRefreshState);
+    on<AddMembersToChat>(_onAddMembersToChat);
 
     _subscribeToWebSocket();
   }
@@ -527,6 +528,14 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     Emitter<ChatDetailsState> emit,
   ) async {
     emit(const ChatDetailsState());
+  }
+
+  Future<void> _onAddMembersToChat(
+    AddMembersToChat event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    if (state.chat == null) return;
+    await _chatDetailsRepository.addMemberToChat(chatId: state.chat!.id, userId: event.userId);
   }
 
   @override

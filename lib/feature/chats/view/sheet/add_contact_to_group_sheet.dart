@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/selected_contacts_input.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -16,7 +18,6 @@ class AddContactToGroupSheet extends StatefulWidget {
 }
 
 class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
-
   @override
   void deactivate() {
     getIt<ContactsBloc>().add(ContactsToggleSelectionMode());
@@ -27,9 +28,13 @@ class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: getIt<ContactsBloc>()..add(ContactsToggleSelectionMode()),
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        body: Stack(
+      child: Container(
+        height: context.mediaSize.height * 0.92,
+        decoration: BoxDecoration(
+          color: context.theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Stack(
           children: [
             BlocBuilder<ContactsBloc, ContactsState>(
               builder: (context, state) {
@@ -52,7 +57,9 @@ class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
                           child: SelectedContactsInput(
                             hintText: context.s.groupInviteHint,
                             onSearchChanged: (query) {
-                              context.read<ContactsBloc>().add(ContactsSearch(query));
+                              context.read<ContactsBloc>().add(
+                                ContactsSearch(query),
+                              );
                             },
                             searchQuery: state.query,
                           ),
@@ -68,9 +75,16 @@ class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
               },
             ),
             CreateChatGroupAppBar(
-              nextLabel: 'Готово',
+              nextLabel: context.s.ready,
               onPressNext: () {
+                final contactsState = getIt<ContactsBloc>().state;
+                if (contactsState is! ContactsLoaded) return;
 
+                final userIds = contactsState.selectedContactIds.toList();
+                for (var userId in userIds) {
+                  getIt<ChatDetailsBloc>().add(AddMembersToChat(userId));
+                }
+                context.pop();
               },
             ),
           ],

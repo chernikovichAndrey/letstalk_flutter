@@ -80,4 +80,19 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
     );
     return ChatDetailsResponse.fromJson(response.data);
   }
+
+  @override
+  Future<void> addMemberToChat({
+    required int chatId,
+    required int userId,
+    String role = 'member',
+  }) async {
+    await _apiService.post(
+      '${ApiConstants.chats}/$chatId/members',
+      data: {
+        'user_id': userId,
+        'role': role,
+      },
+    );
+  }
 }

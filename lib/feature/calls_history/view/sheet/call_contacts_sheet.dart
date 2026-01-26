@@ -20,8 +20,8 @@ class CallContactsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ContactsBloc>()..add(ContactsLoad()),
+    return BlocProvider.value(
+      value: getIt<ContactsBloc>()..add(ContactsLoad()),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: Scaffold(

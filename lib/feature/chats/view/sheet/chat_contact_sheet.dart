@@ -16,8 +16,8 @@ class ChatContactsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ContactsBloc>()..add(ContactsLoad()),
+    return BlocProvider.value(
+      value: getIt<ContactsBloc>()..add(ContactsLoad()),
       child: BlocListener<ContactsBloc, ContactsState>(
         listener: (context, state) {
           if (state is ContactsChatCreated) {

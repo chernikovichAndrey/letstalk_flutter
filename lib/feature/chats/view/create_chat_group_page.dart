@@ -53,6 +53,7 @@ class CreateChatGroupPage extends StatelessWidget {
                             vertical: 12,
                           ),
                           child: SelectedContactsInput(
+                            hintText: 'Кого бы Вы хотели пригласить?',
                             selectedContacts: _getSelectedContacts(state),
                             onRemoveContact: (contact) => _removeContact(context, contact),
                             onSearchChanged: (query) {

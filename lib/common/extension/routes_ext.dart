@@ -3,7 +3,7 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/feature/calls_history/view/sheet/call_details_sheet.dart';
 import 'package:lets_talk/feature/calls_history/view/sheet/call_contacts_sheet.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
-import 'package:lets_talk/feature/chats/view/create_chat_group_page.dart';
+import 'package:lets_talk/feature/chats/view/select_contact_for_group_page.dart';
 import 'package:lets_talk/feature/chats/view/sheet/chat_contact_sheet.dart';
 import 'package:lets_talk/common/widget/c_alert_dialog.dart';
 import 'package:lets_talk/feature/auth/view/login_page.dart';
@@ -43,7 +43,7 @@ extension RoutesExt on Routes {
       Routes.profileAvatarSheet => const ProfileAvatarBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),
       Routes.photoEditor => const PhotoEditorPage(),
-      Routes.createChatGroup => const CreateChatGroupPage(),
+      Routes.selectContactsFroGroup => const SelectContactsForGroupPage(),
     };
   }
 }

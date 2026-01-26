@@ -17,7 +17,6 @@ class SelectedContactsInput extends StatefulWidget {
     required this.onSearchChanged,
     required this.hintText,
     this.searchQuery = '',
-
   });
 
   @override

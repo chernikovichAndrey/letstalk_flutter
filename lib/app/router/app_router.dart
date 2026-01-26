@@ -59,7 +59,7 @@ class AppRouter {
 
       buildRoute(Routes.call),
       buildRoute(Routes.photoEditor),
-      buildRoute(Routes.createChatGroup),
+      buildRoute(Routes.selectContactsFroGroup),
 
       //Sheets
       ...Routes.sheetRoutes.map(buildRoute),

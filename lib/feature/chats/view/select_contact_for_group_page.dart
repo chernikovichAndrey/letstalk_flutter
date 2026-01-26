@@ -9,8 +9,20 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
 
-class CreateChatGroupPage extends StatelessWidget {
-  const CreateChatGroupPage({super.key});
+class SelectContactsForGroupPage extends StatefulWidget {
+  const SelectContactsForGroupPage({super.key});
+
+  @override
+  State<SelectContactsForGroupPage> createState() => _SelectContactsForGroupPageState();
+}
+
+class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage> {
+
+  @override
+  void deactivate() {
+    getIt<ContactsBloc>().add(ContactsToggleSelectionMode());
+    super.deactivate();
+  }
 
   List<Contact> _getSelectedContacts(ContactsLoaded state) {
     return state.allContacts
@@ -29,7 +41,7 @@ class CreateChatGroupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<ContactsBloc>()..add(ContactsToggleSelectionMode()),
+      value: getIt<ContactsBloc>()..add(ContactsLoad(showSelectMode: true)),
       child: Scaffold(
         extendBodyBehindAppBar: true,
         body: Stack(

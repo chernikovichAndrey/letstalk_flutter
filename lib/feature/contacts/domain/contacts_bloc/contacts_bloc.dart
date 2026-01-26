@@ -36,6 +36,9 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     try {
       final contacts = await _contactsRepository.getContacts();
       emit(ContactsLoaded(contacts));
+      if (event.showSelectMode) {
+        add(ContactsToggleSelectionMode());
+      }
     } catch (e) {
       emit(ContactsError(e.toString()));
     }

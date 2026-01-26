@@ -56,7 +56,7 @@ class CreateChatGroupNameInput extends StatelessWidget {
                   fontSize: 16,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Название группы',
+                  hintText: context.s.groupNameHint,
                   hintStyle: TextStyle(
                     color: context.appColors.glassForeground.withValues(
                       alpha: 0.5,

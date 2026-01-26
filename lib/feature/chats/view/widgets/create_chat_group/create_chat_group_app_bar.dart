@@ -10,11 +10,13 @@ import 'package:lets_talk/common/widget/glass_button.dart';
 class CreateChatGroupAppBar extends StatelessWidget {
   final String? nextLabel;
   final VoidCallback? onPressNext;
+  final bool isActionEnabled;
 
   const CreateChatGroupAppBar({
     super.key,
     this.nextLabel,
     this.onPressNext,
+    this.isActionEnabled = true,
   });
 
   @override
@@ -67,6 +69,7 @@ class CreateChatGroupAppBar extends StatelessWidget {
                             GlassButton(
                               label: nextLabel ?? context.s.next,
                               onTap: onPressNext ?? () => context.push(Routes.createChatGroup),
+                              isEnabled: isActionEnabled,
                             ),
                           ],
                         ),

@@ -101,5 +101,8 @@
   "createContact": "Создать контакт",
   "groupInviteHint": "Кого бы Вы хотели пригласить?",
   "group": "Группа",
-  "next": "Дальше"
+  "next": "Дальше",
+  "create": "Создать",
+  "notWorkingNow": "Сейчас не работает",
+  "groupNameHint": "Название группы"
 }

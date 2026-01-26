@@ -60,7 +60,7 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
                     groupNameController: _groupNameController,
                     onPressCamera: () {
                       //TODO
-                      showWarningToast('Сейчас не работает');
+                      showWarningToast(context.s.notWorkingNow);
                     },
                     onClearInput: () {
                       setState(() {
@@ -95,7 +95,8 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
               ),
             ),
             CreateChatGroupAppBar(
-              nextLabel: 'Создать',
+              isActionEnabled: _groupNameController.text.trim().isNotEmpty,
+              nextLabel: context.s.create,
               onPressNext: () {
                 // TODO: Create group action
               },

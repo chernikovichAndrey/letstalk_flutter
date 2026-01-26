@@ -143,5 +143,8 @@
   "createContact": "Create contact",
   "groupInviteHint": "Who would you like to invite?",
   "group": "Group",
-  "next": "Next"
+  "next": "Next",
+  "create": "Create",
+  "notWorkingNow": "Not working now",
+  "groupNameHint": "Group name"
 }

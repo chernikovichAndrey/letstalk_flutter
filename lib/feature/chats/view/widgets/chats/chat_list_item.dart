@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatListItem extends StatelessWidget {
   final Chat chat;
@@ -40,6 +44,34 @@ class ChatListItem extends StatelessWidget {
       return '';
     }
   }
+  MemberInfo? _getChatMember() {
+    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    return chat.memberInfo?.firstWhereOrNull((member) => member.id != myId);
+  }
+
+  String? _getMemberAvatar() {
+    final member = _getChatMember();
+    if (member == null) return null;
+    if (member.avatar != null && member.avatar!.isNotEmpty) {
+      return '${Env.baseUrl}uploads/${member.avatar}';
+    }
+    return null;
+  }
+
+  String? _getMemberName({bool phone = false}) {
+    final member = _getChatMember();
+    if (member == null) return null;
+    if (member.fullName != null && member.fullName!.isNotEmpty) {
+      return member.fullName;
+    }
+    if (member.firstName != null && member.firstName!.isNotEmpty) {
+      return member.firstName;
+    }
+    if (phone && member.phone != null && member.phone!.isNotEmpty) {
+      return member.phone;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +86,8 @@ class ChatListItem extends StatelessWidget {
         child: Row(
           children: [
             CAvatar(
-              imageUrl: chat.avatar,
-              name: chat.title,
+              imageUrl: chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
+              name: chat.type == 'group' ? chat.title : _getMemberName(),
               radius: 28,
             ),
             const SizedBox(width: 12),
@@ -68,7 +100,7 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          chat.title ?? context.s.noTitle,
+                          (chat.type == 'group' ? chat.title : _getMemberName(phone: true)) ?? context.s.noTitle,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

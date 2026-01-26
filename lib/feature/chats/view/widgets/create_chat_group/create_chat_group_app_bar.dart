@@ -7,8 +7,15 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
-class SelectContactsForGroupAppBar extends StatelessWidget {
-  const SelectContactsForGroupAppBar({super.key});
+class CreateChatGroupAppBar extends StatelessWidget {
+  final String? nextLabel;
+  final VoidCallback? onPressNext;
+
+  const CreateChatGroupAppBar({
+    super.key,
+    this.nextLabel,
+    this.onPressNext,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +65,8 @@ class SelectContactsForGroupAppBar extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             GlassButton(
-                              label: context.s.next,
-                              onTap: () => context.push(Routes.createChatGroup),
+                              label: nextLabel ?? context.s.next,
+                              onTap: onPressNext ?? () => context.push(Routes.createChatGroup),
                             ),
                           ],
                         ),

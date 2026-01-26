@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/select_contacts_for_group_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/selected_contacts_input.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -84,7 +84,7 @@ class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage>
                 );
               },
             ),
-            const SelectContactsForGroupAppBar(),
+            const CreateChatGroupAppBar(),
           ],
         ),
       ),

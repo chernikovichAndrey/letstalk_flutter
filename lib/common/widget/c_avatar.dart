@@ -60,6 +60,8 @@ class CAvatar extends StatelessWidget {
       avatar = CachedNetworkImage(
         imageUrl: imageUrl!,
         cacheManager: CustomCacheManager.instance,
+        fadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
         imageBuilder: (context, imageProvider) => CircleAvatar(
           radius: radius,
           backgroundImage: imageProvider,

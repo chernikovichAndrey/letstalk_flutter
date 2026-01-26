@@ -153,5 +153,21 @@
   "groupChatCreated": "Group chat created",
   "chatCreatedByYou": "You created a new chat",
   "chatInvited": "You were invited to chat",
-  "addParticipants": "Add participants"
+  "addParticipants": "Add participants",
+  "participantsCount": "{count, plural, one{{count} participant} other{{count} participants}}",
+  "@participantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "replyingTo": "Replying to {name}",
+  "@replyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

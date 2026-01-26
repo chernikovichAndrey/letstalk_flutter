@@ -111,5 +111,21 @@
   "groupChatCreated": "Групповой чат создан",
   "chatCreatedByYou": "Вы создали новый чат",
   "chatInvited": "Вас пригласили в чат",
-  "addParticipants": "Добавить участников"
+  "addParticipants": "Добавить участников",
+  "participantsCount": "{count, plural, one{{count} участник} few{{count} участника} many{{count} участников} other{{count} участников}}",
+  "@participantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "replyingTo": "В ответ {name}",
+  "@replyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

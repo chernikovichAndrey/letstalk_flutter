@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
+import 'package:lets_talk/common/service/custom_cache_manager.dart';
 import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 import 'package:lets_talk/feature/settings/domain/repository/profile_repository.dart';
 
@@ -17,11 +19,35 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<UserModel> getProfile() async {
     final response = await _apiService.get(ApiConstants.profile);
-    return UserModel.fromJson(response.data['user']);
+    final user = UserModel.fromJson(response.data['user']);
+    
+    // Precache avatar image to avoid flickering on settings screen
+    if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
+      try {
+        await CustomCacheManager.instance.downloadFile(user.avatarUrl!);
+      } catch (e) {
+        // Continue even if precaching fails
+      }
+    }
+    
+    return user;
   }
 
   @override
   Future<void> updateAvatar(String avatarPath) async {
+    // Get current user to clear old avatar from cache
+    try {
+      final currentProfile = await getProfile();
+      if (currentProfile.avatarUrl != null && currentProfile.avatarUrl!.isNotEmpty) {
+        await CachedNetworkImage.evictFromCache(
+          currentProfile.avatarUrl!,
+          cacheManager: CustomCacheManager.instance,
+        );
+      }
+    } catch (e) {
+      // Continue even if cache clearing fails
+    }
+    
     final file = File(avatarPath);
     final bytes = await file.readAsBytes();
     final base64Image = base64Encode(bytes);

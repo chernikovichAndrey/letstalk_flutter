@@ -1,8 +1,8 @@
-import 'dart:math';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/service/custom_cache_manager.dart';
 
 class CAvatar extends StatelessWidget {
   final String? imageUrl;
@@ -57,10 +57,37 @@ class CAvatar extends StatelessWidget {
     Widget avatar;
 
     if (hasImage) {
-      avatar = CircleAvatar(
-        radius: radius,
-        backgroundColor: Colors.grey[200],
-        backgroundImage: NetworkImage(imageUrl!),
+      avatar = CachedNetworkImage(
+        imageUrl: imageUrl!,
+        cacheManager: CustomCacheManager.instance,
+        imageBuilder: (context, imageProvider) => CircleAvatar(
+          radius: radius,
+          backgroundImage: imageProvider,
+        ),
+        placeholder: (context, url) => CircleAvatar(
+          radius: radius,
+          backgroundColor: context.appColors.surfaceSecondary,
+          child: SizedBox(
+            width: radius * 0.5,
+            height: radius * 0.5,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.grey[400],
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => CircleAvatar(
+          radius: radius,
+          backgroundColor: backgroundColor,
+          child: Text(
+            initials,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: radius * 0.8,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       );
     } else if (hasName) {
       avatar = CircleAvatar(

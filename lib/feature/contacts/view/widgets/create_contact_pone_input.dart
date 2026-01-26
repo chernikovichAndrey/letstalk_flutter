@@ -19,16 +19,16 @@ class CreateContactPhoneInput extends StatefulWidget {
 
 class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
   MaskTextInputFormatter? _phoneMaskFormatter;
+  CountryCode? _countryCode;
 
-  void _updatePhoneMask(CountryCode? countryCode) {
-    print('1111 ${countryCode?.code}');
-    if (countryCode?.code == null) {
+  void _updatePhoneMask() {
+    if (_countryCode?.code == null) {
       _phoneMaskFormatter = null;
       return;
     }
 
     try {
-      final isoCode = IsoCode.fromJson(countryCode!.code!);
+      final isoCode = IsoCode.fromJson(_countryCode!.code!);
       final exampleMetadata = metadataExamplesByIsoCode[isoCode];
 
       final mobileExample = exampleMetadata?.mobile;
@@ -38,13 +38,17 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
 
       if (exampleNumber != null) {
         final mask = _createMaskFromExample(exampleNumber);
-        _phoneMaskFormatter = MaskTextInputFormatter(
-          mask: mask,
-          filter: {"#": RegExp(r'\d')},
-        );
+        setState(() {
+          _phoneMaskFormatter = MaskTextInputFormatter(
+            mask: mask,
+            filter: {"#": RegExp(r'\d')},
+          );
+        });
       }
     } catch (e) {
-      _phoneMaskFormatter = null;
+      setState(() {
+        _phoneMaskFormatter = null;
+      });
     }
   }
 
@@ -52,7 +56,7 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
     try {
       final phoneNumber = PhoneNumber.parse(
         exampleNumber,
-        callerCountry: IsoCode.fromJson(widget.countryCode!.code!),
+        callerCountry: IsoCode.fromJson(_countryCode!.code!),
       );
       final formatted = phoneNumber.formatNsn();
 
@@ -71,10 +75,10 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
   }
 
   String _getPhoneHint() {
-    if (widget.countryCode?.code == null) return '00 000 0000';
+    if (_countryCode?.code == null) return '00 000 0000';
 
     try {
-      final isoCode = IsoCode.fromJson(widget.countryCode!.code!);
+      final isoCode = IsoCode.fromJson(_countryCode!.code!);
       final exampleMetadata = metadataExamplesByIsoCode[isoCode];
 
       final mobileExample = exampleMetadata?.mobile;
@@ -98,7 +102,7 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
     try {
       final phoneNumber = PhoneNumber.parse(
         exampleNumber,
-        callerCountry: IsoCode.fromJson(widget.countryCode!.code!),
+        callerCountry: IsoCode.fromJson(_countryCode!.code!),
       );
       final formatted = phoneNumber.formatNsn();
 
@@ -128,12 +132,22 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
           // Country Selector Row
           CountryCodePicker(
             onChanged: (code) {
+              setState(() {
+                _countryCode = code;
+              });
               widget.onChangeCountry!(code);
-              _updatePhoneMask(code);
+              _updatePhoneMask();
             },
             onInit: (code) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() {
+                    _countryCode = code;
+                    _updatePhoneMask();
+                  });
+                }
+              });
               widget.onInit!(code);
-              _updatePhoneMask(code);
             },
             initialSelection: View.of(context).platformDispatcher.locale.countryCode,
             favorite: const ['RU', 'KZ'],
@@ -172,9 +186,9 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: [
-                if (widget.countryCode != null)
+                if (_countryCode != null)
                   Text(
-                    widget.countryCode!.dialCode ?? '',
+                    _countryCode!.dialCode ?? '',
                     style: context.text.bodyLarge,
                   ),
                 const SizedBox(width: 12),

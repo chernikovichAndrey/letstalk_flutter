@@ -8,48 +8,66 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 import 'package:lets_talk/feature/contacts/view/contacts_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ContactsPageScope extends StatelessWidget {
+class ContactsPageScope extends StatefulWidget {
   const ContactsPageScope({super.key});
 
   @override
+  State<ContactsPageScope> createState() => _ContactsPageScopeState();
+}
+
+class _ContactsPageScopeState extends State<ContactsPageScope> {
+  SharedPreferences? _prefs;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeContacts();
+  }
+
+  Future<void> _initializeContacts() async {
+    _prefs = await SharedPreferences.getInstance();
+    final contactsSynced = _prefs!.getBool('contacts_synced_first_time') ?? false;
+    
+    final bloc = getIt<ContactsBloc>();
+    bloc.add(
+      !contactsSynced ? ContactsSyncPhoneContacts() : ContactsLoad()
+    );
+    
+    setState(() {
+      _initialized = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SharedPreferences>(
-      future: SharedPreferences.getInstance(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator.adaptive()),
-          );
-        }
+    if (!_initialized || _prefs == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator.adaptive()),
+      );
+    }
 
-        final prefs = snapshot.data!;
-        final contactsSynced =
-            prefs.getBool('contacts_synced_first_time') ?? false;
+    final contactsSynced = _prefs!.getBool('contacts_synced_first_time') ?? false;
 
-        return BlocProvider(
-          create: (context) => getIt<ContactsBloc>()
-            ..add(
-              !contactsSynced ? ContactsSyncPhoneContacts() : ContactsLoad()
-            ),
-          child: BlocListener<ContactsBloc, ContactsState>(
-            listener: (context, state) {
-              if (state is ContactsLoaded && !contactsSynced) {
-                prefs.setBool('contacts_synced_first_time', true);
-              }
-              if (state is ContactsChatCreated) {
-                context.go(
-                  '${Routes.chats.path}/${Routes.chatDetails.path}',
-                  extra: ChatDetailsArgs(chatId: state.chatId),
-                );
-              }
-            },
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: const ContactsPage(),
-            ),
-          ),
-        );
-      },
+    return BlocProvider.value(
+      value: getIt<ContactsBloc>(),
+      child: BlocListener<ContactsBloc, ContactsState>(
+        listener: (context, state) {
+          if (state is ContactsLoaded && !contactsSynced) {
+            _prefs!.setBool('contacts_synced_first_time', true);
+          }
+          if (state is ContactsChatCreated) {
+            context.go(
+              '${Routes.chats.path}/${Routes.chatDetails.path}',
+              extra: ChatDetailsArgs(chatId: state.chatId),
+            );
+          }
+        },
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: const ContactsPage(),
+        ),
+      ),
     );
   }
 }

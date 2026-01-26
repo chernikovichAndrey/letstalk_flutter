@@ -33,7 +33,6 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     on<NavigationUpdateUnreadCount>(_onUpdateUnreadCount);
     on<NavigationReset>(_onReset);
     _subscribeToWebSocket();
-    add(NavigationInitEvent());
   }
 
   void _subscribeToWebSocket() {

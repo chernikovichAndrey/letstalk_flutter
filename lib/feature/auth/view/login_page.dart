@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       onLoginPressed: () {
                         final code = countryCode?.dialCode;
-                        final phone = phoneController.text;
+                        final phone = phoneController.text.replaceAll(RegExp(r'[^\d]'), '');
 
                         if (code != null && phone.isNotEmpty) {
                           context.read<AuthBloc>().add(

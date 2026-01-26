@@ -1,9 +1,12 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
+import 'package:phone_numbers_parser/metadata.dart' show metadataExamplesByIsoCode;
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
-class PhoneInputField extends StatelessWidget {
+class PhoneInputField extends StatefulWidget {
   const PhoneInputField({
     super.key,
     required this.controller,
@@ -20,6 +23,82 @@ class PhoneInputField extends StatelessWidget {
   final ValueChanged<CountryCode?>? onInit;
 
   @override
+  State<PhoneInputField> createState() => _PhoneInputFieldState();
+}
+
+class _PhoneInputFieldState extends State<PhoneInputField> {
+  MaskTextInputFormatter? _phoneMaskFormatter;
+
+  @override
+  void initState() {
+    super.initState();
+    _updatePhoneMask();
+  }
+
+  @override
+  void didUpdateWidget(PhoneInputField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.countryCode?.code != widget.countryCode?.code) {
+      widget.controller.clear();
+      _updatePhoneMask();
+    }
+  }
+
+  void _updatePhoneMask() {
+    final countryCode = widget.countryCode?.code ?? widget.initialCountryCode;
+    if (countryCode == null) {
+      setState(() {
+        _phoneMaskFormatter = null;
+      });
+      return;
+    }
+
+    try {
+      final isoCode = IsoCode.fromJson(countryCode);
+      final exampleMetadata = metadataExamplesByIsoCode[isoCode];
+
+      final mobileExample = exampleMetadata?.mobile;
+      final fixedLineExample = exampleMetadata?.fixedLine;
+
+      String? exampleNumber = mobileExample ?? fixedLineExample;
+
+      if (exampleNumber != null) {
+        final mask = _createMaskFromExample(exampleNumber, isoCode);
+        setState(() {
+          _phoneMaskFormatter = MaskTextInputFormatter(
+            mask: mask,
+            filter: {"#": RegExp(r'\d')},
+          );
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _phoneMaskFormatter = null;
+      });
+    }
+  }
+
+  String _createMaskFromExample(String exampleNumber, IsoCode isoCode) {
+    try {
+      final phoneNumber = PhoneNumber.parse(
+        exampleNumber,
+        callerCountry: isoCode,
+      );
+      final formatted = phoneNumber.formatNsn();
+
+      return formatted.replaceAllMapped(
+        RegExp(r'\d'),
+        (match) => '#',
+      );
+    } catch (e) {
+      return exampleNumber.replaceAllMapped(
+        RegExp(r'\d'),
+        (match) => '#',
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final textTheme = context.text;
@@ -33,9 +112,11 @@ class PhoneInputField extends StatelessWidget {
       child: Row(
         children: [
           CountryCodePicker(
-            onChanged: onCountryCodeChanged,
-            onInit: onInit,
-            initialSelection: countryCode?.code ?? initialCountryCode,
+            onChanged: (code) {
+              widget.onCountryCodeChanged(code);
+            },
+            onInit: widget.onInit,
+            initialSelection: widget.countryCode?.code ?? widget.initialCountryCode,
             favorite: const ['RU', 'KZ'],
             padding: EdgeInsets.zero,
             textStyle: textTheme.bodyLarge?.copyWith(
@@ -48,19 +129,14 @@ class PhoneInputField extends StatelessWidget {
           ),
           Expanded(
             child: TextField(
-              controller: controller,
+              controller: widget.controller,
               keyboardType: TextInputType.phone,
               style: textTheme.bodyLarge?.copyWith(
                 color: Colors.black,
               ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
-                TextInputFormatter.withFunction((oldValue, newValue) {
-                  if (countryCode != null) return newValue;
-                  if (newValue.text.isEmpty) return newValue;
-                  return newValue;
-                }),
-              ],
+              inputFormatters: _phoneMaskFormatter != null
+                  ? [_phoneMaskFormatter!]
+                  : [],
               decoration: InputDecoration(
                 hintText: context.s.enterPhoneNumber,
                 border: InputBorder.none,

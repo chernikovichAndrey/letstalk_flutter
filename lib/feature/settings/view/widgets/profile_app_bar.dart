@@ -7,6 +7,15 @@ import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart
 class ProfileAppBar extends StatelessWidget {
   const ProfileAppBar({super.key});
 
+  bool _isEnabledSave(ProfileState state) {
+    if (state is ProfileLoaded) {
+      return state.editingBirthday != null ||
+          state.editingFirstName != null ||
+          state.editingLastName != null;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
@@ -44,10 +53,7 @@ class ProfileAppBar extends StatelessWidget {
                         );
                         FocusScope.of(context).unfocus();
                       },
-                      isEnabled:
-                          (state as ProfileLoaded).editingBirthday != null ||
-                          state.editingFirstName != null ||
-                          state.editingLastName != null,
+                      isEnabled: _isEnabledSave(state)
                     ),
                 ],
               ),

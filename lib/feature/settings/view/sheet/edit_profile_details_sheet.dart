@@ -17,7 +17,7 @@ class EditProfileDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final topPadding = context.padding.top;
-    final cardColor = appColors.secondaryBackground;
+    final cardColor = appColors.surfaceSecondary;
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {

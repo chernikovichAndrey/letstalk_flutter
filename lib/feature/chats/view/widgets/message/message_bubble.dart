@@ -22,7 +22,6 @@ class MessageBubble extends StatelessWidget {
     final appColors = context.appColors;
 
     Color backgroundColor = isMe ? appColors.messageMeBubble : appColors.messageOtherBubble;
-    Color textColor = isMe ? appColors.messageMeText : appColors.messageOtherText;
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -41,14 +40,18 @@ class MessageBubble extends StatelessWidget {
               bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(12),
             ),
           ),
-          child: Wrap(
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.end,
-            spacing: 8,
+          child: Column(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  //TODO: add forwardedFrom text
+                  // if (message.forwardedFrom != null)
+                  //   Text(
+                  //     'Переслано от\n${message.forwardedFrom?.fromName}',
+                  //     style: context.text.bodyMedium,
+                  //     textAlign: TextAlign.start,
+                  //   ),
                   if (message.replyTo != null)
                     MessageReplay(
                       replyTo: message.replyTo!,
@@ -68,7 +71,7 @@ class MessageBubble extends StatelessWidget {
                   Text(
                     message.text ?? '',
                     style: context.text.bodyMedium?.copyWith(
-                      color: textColor,
+                      color: Colors.white,
                     ),
                   ),
                   MessageBubbleInfo(

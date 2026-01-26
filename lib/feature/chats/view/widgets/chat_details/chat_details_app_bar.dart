@@ -56,16 +56,45 @@ class ChatDetailsAppBar extends StatelessWidget {
                             color: appColors.glassButtonBackground,
                             borderRadius: BorderRadius.circular(25),
                           ),
-                          child: Center(
-                            child: Text(
-                              chatTitle,
-                              style: TextStyle(
-                                color: baseColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+                            builder: (context, state) {
+                              return Center(
+                                child: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: chatTitle,
+                                        style: TextStyle(
+                                          color: baseColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      if (state.typingUserIds.isNotEmpty)
+                                        TextSpan(
+                                          text: '\n${context.s.typing}',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      if (state.chat?.type == 'group')
+                                        TextSpan(
+                                          text: '\n${context.s.participantsCount(state.chat?.membersCount ?? 1)}',
+                                          style: TextStyle(
+                                            color: baseColor,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),

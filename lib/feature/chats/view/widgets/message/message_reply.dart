@@ -41,25 +41,24 @@ class MessageReplay extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              //TODO: wait update from backend
-              // if (message.media != null && message.media?.thumbnailUrl != null)
-              //   ...[
-              //     Image.network(
-              //       message.media!.thumbnailUrl!,
-              //       headers: {'Authorization': 'Bearer $token'},
-              //       height: 40,
-              //       width: 40,
-              //       fit: BoxFit.contain,
-              //       errorBuilder: (context, error, stackTrace) =>
-              //       const Icon(Icons.image, color: Colors.white70, size: 20),
-              //     ),
-              //     SizedBox(width: 6.0),
-              //   ],
+              if (replyTo.media != null && replyTo.media?.thumbnailUrl != null)
+                ...[
+                  Image.network(
+                    replyTo.media!.thumbnailUrl!,
+                    headers: {'Authorization': 'Bearer $token'},
+                    height: 40,
+                    width: 40,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.image, color: Colors.white70, size: 20),
+                  ),
+                  SizedBox(width: 6.0),
+                ],
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    replyTo.fromName,
+                    replyTo.fromName ?? '',
                     style: context.text.labelMedium?.copyWith(
                       color: textColor,
                       fontWeight: FontWeight.bold,

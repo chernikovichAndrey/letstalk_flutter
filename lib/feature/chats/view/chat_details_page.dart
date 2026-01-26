@@ -7,7 +7,7 @@ import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
-import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/add_participants_banner.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
@@ -16,6 +16,7 @@ import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_e
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/message_input.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatDetailsPage extends StatefulWidget {
   final int chatId;
@@ -132,6 +133,20 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
     return bubble;
   }
 
+  String _getChatTitle(ChatDetailsState state) {
+    final chat = state.chat;
+    if (chat == null) return '';
+    if (chat.type == 'group') return chat.title ?? '';
+    if (chat.memberInfo == null) return '';
+    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    final member = chat.memberInfo?.firstWhereOrNull((member) => member.id != myId);
+    if (member == null) return '';
+    if (member.fullName != null && member.fullName!.isNotEmpty) return member.fullName!;
+    if (member.firstName != null && member.firstName!.isNotEmpty) return member.firstName!;
+    if (member.phone != null && member.phone!.isNotEmpty) return member.phone!;
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ChatDetailsBloc, ChatDetailsState>(
@@ -191,7 +206,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   left: 0,
                   right: 0,
                   child: ChatDetailsAppBar(
-                    chatTitle: state.chat?.title ?? member?.phone ?? '',
+                    chatTitle: _getChatTitle(state),
                     memberId: member?.userId,
                   ),
                 ),
@@ -213,23 +228,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Column(
-                    children: [
-                      if (state.typingUserIds.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            context.s.typing,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      MessageInput(controller: _scrollController),
-                    ],
-                  ),
+                  child: MessageInput(controller: _scrollController),
                 )
               ],
             );

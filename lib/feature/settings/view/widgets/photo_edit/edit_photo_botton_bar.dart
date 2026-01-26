@@ -53,7 +53,6 @@ class EditPhotoBottomBar extends StatelessWidget {
               icon: Icons.check,
               label: context.s.photoEditorDone,
               onTap: onSave,
-              background: Colors.blue,
             ),
           ],
         ),

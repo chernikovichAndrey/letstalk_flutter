@@ -22,6 +22,7 @@ enum Routes {
   chatAttachSheet(path: _Paths.chatAttachSheet, type: RouteType.bottomSheet),
   profileAvatarSheet(path: _Paths.profileAvatarSheet, type: RouteType.bottomSheet),
   selectContactsFroGroup(path: _Paths.selectContactsFroGroup, type: RouteType.page),
+  createChatGroup(path: _Paths.createChatGroup, type: RouteType.page),
   photoEditor(path: _Paths.photoEditor, type: RouteType.page);
 
   const Routes({required this.path, required this.type});
@@ -63,4 +64,5 @@ abstract class _Paths {
   static const String fullScreenMedia = '/full_screen_media';
   static const String photoEditor = '/photo_editor';
   static const String selectContactsFroGroup = '/select_contacts_fro_group';
+  static const String createChatGroup = '/create_chat_group';
 }

@@ -1,13 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 
-class CreateChatGroupAppBar extends StatelessWidget {
-  const CreateChatGroupAppBar({super.key});
+class SelectContactsForGroupAppBar extends StatelessWidget {
+  const SelectContactsForGroupAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class CreateChatGroupAppBar extends StatelessWidget {
                       ),
                       Center(
                         child: Text(
-                          'Группа',
+                          context.s.group,
                           style: TextStyle(
                             color: context.appColors.glassForeground,
                             fontSize: 16,
@@ -56,7 +57,10 @@ class CreateChatGroupAppBar extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            GlassButton(label: 'Дальше', onTap: () {}),
+                            GlassButton(
+                              label: context.s.next,
+                              onTap: () => context.push(Routes.createChatGroup),
+                            ),
                           ],
                         ),
                       ),

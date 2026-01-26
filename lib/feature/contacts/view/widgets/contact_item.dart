@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/c_list_tile.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 
@@ -39,6 +40,7 @@ class ContactItem extends StatelessWidget {
       }
     } else {
       //TODO: send registration sms
+      showWarningToast(context.s.notWorkingNow);
     }
   }
 

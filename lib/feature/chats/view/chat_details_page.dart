@@ -221,6 +221,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                       },
                       onClose: () {
                         // TODO: Add logic to hide banner
+                        showWarningToast(context.s.notWorkingNow);
                       },
                     ),
                   ),

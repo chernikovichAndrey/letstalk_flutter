@@ -167,7 +167,7 @@ class _MessageInputState extends State<MessageInput> {
     );
   }
 
-  //TODO: remove in future
+  //TODO: remove in future when parrallel upload will be added
   Widget _buildAttachmentPreview(BuildContext context, Media media) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),

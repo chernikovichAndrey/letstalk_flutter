@@ -41,7 +41,7 @@ class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<ContactsBloc>()..add(ContactsLoad(showSelectMode: true)),
+      value: getIt<ContactsBloc>()..add(ContactsToggleSelectionMode()),
       child: Scaffold(
         extendBodyBehindAppBar: true,
         body: Stack(
@@ -65,7 +65,7 @@ class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage>
                             vertical: 12,
                           ),
                           child: SelectedContactsInput(
-                            hintText: 'Кого бы Вы хотели пригласить?',
+                            hintText: context.s.groupInviteHint,
                             selectedContacts: _getSelectedContacts(state),
                             onRemoveContact: (contact) => _removeContact(context, contact),
                             onSearchChanged: (query) {
@@ -75,7 +75,11 @@ class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage>
                           ),
                         ),
                       ),
-                    ContactsSlivers(state: state, isRegisteredOnly: false, showSearch: false),
+                    ContactsSlivers(
+                      state: state,
+                      isRegisteredOnly: true,
+                      showSearch: false,
+                    ),
                   ],
                 );
               },

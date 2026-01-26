@@ -2,11 +2,7 @@ part of 'contacts_bloc.dart';
 
 abstract class ContactsEvent {}
 
-class ContactsLoad extends ContactsEvent {
-  final bool showSelectMode;
-
-  ContactsLoad({this.showSelectMode = false});
-}
+class ContactsLoad extends ContactsEvent {}
 
 class ContactsRefresh extends ContactsEvent {
   final Completer? completer;

@@ -15,42 +15,42 @@ class ContactChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal:8, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.appColors.glassForeground.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CAvatar(
-            imageUrl: contact.imageUrl,
-            name: contact.fullName,
-            radius: 12,
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              contact.fullName,
-              style: TextStyle(
-                color: context.appColors.glassForeground,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: onRemove,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal:8, vertical: 6),
+        decoration: BoxDecoration(
+          color: context.appColors.glassForeground.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CAvatar(
+              imageUrl: contact.imageUrl,
+              name: contact.fullName,
+              radius: 12,
             ),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onRemove,
-            child: Icon(
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                contact.fullName,
+                style: TextStyle(
+                  color: context.appColors.glassForeground,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
               Icons.close,
               size: 18,
               color: context.appColors.glassForeground.withValues(alpha: 0.7),
-            ),
-          ),
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

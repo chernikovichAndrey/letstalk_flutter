@@ -140,5 +140,6 @@
   "deleteBirthday": "Delete Birthday",
   "writeMessage": "Write message",
   "createGroup": "Create group",
-  "createContact": "Create contact"
+  "createContact": "Create contact",
+  "groupInviteHint": "Who would you like to invite?"
 }

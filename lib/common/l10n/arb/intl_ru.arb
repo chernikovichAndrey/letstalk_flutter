@@ -98,5 +98,6 @@
   "deleteBirthday": "Удалить день рождения",
   "writeMessage": "Написать сообщение",
   "createGroup": "Создать группу",
-  "createContact": "Создать контакт"
+  "createContact": "Создать контакт",
+  "groupInviteHint": "Кого бы Вы хотели пригласить?"
 }

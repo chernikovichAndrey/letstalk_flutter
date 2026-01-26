@@ -45,18 +45,14 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     ContactsSyncPhoneContacts event,
     Emitter<ContactsState> emit,
   ) async {
-    emit(ContactsSyncingPhoneContacts(0.0));
     try {
       final phoneContacts = await _phoneContactsService.getPhoneContacts();
-      emit(ContactsSyncingPhoneContacts(0.5));
 
       if (phoneContacts.isNotEmpty) {
         await _contactsRepository.uploadPhoneContacts(phoneContacts);
       }
-      emit(ContactsSyncingPhoneContacts(0.75));
 
       final contacts = await _contactsRepository.getContacts();
-      emit(ContactsSyncingPhoneContacts(1));
       emit(ContactsLoaded(contacts));
     } catch (e) {
       emit(ContactsError(e.toString()));

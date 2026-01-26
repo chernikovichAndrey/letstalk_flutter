@@ -99,5 +99,7 @@
   "writeMessage": "Написать сообщение",
   "createGroup": "Создать группу",
   "createContact": "Создать контакт",
-  "groupInviteHint": "Кого бы Вы хотели пригласить?"
+  "groupInviteHint": "Кого бы Вы хотели пригласить?",
+  "group": "Группа",
+  "next": "Дальше"
 }

@@ -9,12 +9,14 @@ class ContactsSlivers extends StatelessWidget {
   final List<Widget> children;
   final Function(int? id)? onSelectContact;
   final bool isRegisteredOnly;
+  final bool showSearch;
 
   const ContactsSlivers({
     super.key,
     required this.state,
     this.onSelectContact,
     this.isRegisteredOnly = false,
+    this.showSearch = true,
     this.children = const [],
   });
 
@@ -29,14 +31,15 @@ class ContactsSlivers extends StatelessWidget {
           : loadedState.contacts;
       return SliverMainAxisGroup(
         slivers: [
-          SliverToBoxAdapter(
-            child: CSearchBar(
-              hintText: context.s.search,
-              onChanged: (value) {
-                context.read<ContactsBloc>().add(ContactsSearch(value));
-              },
+          if (showSearch)
+            SliverToBoxAdapter(
+              child: CSearchBar(
+                hintText: context.s.search,
+                onChanged: (value) {
+                  context.read<ContactsBloc>().add(ContactsSearch(value));
+                },
+              ),
             ),
-          ),
           if (children.isNotEmpty)
             SliverToBoxAdapter(
               child: Column(children: children),

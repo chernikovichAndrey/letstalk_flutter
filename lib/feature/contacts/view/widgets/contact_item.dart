@@ -19,6 +19,7 @@ class ContactItem extends StatelessWidget {
   });
 
   void _onTapContact(BuildContext context) {
+    print('11111 ${state.isSelectionMode}');
     if (onTap != null) {
       onTap!(contact.registeredUserId);
       return;

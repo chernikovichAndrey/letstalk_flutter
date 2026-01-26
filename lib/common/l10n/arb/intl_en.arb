@@ -146,5 +146,8 @@
   "next": "Next",
   "create": "Create",
   "notWorkingNow": "Not working now",
-  "groupNameHint": "Group name"
+  "groupNameHint": "Group name",
+  "selectAtLeastOneContact": "Select at least one contact",
+  "enterGroupName": "Enter group name",
+  "groupChatCreated": "Group chat created"
 }

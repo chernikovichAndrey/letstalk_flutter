@@ -1,12 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/c_avatar.dart';
-import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_name_input.dart';
@@ -14,6 +10,9 @@ import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_ch
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_app_bar.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
+import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
+import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class CreateChatGroupPage extends StatefulWidget {
   const CreateChatGroupPage({super.key});
@@ -24,6 +23,7 @@ class CreateChatGroupPage extends StatefulWidget {
 
 class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
   final TextEditingController _groupNameController = TextEditingController();
+  bool _isCreating = false;
 
   @override
   void initState() {
@@ -43,6 +43,50 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
     return state.allContacts
         .where((contact) => state.selectedContactIds.contains(contact.id))
         .toList();
+  }
+
+  Future<void> _createGroupChat() async {
+    if (_isCreating) return;
+
+    final contactsState = getIt<ContactsBloc>().state;
+    if (contactsState is! ContactsLoaded) return;
+
+    final userIds = contactsState.selectedContactIds.toList()
+      ..add((getIt<ProfileBloc>().state as ProfileLoaded).user.id);
+
+    final title = _groupNameController.text.trim();
+    if (title.isEmpty) {
+      showErrorToast(context.s.enterGroupName);
+      return;
+    }
+
+    setState(() {
+      _isCreating = true;
+    });
+
+    try {
+      final repository = getIt<ChatsRepository>();
+      await repository.createGroupChat(
+        userIds: userIds,
+        title: title,
+      );
+
+      if (!mounted) return;
+
+      getIt<ChatsBloc>().add(ChatsRefresh());
+      getIt<ContactsBloc>().add(ContactsLoad());
+      context.replace(Routes.chats);
+      showSuccessToast(context.s.groupChatCreated);
+    } catch (e) {
+      if (!mounted) return;
+      showErrorToast(e.toString());
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCreating = false;
+        });
+      }
+    }
   }
 
   @override
@@ -95,11 +139,9 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
               ),
             ),
             CreateChatGroupAppBar(
-              isActionEnabled: _groupNameController.text.trim().isNotEmpty,
+              isActionEnabled: _groupNameController.text.trim().isNotEmpty && !_isCreating,
               nextLabel: context.s.create,
-              onPressNext: () {
-                // TODO: Create group action
-              },
+              onPressNext: _createGroupChat,
             ),
           ],
         ),

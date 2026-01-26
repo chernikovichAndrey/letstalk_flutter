@@ -104,5 +104,8 @@
   "next": "Дальше",
   "create": "Создать",
   "notWorkingNow": "Сейчас не работает",
-  "groupNameHint": "Название группы"
+  "groupNameHint": "Название группы",
+  "selectAtLeastOneContact": "Выберите хотя бы один контакт",
+  "enterGroupName": "Введите название группы",
+  "groupChatCreated": "Групповой чат создан"
 }

@@ -48,6 +48,29 @@ class ChatsRepositoryImpl implements ChatsRepository {
   }
 
   @override
+  Future<CreateChatResponse> createGroupChat({
+    required List<int> userIds,
+    required String title,
+    String? avatar,
+  }) async {
+    final data = {
+      'type': 'group',
+      'user_ids': userIds,
+      'title': title,
+    };
+    
+    if (avatar != null) {
+      data['avatar'] = avatar;
+    }
+
+    final response = await _apiService.post(
+      ApiConstants.chats,
+      data: data,
+    );
+    return CreateChatResponse.fromJson(response.data);
+  }
+
+  @override
   Future<void> deleteChat(int chatId) async {
     await _apiService.delete('${ApiConstants.chats}/$chatId');
   }

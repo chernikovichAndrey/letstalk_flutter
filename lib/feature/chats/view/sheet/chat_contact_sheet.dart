@@ -62,7 +62,7 @@ class ChatContactsSheet extends StatelessWidget {
                         ChatActionButton(
                           icon: Icons.group_outlined,
                           title: context.s.createGroup,
-                          onTap: () {},
+                          onTap: () => context.push(Routes.createChatGroup.path),
                         ),
                         const Divider(height: 1, indent: 12, endIndent: 12,),
                         ChatActionButton(

@@ -5,6 +5,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class GlassButton extends StatelessWidget {
   final IconData icon;
+  final String? label;
   final VoidCallback? onTap;
   final Color? backgroundColor;
   final Color? iconColor;
@@ -19,6 +20,7 @@ class GlassButton extends StatelessWidget {
     this.iconColor,
     this.size = 50,
     this.isEnabled = true,
+    this.label,
   });
 
   @override
@@ -42,11 +44,13 @@ class GlassButton extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: isEnabled ? onTap : null,
-                child: Icon(
-                  icon,
-                  color: baseColor,
-                  size: size * 0.48, // Scale icon with size (24/50 approx 0.48)
-                ),
+                child: label != null
+                    ? Text(label!)
+                    : Icon(
+                        icon,
+                        color: baseColor,
+                        size: size * 0.48, // Scale icon with size (24/50 approx 0.48)
+                      ),
               ),
             ),
           ),

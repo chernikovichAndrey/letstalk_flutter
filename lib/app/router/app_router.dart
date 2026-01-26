@@ -57,9 +57,9 @@ class AppRouter {
         ]
       ),
 
-      //Call screen
       buildRoute(Routes.call),
       buildRoute(Routes.photoEditor),
+      buildRoute(Routes.createChatGroup),
 
       //Sheets
       ...Routes.sheetRoutes.map(buildRoute),

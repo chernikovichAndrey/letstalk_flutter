@@ -149,5 +149,7 @@
   "groupNameHint": "Group name",
   "selectAtLeastOneContact": "Select at least one contact",
   "enterGroupName": "Enter group name",
-  "groupChatCreated": "Group chat created"
+  "groupChatCreated": "Group chat created",
+  "chatCreatedByYou": "You created a new chat",
+  "chatInvited": "You were invited to chat"
 }

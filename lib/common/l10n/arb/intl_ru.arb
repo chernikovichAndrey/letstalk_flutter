@@ -107,5 +107,7 @@
   "groupNameHint": "Название группы",
   "selectAtLeastOneContact": "Выберите хотя бы один контакт",
   "enterGroupName": "Введите название группы",
-  "groupChatCreated": "Групповой чат создан"
+  "groupChatCreated": "Групповой чат создан",
+  "chatCreatedByYou": "Вы создали новый чат",
+  "chatInvited": "Вас пригласили в чат"
 }

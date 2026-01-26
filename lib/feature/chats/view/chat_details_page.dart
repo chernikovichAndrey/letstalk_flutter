@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
+import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_date_seporator.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_empty_messages.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/message_input.dart';
@@ -153,32 +156,36 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                 state.messages.isEmpty) {
               return Center(child: Text(state.errorMessage ?? 'Error'));
             }
-            final member = state.members.firstWhere(
+
+            final member = state.members.firstWhereOrNull(
               (member) => member.userId != state.currentUser?.id,
             );
 
             return Stack(
               children: [
-                ListView.builder(
-                  reverse: true,
-                  controller: _scrollController,
-                  padding: EdgeInsets.only(
-                    top: context.padding.top + 60,
-                    bottom: context.padding.bottom + 80,
+                if (state.messages.isEmpty)
+                  const ChatDetailsEmptyMessages()
+                else
+                  ListView.builder(
+                    reverse: true,
+                    controller: _scrollController,
+                    padding: EdgeInsets.only(
+                      top: context.padding.top + 60,
+                      bottom: context.padding.bottom + 80,
+                    ),
+                    itemCount: state.hasReachedMax
+                        ? state.messages.length
+                        : state.messages.length + 1,
+                    itemBuilder: (context, index) =>
+                        _renderItem(context, index, state),
                   ),
-                  itemCount: state.hasReachedMax
-                      ? state.messages.length
-                      : state.messages.length + 1,
-                  itemBuilder: (context, index) =>
-                      _renderItem(context, index, state),
-                ),
                 Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
                   child: ChatDetailsAppBar(
-                    chatTitle: state.chat?.title ?? member.phone ?? '',
-                    memberId: member.userId,
+                    chatTitle: state.chat?.title ?? member?.phone ?? '',
+                    memberId: member?.userId,
                   ),
                 ),
                 Positioned(

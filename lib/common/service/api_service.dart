@@ -49,6 +49,7 @@ class ApiService {
           return handler.next(response);
         },
         onError: (DioException e, handler) {
+          print('111 ${e.type}');
           _logger.e(
             'Error: ${e.message}',
             error: e.error,

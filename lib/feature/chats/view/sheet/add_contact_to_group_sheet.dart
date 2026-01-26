@@ -8,14 +8,14 @@ import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.da
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
 
-class SelectContactsForGroupPage extends StatefulWidget {
-  const SelectContactsForGroupPage({super.key});
+class AddContactToGroupSheet extends StatefulWidget {
+  const AddContactToGroupSheet({super.key});
 
   @override
-  State<SelectContactsForGroupPage> createState() => _SelectContactsForGroupPageState();
+  State<AddContactToGroupSheet> createState() => _AddContactToGroupSheetState();
 }
 
-class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage> {
+class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
 
   @override
   void deactivate() {
@@ -67,7 +67,12 @@ class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage>
                 );
               },
             ),
-            const CreateChatGroupAppBar(),
+            CreateChatGroupAppBar(
+              nextLabel: 'Готово',
+              onPressNext: () {
+
+              },
+            ),
           ],
         ),
       ),

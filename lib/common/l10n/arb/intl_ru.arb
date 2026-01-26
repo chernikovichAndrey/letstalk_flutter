@@ -109,5 +109,6 @@
   "enterGroupName": "Введите название группы",
   "groupChatCreated": "Групповой чат создан",
   "chatCreatedByYou": "Вы создали новый чат",
-  "chatInvited": "Вас пригласили в чат"
+  "chatInvited": "Вас пригласили в чат",
+  "addParticipants": "Добавить участников"
 }

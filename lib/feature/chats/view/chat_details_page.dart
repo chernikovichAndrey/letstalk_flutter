@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_details/add_participants_banner.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_date_seporator.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_empty_messages.dart';
@@ -161,6 +164,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               (member) => member.userId != state.currentUser?.id,
             );
 
+            final isGroupChat = state.chat?.type == 'group';
+            final shouldShowAddBanner = isGroupChat && 
+                state.members.length == 1;
+
             return Stack(
               children: [
                 if (state.messages.isEmpty)
@@ -170,7 +177,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     reverse: true,
                     controller: _scrollController,
                     padding: EdgeInsets.only(
-                      top: context.padding.top + 60,
+                      top: context.padding.top + 60 + (shouldShowAddBanner ? 60 : 0),
                       bottom: context.padding.bottom + 80,
                     ),
                     itemCount: state.hasReachedMax
@@ -188,6 +195,20 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                     memberId: member?.userId,
                   ),
                 ),
+                if (shouldShowAddBanner)
+                  Positioned(
+                    top: context.padding.top + 66,
+                    left: 0,
+                    right: 0,
+                    child: AddParticipantsBanner(
+                      onTap: () {
+                        context.push(Routes.addContactToGroupSheet);
+                      },
+                      onClose: () {
+                        // TODO: Add logic to hide banner
+                      },
+                    ),
+                  ),
                 Positioned(
                   bottom: 0,
                   left: 0,

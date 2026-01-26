@@ -3,22 +3,28 @@ import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 class ReplyTo {
   final int messageId;
   final int fromUserId;
-  final String fromName;
+  final String? fromName;
   final String textPreview;
+  final String messageType;
+  final Media? media;
 
   ReplyTo({
     required this.messageId,
     required this.fromUserId,
-    required this.fromName,
+    this.fromName,
     required this.textPreview,
+    required this.messageType,
+    this.media,
   });
 
   factory ReplyTo.fromJson(Map<String, dynamic> json) {
     return ReplyTo(
       messageId: int.tryParse(json['message_id'].toString()) ?? 0,
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
-      fromName: json['from_name'] as String? ?? '',
+      fromName: json['from_name'] as String?,
       textPreview: json['text_preview'] as String? ?? '',
+      messageType: json['message_type'] as String? ?? 'text',
+      media: json['media'] != null ? Media.fromJson(json['media']) : null,
     );
   }
 }

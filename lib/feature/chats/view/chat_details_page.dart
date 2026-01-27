@@ -8,6 +8,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/add_participants_banner.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
@@ -138,13 +139,18 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
     if (chat == null) return '';
     if (chat.type == 'group') return chat.title ?? '';
     if (chat.memberInfo == null) return '';
-    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
-    final member = chat.memberInfo?.firstWhereOrNull((member) => member.id != myId);
+    final member = _getChatMemberInfo(state);
     if (member == null) return '';
     if (member.fullName != null && member.fullName!.isNotEmpty) return member.fullName!;
     if (member.firstName != null && member.firstName!.isNotEmpty) return member.firstName!;
     if (member.phone != null && member.phone!.isNotEmpty) return member.phone!;
     return '';
+  }
+
+  MemberInfo? _getChatMemberInfo(ChatDetailsState state) {
+    final chat = state.chat;
+    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    return chat?.memberInfo?.firstWhereOrNull((member) => member.id != myId);
   }
 
   @override
@@ -208,6 +214,9 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   child: ChatDetailsAppBar(
                     chatTitle: _getChatTitle(state),
                     memberId: member?.userId,
+                    avatarUrl: state.chat?.type == 'group'
+                        ? state.chat?.avatar
+                        : _getChatMemberInfo(state)?.avatar,
                   ),
                 ),
                 if (shouldShowAddBanner)

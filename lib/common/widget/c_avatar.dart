@@ -26,6 +26,9 @@ class CAvatar extends StatelessWidget {
     if (parts.length >= 2) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
+    if (name[0] == '+') {
+      return '';
+    }
     return name[0].toUpperCase();
   }
 
@@ -52,7 +55,7 @@ class CAvatar extends StatelessWidget {
     final initials = _getInitials(name);
     final backgroundColor = _getBackgroundColor(name);
     final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
-    final hasName = name != null && name!.isNotEmpty;
+    final hasName = name != null && name!.isNotEmpty && name![0] != '+';
 
     Widget avatar;
 

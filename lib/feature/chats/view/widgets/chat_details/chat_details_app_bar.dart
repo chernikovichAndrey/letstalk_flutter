@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
@@ -11,12 +13,14 @@ import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bl
 
 class ChatDetailsAppBar extends StatelessWidget {
   final String chatTitle;
+  final String? avatarUrl;
   final int? memberId;
 
   const ChatDetailsAppBar({
     super.key,
     required this.chatTitle,
     this.memberId,
+    this.avatarUrl,
   });
 
   @override
@@ -79,7 +83,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
-                                      if (state.chat?.type == 'group')
+                                      if (state.chat?.type == 'group' && state.typingUserIds.isEmpty)
                                         TextSpan(
                                           text: '\n${context.s.participantsCount(state.chat?.membersCount ?? 1)}',
                                           style: TextStyle(
@@ -100,13 +104,27 @@ class ChatDetailsAppBar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    GlassButton(
-                      icon: Icons.call,
-                      onTap: () {
-                        if (memberId != null) {
-                          SelectCallTypeDialog(memberId!, context);
-                        }
-                      },
+                    // GlassButton(
+                    //   icon: Icons.call,
+                    //   onTap: () {
+                    //     if (memberId != null) {
+                    //       SelectCallTypeDialog(memberId!, context);
+                    //     }
+                    //   },
+                    // ),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        onTap: () {
+
+                        },
+                        child: CAvatar(
+                          radius: 25,
+                          imageUrl: avatarUrl != null ? '${Env.baseUrl}uploads/$avatarUrl' : null,
+                          name: chatTitle,
+                        ),
+                      ),
                     ),
                   ],
                 ),

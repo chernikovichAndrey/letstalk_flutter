@@ -35,49 +35,37 @@ class ProfileWidget extends StatelessWidget {
             : state is AvatarUploadLoading ? state.user : null;
         if (user == null) return Container();
         final displayName = _getUserDisplayName(user);
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-          child: Column(
-            children: [
-              ProfileAvatar(),
-              const SizedBox(height: 16),
-              if (displayName.isNotEmpty) ...[
+        return Column(
+          children: [
+            ProfileAvatar(),
+            const SizedBox(height: 16),
+            if (displayName.isNotEmpty) ...[
+              Text(
+                displayName,
+                style: TextStyle(
+                  color: appColors.glassForeground,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+            ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Text(
-                  displayName,
+                  user.phone,
                   style: TextStyle(
-                    color: appColors.glassForeground,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                    color: appColors.glassForeground.withOpacity(0.7),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 4),
               ],
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    user.phone,
-                    style: TextStyle(
-                      color: appColors.glassForeground.withOpacity(0.7),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 48),
-              ProfileActionButton(
-                onTap: () => context.push(Routes.profileAvatarSheet.path),
-                label: context.s.changePhoto,
-                labelColor: appColors.telegramBlue,
-                icon: Icons.add_a_photo_outlined,
-                iconColor: appColors.telegramBlue,
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

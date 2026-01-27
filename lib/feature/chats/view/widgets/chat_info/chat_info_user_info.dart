@@ -3,8 +3,8 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_add_contact.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_row.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_add_contact.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_row.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatInfoUserInfo extends StatelessWidget {
@@ -26,7 +26,7 @@ class ChatInfoUserInfo extends StatelessWidget {
               if (member?.phone != null && member!.phone!.isNotEmpty)
                 ...[
                   ChatInfoRow(
-                    label: 'мобильный',
+                    label: context.s.mobile,
                     value: member.phone!,
                   ),
                   Divider(
@@ -37,7 +37,7 @@ class ChatInfoUserInfo extends StatelessWidget {
                   ),
                 ],
               ChatInfoRow(
-                label: 'имя пользователя',
+                label: context.s.username,
                 value: member?.fullName ?? member?.firstName ?? member?.phone ?? '',
               ),
             ],

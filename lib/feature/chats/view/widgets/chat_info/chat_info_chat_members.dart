@@ -4,8 +4,8 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_add_new_member.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_member_item.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_add_new_member.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_member_item.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatInfoChatMembers extends StatelessWidget {

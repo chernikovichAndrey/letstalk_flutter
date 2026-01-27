@@ -4,11 +4,11 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_actions_group.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_app_bar.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_avatar.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_chat_members.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_user_info.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_actions_group.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_avatar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_chat_members.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_user_info.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatInfoSheet extends StatelessWidget {

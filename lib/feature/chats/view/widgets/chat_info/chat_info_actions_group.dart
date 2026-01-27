@@ -5,7 +5,7 @@ import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_action_button.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_action_button.dart';
 
 class ChatInfoActionsGroup extends StatelessWidget {
   final int targetUserId;
@@ -24,7 +24,7 @@ class ChatInfoActionsGroup extends StatelessWidget {
               ChatInfoActionButton(
                 context: context,
                 icon: Icons.phone,
-                label: 'звонок',
+                label: context.s.call,
                 onTap: () {
                   getIt<CallBloc>().add(
                       CallInitiated(targetUserId: targetUserId));
@@ -34,7 +34,7 @@ class ChatInfoActionsGroup extends StatelessWidget {
               ChatInfoActionButton(
                 context: context,
                 icon: Icons.videocam,
-                label: 'видео',
+                label: context.s.videoCallAction,
                 onTap: () {
                   getIt<CallBloc>().add(
                     CallInitiated(targetUserId: targetUserId, isVideo: true),
@@ -44,7 +44,7 @@ class ChatInfoActionsGroup extends StatelessWidget {
             ChatInfoActionButton(
               context: context,
               icon: Icons.notifications,
-              label: 'звук',
+              label: context.s.sound,
               onTap: () {
                 //TODO
                 showWarningToast(context.s.notWorkingNow);
@@ -55,7 +55,7 @@ class ChatInfoActionsGroup extends StatelessWidget {
             ChatInfoActionButton(
               context: context,
               icon: Icons.more_horiz,
-              label: 'ещё',
+              label: context.s.more,
               onTap: () {
                 //TODO
                 showWarningToast(context.s.notWorkingNow);

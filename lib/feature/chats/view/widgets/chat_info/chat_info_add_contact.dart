@@ -20,7 +20,7 @@ class ChatInfoAddContact extends StatelessWidget {
       child: BlocListener<AddContactBloc, AddContactState>(
         listener: (context, state) {
           if (state is AddContactSuccess) {
-            showSuccessToast('Контакт добавлен');
+            showSuccessToast(context.s.contactAdded);
             getIt<ContactsBloc>().add(ContactsLoad());
           }
         },
@@ -66,7 +66,7 @@ class ChatInfoAddContact extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Добавить в контакты',
+                    context.s.addToContacts,
                     style: context.text.bodyLarge?.copyWith(color: Colors.blue),
                   ),
                 ),

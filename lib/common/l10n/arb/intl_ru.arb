@@ -127,5 +127,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "owner": "Владелец",
+  "unknown": "Неизвестно",
+  "deleteMember": "Удалить",
+  "you": "вы",
+  "call": "Звонок",
+  "videoCallAction": "Видео",
+  "sound": "Звук",
+  "more": "Ещё",
+  "addMembersAction": "Добавить участников",
+  "contactAdded": "Контакт добавлен",
+  "addToContacts": "Добавить в контакты",
+  "mobile": "мобильный",
+  "username": "имя пользователя",
+  "forwardedFrom": "Переслано от"
 }

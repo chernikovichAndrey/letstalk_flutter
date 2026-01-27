@@ -62,7 +62,7 @@ class MessageBubble extends StatelessWidget {
                 //TODO: add forwardedFrom text
                 // if (message.forwardedFrom != null)
                 //   Text(
-                //     'Переслано от\n${message.forwardedFrom?.fromName}',
+                //     '${context.s.forwardedFrom}\n${message.forwardedFrom?.fromName}',
                 //     style: context.text.bodyMedium,
                 //     textAlign: TextAlign.start,
                 //   ),

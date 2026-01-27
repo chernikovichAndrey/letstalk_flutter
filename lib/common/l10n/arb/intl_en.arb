@@ -169,5 +169,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "owner": "Owner",
+  "unknown": "Unknown",
+  "deleteMember": "Delete",
+  "you": "you",
+  "call": "Call",
+  "videoCallAction": "Video",
+  "sound": "Sound",
+  "more": "More",
+  "addMembersAction": "Add members",
+  "contactAdded": "Contact added",
+  "addToContacts": "Add to contacts",
+  "mobile": "mobile",
+  "username": "username",
+  "forwardedFrom": "Forwarded from"
 }

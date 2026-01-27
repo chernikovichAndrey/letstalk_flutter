@@ -80,18 +80,18 @@ class _MemberItemState extends State<MemberItem>
     }
   }
 
-  String _getRoleLabel(String role) {
+  String _getRoleLabel(String role, BuildContext context) {
     switch (role) {
       case 'owner':
       case 'admin':
-        return 'владелец';
+        return context.s.owner;
       case 'member':
       default:
         return '';
     }
   }
 
-  String _getMemberName(MemberInfo memberInfo) {
+  String _getMemberName(BuildContext context, MemberInfo memberInfo) {
     if (memberInfo.fullName != null && memberInfo.fullName!.isNotEmpty) {
       return memberInfo.fullName!;
     }
@@ -101,7 +101,7 @@ class _MemberItemState extends State<MemberItem>
     if (memberInfo.phone != null && memberInfo.phone!.isNotEmpty) {
       return memberInfo.phone!;
     }
-    return 'Unknown';
+    return context.s.unknown;
   }
 
   String? _getMemberAvatar(MemberInfo memberInfo) {
@@ -113,7 +113,7 @@ class _MemberItemState extends State<MemberItem>
 
   @override
   Widget build(BuildContext context) {
-    final roleLabel = _getRoleLabel(widget.chatMember.role);
+    final roleLabel = _getRoleLabel(widget.chatMember.role, context);
     final canDelete = widget.currentUserRole == 'admin' && !widget.isMyself;
 
     return GestureDetector(
@@ -140,10 +140,10 @@ class _MemberItemState extends State<MemberItem>
                               left: Radius.circular(12),
                             ),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
-                              'Удалить',
-                              style: TextStyle(
+                              context.s.deleteMember,
+                              style: const TextStyle(
                                 color: CupertinoColors.white,
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
@@ -178,7 +178,7 @@ class _MemberItemState extends State<MemberItem>
                             children: [
                               CAvatar(
                                 imageUrl: _getMemberAvatar(widget.member),
-                                name: _getMemberName(widget.member),
+                                name: _getMemberName(context, widget.member),
                                 radius: 20,
                               ),
                               const SizedBox(width: 12),
@@ -188,7 +188,7 @@ class _MemberItemState extends State<MemberItem>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      _getMemberName(widget.member),
+                                      _getMemberName(context, widget.member),
                                       style: TextStyle(
                                         color: context.appColors.glassForeground,
                                         fontSize: 17,
@@ -199,7 +199,7 @@ class _MemberItemState extends State<MemberItem>
                                     ),
                                     if (widget.isMyself)
                                       Text(
-                                        'вы',
+                                        context.s.you,
                                         style: const TextStyle(
                                           color: CupertinoColors.systemBlue,
                                           fontSize: 14,

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class ChatInfoAddNewMember extends StatelessWidget {
   const ChatInfoAddNewMember({super.key});
@@ -30,8 +31,8 @@ class ChatInfoAddNewMember extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              'Добавить участников',
-              style: TextStyle(
+              context.s.addMembersAction,
+              style: const TextStyle(
                 color: CupertinoColors.systemBlue,
                 fontSize: 17,
                 fontWeight: FontWeight.w400,

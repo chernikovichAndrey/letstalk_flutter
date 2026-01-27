@@ -107,11 +107,11 @@ class MessageBubble extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 4),
+                  padding: const EdgeInsets.only(left: 4, bottom: 4),
                   child: CAvatar(
                     imageUrl: senderInfo?.avatarUrl,
                     name: senderInfo?.fullName ?? senderInfo?.firstName,
-                    radius: 22,
+                    radius: 20,
                   ),
                 ),
                 Flexible(child: messageBubble),

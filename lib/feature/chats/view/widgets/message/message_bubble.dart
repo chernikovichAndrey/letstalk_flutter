@@ -57,7 +57,7 @@ class MessageBubble extends StatelessWidget {
         child: Column(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 //TODO: add forwardedFrom text
                 // if (message.forwardedFrom != null)

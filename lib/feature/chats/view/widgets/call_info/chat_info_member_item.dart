@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 
 class MemberItem extends StatefulWidget {
   final MemberInfo member;
@@ -49,8 +51,8 @@ class _MemberItemState extends State<MemberItem>
     super.dispose();
   }
 
-  void _onDelete() {
-
+  void _onDelete(int userId) {
+    context.read<ChatDetailsBloc>().add(RemoveMemberFromChat(userId));
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
@@ -128,7 +130,7 @@ class _MemberItemState extends State<MemberItem>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       GestureDetector(
-                        onTap: _onDelete,
+                        onTap: () => _onDelete(widget.chatMember.userId),
                         child: Container(
                           width: _deleteButtonWidth,
                           decoration: const BoxDecoration(

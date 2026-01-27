@@ -95,4 +95,14 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
       },
     );
   }
+
+  @override
+  Future<void> removeMemberFromChat({
+    required int chatId,
+    required int userId,
+  }) async {
+    await _apiService.delete(
+      '${ApiConstants.chats}/$chatId/members/$userId',
+    );
+  }
 }

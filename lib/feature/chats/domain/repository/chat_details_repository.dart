@@ -20,4 +20,8 @@ abstract class ChatDetailsRepository {
     required int userId,
     String role = 'member',
   });
+  Future<void> removeMemberFromChat({
+    required int chatId,
+    required int userId,
+  });
 }

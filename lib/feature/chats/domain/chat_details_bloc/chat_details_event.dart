@@ -120,3 +120,9 @@ class AddMembersToChat extends ChatDetailsEvent {
 
   AddMembersToChat(this.userId);
 }
+
+class RemoveMemberFromChat extends ChatDetailsEvent {
+  final int userId;
+
+  RemoveMemberFromChat(this.userId);
+}

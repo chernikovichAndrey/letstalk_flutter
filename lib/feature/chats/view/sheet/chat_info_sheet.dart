@@ -7,6 +7,7 @@ import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bl
 import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_actions_group.dart';
 import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_avatar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_chat_members.dart';
 import 'package:lets_talk/feature/chats/view/widgets/call_info/chat_info_user_info.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
@@ -26,6 +27,7 @@ class ChatInfoSheet extends StatelessWidget {
         child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
           builder: (context, state) {
             //TODO: add group style
+            final isGroupChat = state.chat?.type == 'group';
 
             //this is for 1x1
             final member = state.chat?.memberInfo?.firstWhereOrNull((member) =>
@@ -34,25 +36,30 @@ class ChatInfoSheet extends StatelessWidget {
 
             return Stack(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 16,
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            ChatInfoAvatar(),
+                            SizedBox(height: 28,),
+                            ChatInfoActionsGroup(targetUserId: member?.id ?? -1),
+                            SizedBox(height: 28,),
+                            if (isGroupChat)
+                              ChatInfoChatMembers()
+                            else
+                              ChatInfoUserInfo(),
+                          ],
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          ChatInfoAvatar(),
-                          SizedBox(height: 28,),
-                          ChatInfoActionsGroup(targetUserId: member?.id ?? -1),
-                          SizedBox(height: 28,),
-                          ChatInfoUserInfo(),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const ChatInfoAppBar()
               ],

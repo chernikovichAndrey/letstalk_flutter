@@ -45,16 +45,17 @@ class ChatInfoAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
       builder: (context, state) {
+        final isGroup = state.chat?.type == 'group';
         return Column(
           children: [
             CAvatar(
-              imageUrl: _getMemberAvatar(state),
-              name: _getMemberName(state),
+              imageUrl: isGroup ? state.chat?.avatar : _getMemberAvatar(state),
+              name: isGroup ? state.chat?.title : _getMemberName(state),
               radius: 60,
               isLoading: state is AvatarUploadLoading,
             ),
             Text(
-              _getMemberName(state, phone: true) ?? '',
+              isGroup ? state.chat?.title ?? '' : _getMemberName(state, phone: true) ?? '',
               style: TextStyle(
                 color: context.appColors.glassForeground,
                 fontSize: 24,

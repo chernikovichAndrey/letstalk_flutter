@@ -1,4 +1,5 @@
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
+import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 
 class ReplyTo {
   final int messageId;
@@ -76,6 +77,7 @@ class Message {
   final int editCount;
   final ReplyTo? replyTo;
   final ForwardedFrom? forwardedFrom;
+  final List<UserModel>? fromName;
 
   Message({
     required this.id,
@@ -92,6 +94,7 @@ class Message {
     required this.editCount,
     this.replyTo,
     this.forwardedFrom,
+    this.fromName,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -113,6 +116,11 @@ class Message {
       forwardedFrom: json['forwarded_from'] != null
           ? ForwardedFrom.fromJson(json['forwarded_from'])
           : null,
+      fromName: json['from_name'] != null
+          ? (json['from_name'] as List<dynamic>)
+              .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
     );
   }
 
@@ -131,6 +139,7 @@ class Message {
     int? editCount,
     ReplyTo? replyTo,
     ForwardedFrom? forwardedFrom,
+    List<UserModel>? fromName,
   }) {
     return Message(
       id: id ?? this.id,
@@ -147,6 +156,7 @@ class Message {
       editCount: editCount ?? this.editCount,
       replyTo: replyTo ?? this.replyTo,
       forwardedFrom: forwardedFrom ?? this.forwardedFrom,
+      fromName: fromName ?? this.fromName,
     );
   }
 }

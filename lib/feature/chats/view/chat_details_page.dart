@@ -99,6 +99,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
     final isMe =
         state.currentUser?.id != null &&
         message.fromUserId == state.currentUser?.id;
+    final isGroupChat = state.chat?.type == 'group';
 
     bool showDate = false;
     final createdAt = DateTime.tryParse('${message.createdAt}Z')?.toLocal();
@@ -119,7 +120,11 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
       }
     }
 
-    final bubble = MessageBubble(message: message, isMe: isMe);
+    final bubble = MessageBubble(
+      message: message,
+      isMe: isMe,
+      isGroupChat: isGroupChat,
+    );
 
     if (showDate && createdAt != null) {
       return Column(

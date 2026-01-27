@@ -104,20 +104,12 @@ class ChatDetailsAppBar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // GlassButton(
-                    //   icon: Icons.call,
-                    //   onTap: () {
-                    //     if (memberId != null) {
-                    //       SelectCallTypeDialog(memberId!, context);
-                    //     }
-                    //   },
-                    // ),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
                         splashColor: Colors.transparent,
                         onTap: () {
-
+                          //TODO: show chat info sheet
                         },
                         child: CAvatar(
                           radius: 25,

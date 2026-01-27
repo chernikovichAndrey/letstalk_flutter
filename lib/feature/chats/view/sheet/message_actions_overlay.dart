@@ -14,20 +14,26 @@ import 'package:lets_talk/feature/chats/view/widgets/message/message_menu.dart';
 class MessageActionsOverlay extends StatefulWidget {
   final Message message;
   final bool isMe;
+  final bool isGroupChat;
 
   const MessageActionsOverlay({
     super.key,
     required this.message,
     required this.isMe,
+    this.isGroupChat = false,
   });
 
-  static void show(BuildContext context, Message message, bool isMe) {
+  static void show(BuildContext context, Message message, bool isMe, {bool isGroupChat = false}) {
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
         pageBuilder: (context, _, __) => BlocProvider<ChatDetailsBloc>.value(
           value: getIt(),
-          child: MessageActionsOverlay(message: message, isMe: isMe),
+          child: MessageActionsOverlay(
+            message: message,
+            isMe: isMe,
+            isGroupChat: isGroupChat,
+          ),
         ),
         transitionsBuilder: (context, animation, _, child) {
           return FadeTransition(opacity: animation, child: child);
@@ -194,6 +200,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               child: MessageBubble(
                                 message: widget.message,
                                 isMe: widget.isMe,
+                                isGroupChat: widget.isGroupChat,
                               ),
                             ),
                             const SizedBox(height: 8),

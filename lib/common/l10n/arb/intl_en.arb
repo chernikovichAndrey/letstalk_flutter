@@ -191,5 +191,8 @@
   "addToContacts": "Add to contacts",
   "mobile": "mobile",
   "username": "username",
-  "forwardedFrom": "Forwarded from"
+  "forwardedFrom": "Forwarded from",
+  "deleteForEveryoneWherePossible": "Delete for everyone where possible",
+  "deleteForBothParticipants": "Delete for both participants",
+  "deleteForMe": "Delete for me"
 }

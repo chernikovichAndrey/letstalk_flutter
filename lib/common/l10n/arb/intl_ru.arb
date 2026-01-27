@@ -149,5 +149,8 @@
   "addToContacts": "Добавить в контакты",
   "mobile": "мобильный",
   "username": "имя пользователя",
-  "forwardedFrom": "Переслано от"
+  "forwardedFrom": "Переслано от",
+  "deleteForEveryoneWherePossible": "Удалить у всех где возможно",
+  "deleteForBothParticipants": "Удалить у обоих участников",
+  "deleteForMe": "Удалить у меня"
 }

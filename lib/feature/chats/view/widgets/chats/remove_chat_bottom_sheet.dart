@@ -33,7 +33,7 @@ class RemoveChatBottomSheet {
               if (!onlyGroupChats)
                 ...[
                   ChatAppBarActionButton(
-                    label: selectedChats.length > 1 ? 'Удалить у всех где возможно' : 'Удалить у обоих участников',
+                    label: selectedChats.length > 1 ? context.s.deleteForEveryoneWherePossible : context.s.deleteForBothParticipants,
                     onPress: () {
                       context.pop();
                       for (final chatId in state.selectedChatIds) {
@@ -46,7 +46,7 @@ class RemoveChatBottomSheet {
                   SizedBox(height: 4),
                 ],
               ChatAppBarActionButton(
-                label: onlyGroupChats ? context.s.deleteChats(selectedChats.length) : 'Удалить у меня',
+                label: onlyGroupChats ? context.s.deleteChats(selectedChats.length) : context.s.deleteForMe,
                 onPress: () {
                   context.pop();
                   for (final chatId in state.selectedChatIds) {
@@ -56,7 +56,7 @@ class RemoveChatBottomSheet {
               ),
               SizedBox(height: 4),
               ChatAppBarActionButton(
-                label: 'Отмена',
+                label: context.s.cancel,
                 isRead: false,
                 onPress: context.pop,
               ),

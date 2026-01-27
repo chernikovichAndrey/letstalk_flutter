@@ -3,7 +3,7 @@ import 'package:lets_talk/feature/calls_history/data/model/call_history_peer_mod
 class CallHistory {
   final int id;
   final String type; // 'audio' or 'video'
-  final String status; // 'ended', 'missed'
+  final String status; // 'ended', 'missed', 'failed'
   final String direction; // 'outgoing', 'incoming'
   final CallHistoryPeer peer;
   final DateTime? startedAt;

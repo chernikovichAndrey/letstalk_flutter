@@ -12,36 +12,8 @@ import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_skeleton.da
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_slivers.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chats_app_bar.dart';
 
-class ChatsPage extends StatefulWidget {
+class ChatsPage extends StatelessWidget {
   const ChatsPage({super.key});
-
-  @override
-  State<ChatsPage> createState() => _ChatsPageState();
-}
-
-class _ChatsPageState extends State<ChatsPage>{
-  late final RouterDelegate routerDelegate;
-
-  @override
-  void initState() {
-    super.initState();
-    super.initState();
-    routerDelegate = GoRouter.of(context).routerDelegate;
-    routerDelegate.addListener(_onRouteChanged);
-  }
-
-  @override
-  void dispose() {
-    routerDelegate.removeListener(_onRouteChanged);
-    super.dispose();
-  }
-
-  void _onRouteChanged() {
-    final location = routerDelegate.currentConfiguration.uri.toString();
-    if (location == Routes.chats.path && mounted) {
-      context.read<ChatsBloc>().add(ChatsRefresh());
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

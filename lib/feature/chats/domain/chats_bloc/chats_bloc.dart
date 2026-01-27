@@ -50,6 +50,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
           (message) {
         if (message is String) {
           final decoded = jsonDecode(message);
+          print('111111 ${decoded}');
           _handleWebSocketMessage(decoded);
         }
       },

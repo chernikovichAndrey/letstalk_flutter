@@ -59,6 +59,9 @@ class Chat {
       unreadCount: unreadCount ?? this.unreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageText: lastMessageText ?? this.lastMessageText,
+      lastMessageAt: lastMessageAt,
+      role: role,
+      memberInfo: memberInfo,
     );
   }
 }

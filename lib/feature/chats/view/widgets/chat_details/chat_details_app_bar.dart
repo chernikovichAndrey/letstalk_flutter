@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/environment/environment.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
-import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 
 class ChatDetailsAppBar extends StatelessWidget {
@@ -109,7 +109,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                       child: InkWell(
                         splashColor: Colors.transparent,
                         onTap: () {
-                          //TODO: show chat info sheet
+                          context.push(Routes.chatInfoSheet.path);
                         },
                         child: CAvatar(
                           radius: 25,

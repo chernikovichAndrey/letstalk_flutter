@@ -13,6 +13,7 @@ import 'package:lets_talk/feature/call/view/call_page.dart';
 import 'package:lets_talk/feature/calls_history/view/calls_history_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/chats_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/sheet/chat_attachment_bottom_sheet.dart';
+import 'package:lets_talk/feature/chats/view/sheet/chat_info_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/forward_message_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/full_screen_media_sheet.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
@@ -48,6 +49,7 @@ extension RoutesExt on Routes {
       Routes.selectContactsFroGroup => const SelectContactsForGroupPage(),
       Routes.createChatGroup => const CreateChatGroupPage(),
       Routes.addContactToGroupSheet => const AddContactToGroupSheet(),
+      Routes.chatInfoSheet => const ChatInfoSheet(),
     };
   }
 }

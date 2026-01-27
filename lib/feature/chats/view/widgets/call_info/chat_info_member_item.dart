@@ -52,6 +52,7 @@ class _MemberItemState extends State<MemberItem>
   }
 
   void _onDelete(int userId) {
+    _controller.reverse();
     context.read<ChatDetailsBloc>().add(RemoveMemberFromChat(userId));
   }
 

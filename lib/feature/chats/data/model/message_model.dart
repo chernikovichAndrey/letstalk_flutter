@@ -116,7 +116,7 @@ class Message {
       forwardedFrom: json['forwarded_from'] != null
           ? ForwardedFrom.fromJson(json['forwarded_from'])
           : null,
-      fromName: json['from_name'] != null
+      fromName: json['from_name'] != null && json['from_name'] is! String
           ? (json['from_name'] as List<dynamic>)
               .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
               .toList()

@@ -44,3 +44,10 @@ class ChatsToggleChatSelection extends ChatsEvent {
 }
 
 class ChatsDeleteSelected extends ChatsEvent {}
+
+class RemoveChat extends ChatsEvent {
+  final int chatId;
+  final List<int> userIds;
+
+  RemoveChat({required this.chatId, required this.userIds});
+}

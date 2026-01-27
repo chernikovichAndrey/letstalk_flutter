@@ -85,7 +85,7 @@ class MessageBubble extends StatelessWidget {
                 Text(
                   message.text ?? '',
                   style: context.text.bodyMedium?.copyWith(
-                    color: Colors.white,
+                    color: isMe ? Colors.white : context.appColors.messageOtherText,
                   ),
                 ),
                 MessageBubbleInfo(

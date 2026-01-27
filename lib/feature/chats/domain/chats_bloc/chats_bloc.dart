@@ -4,15 +4,18 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:logger/logger.dart';
 
 part 'chats_event.dart';
 part 'chats_state.dart';
 
-@injectable
+@singleton
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final Logger _logger = Logger();
   final ChatsRepository _chatsRepository;
@@ -37,6 +40,8 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsToggleSelectionMode>(_onToggleSelectionMode);
     on<ChatsToggleChatSelection>(_onToggleChatSelection);
     on<ChatsDeleteSelected>(_onDeleteSelected);
+    on<RemoveChat>(_onRemoveChat);
+
     _subscribeToWebSocket();
   }
 
@@ -124,8 +129,9 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     final currentState = state;
     if (currentState is ChatsLoaded) {
       try {
+        final userId = (getIt<ProfileBloc>() as ProfileLoaded).user.id;
         for (final chatId in currentState.selectedChatIds) {
-          await _chatsRepository.deleteChat(chatId);
+          await _chatsRepository.removeMemberFromChat(chatId: chatId, userId: userId);
         }
         add(ChatsRefresh());
       } catch (e) {
@@ -231,6 +237,17 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(ChatsLoaded(chats));
     } catch (e) {
       emit(ChatsError(e.toString()));
+    }
+  }
+
+  Future<void> _onRemoveChat(
+    RemoveChat event,
+    Emitter<ChatsState> emit
+  ) async {
+    final chats = await _chatsRepository.getChats();
+    for (var userId in event.userIds) {
+      await _chatsRepository.removeMemberFromChat(chatId: event.chatId, userId: userId);
+      emit(ChatsLoaded(chats.where((chat) => chat.id != event.chatId).toList()));
     }
   }
 }

@@ -112,6 +112,14 @@
   "chatCreatedByYou": "Вы создали новый чат",
   "chatInvited": "Вас пригласили в чат",
   "addParticipants": "Добавить участников",
+  "deleteChats": "{count, plural, one{Удалить {count} чат} few{Удалить {count} чата} many{Удалить {count} чатов} other{Удалить {count} чатов}}",
+  "@deleteChats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "participantsCount": "{count, plural, one{{count} участник} few{{count} участника} many{{count} участников} other{{count} участников}}",
   "@participantsCount": {
     "placeholders": {

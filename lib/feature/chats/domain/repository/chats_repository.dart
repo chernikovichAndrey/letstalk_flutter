@@ -11,4 +11,8 @@ abstract class ChatsRepository {
     String? avatar,
   });
   Future<void> deleteChat(int chatId);
+  Future<void> removeMemberFromChat({
+    required int chatId,
+    required int userId,
+  });
 }

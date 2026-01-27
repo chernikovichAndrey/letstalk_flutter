@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
@@ -74,5 +73,15 @@ class ChatsRepositoryImpl implements ChatsRepository {
   @override
   Future<void> deleteChat(int chatId) async {
     await _apiService.delete('${ApiConstants.chats}/$chatId');
+  }
+
+  @override
+  Future<void> removeMemberFromChat({
+    required int chatId,
+    required int userId,
+  }) async {
+    await _apiService.delete(
+      '${ApiConstants.chats}/$chatId/members/$userId',
+    );
   }
 }

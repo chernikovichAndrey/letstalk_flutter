@@ -44,9 +44,9 @@ class ContactItem extends StatelessWidget {
       return;
     }
     if (contact.isRegistered) {
-      if (contact.id != null) {
+      if (contact.registeredUserId != null) {
         context.read<ContactsBloc>().add(
-          ContactsCreateChat(contact.id!),
+          ContactsCreateChat(contact.registeredUserId!),
         );
       }
     } else {

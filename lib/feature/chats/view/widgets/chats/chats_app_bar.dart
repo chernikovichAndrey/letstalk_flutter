@@ -8,6 +8,8 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_app_bar_action_button.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/remove_chat_bottom_sheet.dart';
 
 class ChatsAppBar extends StatelessWidget {
   const ChatsAppBar({super.key});
@@ -52,9 +54,7 @@ class ChatsAppBar extends StatelessWidget {
                                       const SizedBox(width: 4),
                                       GlassButton(
                                         icon: Icons.delete,
-                                        onTap: () => context
-                                            .read<ChatsBloc>()
-                                            .add(ChatsDeleteSelected()),
+                                        onTap: () => RemoveChatBottomSheet(context),
                                       ),
                                     ],
                                   ],

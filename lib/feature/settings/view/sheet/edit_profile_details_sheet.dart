@@ -67,6 +67,7 @@ class EditProfileDetailsPage extends StatelessWidget {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
+                                    context.go(Routes.settings.path);
                                     context.read<AuthBloc>().add(AuthLogout());
                                   },
                                   style: ElevatedButton.styleFrom(

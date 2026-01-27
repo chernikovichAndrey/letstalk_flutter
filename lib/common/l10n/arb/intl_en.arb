@@ -113,6 +113,14 @@
       }
     }
   },
+  "deleteChats": "{count, plural, one{Delete {count} chat} other{Delete {count} chats}}",
+  "@deleteChats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "changePhoto": "Change Photo",
   "photoEditorBack": "Back",
   "photoEditorRotate": "Rotate",

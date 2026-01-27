@@ -75,11 +75,10 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canSelect = chat.role == 'admin';
 
     return InkWell(
       onTap: isSelectionMode
-          ? (canSelect ? () => onSelect?.call(!isSelected) : null)
+          ? () => onSelect?.call(!isSelected)
           : onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -159,7 +158,7 @@ class ChatListItem extends StatelessWidget {
                 ],
               ),
             ),
-            if (isSelectionMode && canSelect) ...[
+            if (isSelectionMode) ...[
               const SizedBox(width: 12),
               Icon(
                 isSelected ? Icons.check_circle : Icons.radio_button_unchecked,

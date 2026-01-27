@@ -20,22 +20,24 @@ class ChatsPage extends StatefulWidget {
 }
 
 class _ChatsPageState extends State<ChatsPage>{
+  late final RouterDelegate routerDelegate;
 
   @override
   void initState() {
     super.initState();
-    GoRouter.of(context).routerDelegate.addListener(_onRouteChanged);
-
+    super.initState();
+    routerDelegate = GoRouter.of(context).routerDelegate;
+    routerDelegate.addListener(_onRouteChanged);
   }
 
   @override
   void dispose() {
-    GoRouter.of(context).routerDelegate.removeListener(_onRouteChanged);
+    routerDelegate.removeListener(_onRouteChanged);
     super.dispose();
   }
 
   void _onRouteChanged() {
-    final location = GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+    final location = routerDelegate.currentConfiguration.uri.toString();
     if (location == Routes.chats.path && mounted) {
       context.read<ChatsBloc>().add(ChatsRefresh());
     }

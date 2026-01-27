@@ -85,7 +85,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                                         ),
                                       if (state.chat?.type == 'group' && state.typingUserIds.isEmpty)
                                         TextSpan(
-                                          text: '\n${context.s.participantsCount(state.chat?.membersCount ?? 1)}',
+                                          text: '\n${context.s.participantsCount(state.chat?.memberInfo?.length ?? 1)}',
                                           style: TextStyle(
                                             color: baseColor,
                                             fontSize: 12,

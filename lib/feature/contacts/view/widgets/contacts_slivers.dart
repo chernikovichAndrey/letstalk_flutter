@@ -65,6 +65,7 @@ class ContactsSlivers extends StatelessWidget {
                     contact: contact,
                     state: loadedState,
                     onTap: onSelectContact,
+                    isRegisteredOnly: isRegisteredOnly,
                   );
                 },
                 childCount: contacts.length,

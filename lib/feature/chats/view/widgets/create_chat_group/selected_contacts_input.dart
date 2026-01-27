@@ -58,7 +58,7 @@ class _SelectedContactsInputState extends State<SelectedContactsInput> {
   void _removeContact(Contact contact) {
     if (contact.id != null) {
       getIt<ContactsBloc>().add(
-        ContactsToggleContactSelection(contact.id!),
+        ContactsToggleContactSelection(contact.registeredUserId!),
       );
     }
   }

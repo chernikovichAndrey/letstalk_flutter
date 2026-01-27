@@ -43,6 +43,78 @@ class ChatInfoSheet extends StatelessWidget {
     return null;
   }
 
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildActionButton(
+          context: context,
+          icon: Icons.phone,
+          label: 'звонок',
+          onTap: () {},
+        ),
+        _buildActionButton(
+          context: context,
+          icon: Icons.videocam,
+          label: 'видео',
+          onTap: () {},
+        ),
+        _buildActionButton(
+          context: context,
+          icon: Icons.notifications,
+          label: 'звук',
+          onTap: () {},
+        ),
+        _buildActionButton(
+          context: context,
+          icon: Icons.more_horiz,
+          label: 'ещё',
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDarkMode ? Colors.blue : Colors.black;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          color: context.appColors.surfaceSecondary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: iconColor,
+              size: 28,
+            ),
+            SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: iconColor,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,6 +160,8 @@ class ChatInfoSheet extends StatelessWidget {
                             ),
                             textAlign: TextAlign.center,
                           ),
+                          SizedBox(height: 28,),
+                          _buildActionButtons(context),
                           SizedBox(height: 28,)
                         ],
                       ),

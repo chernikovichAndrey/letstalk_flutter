@@ -37,7 +37,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>.value(value: getIt()),
+        BlocProvider<AuthBloc>.value(value: getIt()..add(AuthCheckStatus())),
         BlocProvider<ProfileBloc>.value(value: getIt()),
         BlocProvider<CallBloc>.value(value: getIt()),
         BlocProvider<ConnectivityBloc>.value(value: getIt()),

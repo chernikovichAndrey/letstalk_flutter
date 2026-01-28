@@ -57,9 +57,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthUnauthenticated());
     });
   }
-
-  @postConstruct
-  void init() {
-    add(AuthCheckStatus());
-  }
 }

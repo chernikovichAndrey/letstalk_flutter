@@ -4,11 +4,10 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
-import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
-import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
+import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:logger/logger.dart';
 
@@ -20,31 +19,37 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final Logger _logger = Logger();
   final ChatsRepository _chatsRepository;
   final WebSocketService _wsService;
+  final ProfileBloc _profileBloc;
   StreamSubscription? _wsSubscription;
+  StreamSubscription? _profileSubscription;
+  UserModel? _currentUser;
 
   late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
     'unread_count': _handleUnreadCount,
     'user_typing': _handleUserTyping,
-    'new_message': _handleNewMessage
+    'message_sent': _handleSentMessage,
+    'new_message': _handleNewMessage,
+    'chat_member_removed': _handleChatMemberRemoved,
+    'chat_member_added': _handleChatMemberAdded,
   };
-
 
   ChatsBloc(
     this._chatsRepository,
     this._wsService,
+    this._profileBloc,
   ) : super(ChatsInitial()) {
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
     on<ChatsSearch>(_onSearch);
-    on<UpdateUnreadCount>(_onUpdateUnreadCount);
+    on<ChatMemberRemoved>(_onChatMemberRemoved);
     on<ChatUpdated>(_onChatUpdated);
     on<ChatTypingUpdated>(_onChatTypingUpdated);
     on<ChatsToggleSelectionMode>(_onToggleSelectionMode);
     on<ChatsToggleChatSelection>(_onToggleChatSelection);
-    on<ChatsDeleteSelected>(_onDeleteSelected);
     on<RemoveChat>(_onRemoveChat);
 
     _subscribeToWebSocket();
+    _subscribeToProfile();
   }
 
   void _subscribeToWebSocket() {
@@ -67,9 +72,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   }
 
   void _handleUnreadCount(Map<String, dynamic> decoded) {
-    add(
-      UpdateUnreadCount(decoded['chat_id'], decoded['count'])
-    );
+    add(ChatUpdated(chatId: decoded['chat_id'], unreadCount: decoded['count']));
   }
 
   void _handleUserTyping(Map<String, dynamic> decoded) {
@@ -82,16 +85,44 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     );
   }
 
-  void _handleNewMessage(Map<String, dynamic> decoded) {
+  void _handleSentMessage(Map<String, dynamic> decoded) {
     final msg = Message.fromJson(decoded['message']);
     add(
-      ChatTypingUpdated(
+      ChatUpdated(
         chatId: msg.chatId,
-        userId: msg.fromUserId,
-        isTyping: false,
+        lastMessageId: msg.id,
+        lastMessageText: msg.text,
+        unreadCount: 0,
       ),
     );
-    add(ChatUpdated(msg.chatId, msg));
+  }
+
+  void _handleNewMessage(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['message']);
+    final unreadCount = UnreadMessagesResponse
+        .fromJson(decoded['unreaded_messages'])
+        .unreadedMessages
+        .firstWhere((unreadMessages) => unreadMessages.chatId == msg.chatId)
+        .unread;
+    add(
+      ChatUpdated(
+        chatId: msg.chatId,
+        lastMessageId: msg.id,
+        lastMessageText: msg.text,
+        unreadCount: unreadCount,
+      ),
+    );
+  }
+
+  void _handleChatMemberRemoved(Map<String, dynamic> decoded) {
+    if (_currentUser != null && decoded['user_id'] == _currentUser!.id) {
+      add(ChatMemberRemoved(decoded['chat_id']));
+    }
+  }
+
+  void _handleChatMemberAdded(Map<String, dynamic> decoded) async {
+    //TODO: add new chat from socket data
+    add(ChatsRefresh());
   }
 
   void _onToggleSelectionMode(
@@ -130,30 +161,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     }
   }
 
-  Future<void> _onDeleteSelected(
-    ChatsDeleteSelected event,
-    Emitter<ChatsState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is ChatsLoaded) {
-      try {
-        final userId = (getIt<ProfileBloc>() as ProfileLoaded).user.id;
-        for (final chatId in currentState.selectedChatIds) {
-          await _chatsRepository.removeMemberFromChat(chatId: chatId, userId: userId);
-        }
-        add(ChatsRefresh());
-      } catch (e) {
-        emit(ChatsError(e.toString()));
-      }
-    }
-  }
-
-  @override
-  Future<void> close() {
-    _wsSubscription?.cancel();
-    return super.close();
-  }
-
   void _onChatTypingUpdated(
     ChatTypingUpdated event,
     Emitter<ChatsState> emit,
@@ -184,55 +191,33 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     }
   }
 
-  void _onUpdateUnreadCount(UpdateUnreadCount event, Emitter<ChatsState> emit) {
+  void _onChatMemberRemoved(ChatMemberRemoved event, Emitter<ChatsState> emit) {
     final currentState = state;
     if (currentState is ChatsLoaded) {
-      List<Chat> updatedChats = currentState.chats.map((chat) {
-        if (chat.id == event.chatId) {
-          return chat.copyWith(
-            unreadCount: event.count,
-          );
-        }
-        return chat;
-      }).toList();
-      emit(ChatsLoaded(
-        updatedChats,
-        typingUsers: currentState.typingUsers,
-        isSelectionMode: currentState.isSelectionMode,
-        selectedChatIds: currentState.selectedChatIds,
-      ));
+      emit(ChatsLoaded(currentState.chats.where((chat) => chat.id != event.chatId).toList()));
     }
   }
 
   Future<void> _onChatUpdated(ChatUpdated event, Emitter<ChatsState> emit) async {
     final currentState = state;
     if (currentState is ChatsLoaded) {
-      try {
-        late List<Chat> updatedChats;
-        if (event.message == null) {
-          final chatDetails = await _chatsRepository.getChatDetails(event.chatId);
-          updatedChats = currentState.chats.map((chat) {
-            return chat.id == event.chatId ? chatDetails.chat : chat;
-          }).toList();
-        } else {
-          updatedChats = currentState.chats.map((chat) {
-            if (chat.id == event.chatId) {
-              return chat.copyWith(
-                unreadCount: chat.unreadCount + 1,
-                lastMessageId: event.message!.id,
-                lastMessageText: event.message!.text,
-              );
-            }
-            return chat;
-          }).toList();
+      List<Chat> updatedChats = currentState.chats.map((chat) {
+        if (chat.id == event.chatId) {
+          return chat.copyWith(
+            unreadCount: event.unreadCount ?? chat.unreadCount,
+            lastMessageId: event.lastMessageId ?? chat.lastMessageId,
+            lastMessageText: event.lastMessageText ?? chat.lastMessageText,
+          );
         }
-        emit(ChatsLoaded(
-          updatedChats,
-          typingUsers: currentState.typingUsers,
-          isSelectionMode: currentState.isSelectionMode,
-          selectedChatIds: currentState.selectedChatIds,
-        ));
-      } catch (_) {}
+        return chat;
+      }).toList();
+
+      emit(ChatsLoaded(
+        updatedChats,
+        typingUsers: currentState.typingUsers,
+        isSelectionMode: currentState.isSelectionMode,
+        selectedChatIds: currentState.selectedChatIds,
+      ));
     }
   }
 
@@ -272,10 +257,54 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     RemoveChat event,
     Emitter<ChatsState> emit
   ) async {
-    final chats = await _chatsRepository.getChats();
-    for (var userId in event.userIds) {
-      await _chatsRepository.removeMemberFromChat(chatId: event.chatId, userId: userId);
-      emit(ChatsLoaded(chats.where((chat) => chat.id != event.chatId).toList()));
+    final currentState = state;
+    if (_currentUser == null || currentState is! ChatsLoaded) return;
+
+    if (event.type == RemoveType.all) {
+      final chat = currentState.chats.firstWhere((chat) => chat.id == event.chatId);
+
+      if (chat.type == 'group' &&
+          chat.role == 'admin' &&
+          chat.memberInfo != null) {
+        await Future.wait(
+          chat.memberInfo!
+              .where((member) => member.id != _currentUser!.id)
+              .map((member) =>
+              _chatsRepository.removeMemberFromChat(
+                chatId: event.chatId,
+                userId: member.id,
+              ),
+          ),
+        );
+      }
     }
+    await _chatsRepository.removeMemberFromChat(
+      chatId: event.chatId,
+      userId: _currentUser!.id,
+    );
+  }
+
+  void _subscribeToProfile() {
+    _profileSubscription = _profileBloc.stream.listen((profileState) {
+      if (profileState is ProfileLoaded) {
+        _currentUser = profileState.user;
+      } else if (profileState is AvatarUploadLoading) {
+        _currentUser = profileState.user;
+      } else if (profileState is ProfileSaving) {
+        _currentUser = profileState.user;
+      }
+    });
+
+    final currentProfileState = _profileBloc.state;
+    if (currentProfileState is ProfileLoaded) {
+      _currentUser = currentProfileState.user;
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _wsSubscription?.cancel();
+    _profileSubscription?.cancel();
+    return super.close();
   }
 }

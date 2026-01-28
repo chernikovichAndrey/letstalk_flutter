@@ -43,7 +43,7 @@ class ChatsPage extends StatelessWidget {
                         extra: ChatDetailsArgs(chatId: id),
                       );
                       if (context.mounted) {
-                        context.read<ChatsBloc>().add(ChatUpdated(id));
+                        context.read<ChatsBloc>().add(ChatUpdated(chatId: id));
                       }
                     },
                   ),

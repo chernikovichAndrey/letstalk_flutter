@@ -54,6 +54,8 @@ class Chat {
     return Chat(
       id: id,
       type: type,
+      title: title,
+      avatar: avatar,
       createdBy: createdBy,
       membersCount: membersCount,
       unreadCount: unreadCount ?? this.unreadCount,
@@ -183,6 +185,55 @@ class CreateChatResponse {
       status: json['status'] as String? ?? '',
       chat: Chat.fromJson(json['chat'] as Map<String, dynamic>),
       isNew: json['is_new'] as bool? ?? false,
+    );
+  }
+}
+
+class UnreadMessage {
+  final int chatId;
+  final int unread;
+
+  UnreadMessage({
+    required this.chatId,
+    required this.unread,
+  });
+
+  factory UnreadMessage.fromJson(Map<String, dynamic> json) {
+    return UnreadMessage(
+      chatId: int.tryParse(json['chat_id'].toString()) ?? 0,
+      unread: int.tryParse(json['unreaded'].toString()) ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'chat_id': chatId,
+      'unreaded': unread,
+    };
+  }
+}
+
+class UnreadMessagesResponse {
+  final List<UnreadMessage> unreadedMessages;
+
+  UnreadMessagesResponse({
+    required this.unreadedMessages,
+  });
+
+  factory UnreadMessagesResponse.fromJson(List<dynamic> json) {
+    return UnreadMessagesResponse(
+      unreadedMessages: json
+              .map((e) => UnreadMessage.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+
+  factory UnreadMessagesResponse.fromList(List<dynamic> list) {
+    return UnreadMessagesResponse(
+      unreadedMessages: list
+          .map((e) => UnreadMessage.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

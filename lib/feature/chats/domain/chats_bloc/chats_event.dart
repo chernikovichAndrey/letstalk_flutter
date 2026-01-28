@@ -1,5 +1,10 @@
 part of 'chats_bloc.dart';
 
+enum RemoveType {
+  all,
+  me,
+}
+
 abstract class ChatsEvent {}
 
 class ChatsLoad extends ChatsEvent {}
@@ -18,9 +23,16 @@ class ChatsSearch extends ChatsEvent {
 
 class ChatUpdated extends ChatsEvent {
   final int chatId;
-  final Message? message;
+  final int? unreadCount;
+  final int? lastMessageId;
+  final String? lastMessageText;
 
-  ChatUpdated(this.chatId, [this.message]);
+  ChatUpdated({
+    required this.chatId,
+    this.unreadCount,
+    this.lastMessageId,
+    this.lastMessageText,
+  });
 }
 
 class ChatTypingUpdated extends ChatsEvent {
@@ -43,18 +55,15 @@ class ChatsToggleChatSelection extends ChatsEvent {
   ChatsToggleChatSelection(this.chatId);
 }
 
-class ChatsDeleteSelected extends ChatsEvent {}
-
 class RemoveChat extends ChatsEvent {
   final int chatId;
-  final List<int> userIds;
+  final RemoveType type;
 
-  RemoveChat({required this.chatId, required this.userIds});
+  RemoveChat({required this.chatId, required this.type});
 }
 
-class UpdateUnreadCount extends ChatsEvent {
+class ChatMemberRemoved extends ChatsEvent {
   final int chatId;
-  final int count;
 
-  UpdateUnreadCount(this.chatId, this.count);
+  ChatMemberRemoved(this.chatId);
 }

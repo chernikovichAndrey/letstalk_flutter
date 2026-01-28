@@ -4,7 +4,6 @@ import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
-import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_app_bar_action_button.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
@@ -37,9 +36,7 @@ class RemoveChatBottomSheet {
                     onPress: () {
                       context.pop();
                       for (final chatId in state.selectedChatIds) {
-                        final chat = state.chats.firstWhere((chat) => chat.id == chatId);
-                        final chatMemberIds = chat.memberInfo?.map((e) => e.id).toList() ?? [];
-                        getIt<ChatsBloc>().add(RemoveChat(chatId: chatId, userIds: chatMemberIds));
+                        getIt<ChatsBloc>().add(RemoveChat(chatId: chatId, type: RemoveType.all));
                       }
                     },
                   ),
@@ -50,7 +47,7 @@ class RemoveChatBottomSheet {
                 onPress: () {
                   context.pop();
                   for (final chatId in state.selectedChatIds) {
-                    getIt<ChatsBloc>().add(RemoveChat(chatId: chatId, userIds: [myId]));
+                    getIt<ChatsBloc>().add(RemoveChat(chatId: chatId, type: RemoveType.me));
                   }
                 },
               ),

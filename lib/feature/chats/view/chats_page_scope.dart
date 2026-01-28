@@ -9,8 +9,8 @@ class ChatsPageScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ChatsBloc>()..add(ChatsLoad()),
+    return BlocProvider.value(
+      value: getIt<ChatsBloc>()..add(ChatsLoad()),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: const ChatsPage(),

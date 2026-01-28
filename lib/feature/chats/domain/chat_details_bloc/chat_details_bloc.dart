@@ -464,9 +464,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
 
       if (messages.isNotEmpty) {
         try {
-          final lastMemberMessageId = messages
-              .lastWhere((e) => e.fromUserId != event.user.id);
-          await _chatDetailsRepository.markAsRead(event.chatId, lastMemberMessageId.id);
+          await _chatDetailsRepository.markAsRead(event.chatId, messages.last.id);
         } catch (_) {}
       }
 

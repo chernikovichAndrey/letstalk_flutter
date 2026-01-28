@@ -9,6 +9,8 @@ abstract class ChatsEvent {}
 
 class ChatsLoad extends ChatsEvent {}
 
+class ResetChatsBloc extends ChatsEvent {}
+
 class ChatsRefresh extends ChatsEvent {
   final Completer? completer;
 

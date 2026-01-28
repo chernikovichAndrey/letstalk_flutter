@@ -2,6 +2,8 @@ part of 'call_bloc.dart';
 
 abstract class CallEvent {}
 
+class ResetCallBloc extends CallEvent {}
+
 class CallInitiated extends CallEvent {
   final int targetUserId;
   final bool isVideo;

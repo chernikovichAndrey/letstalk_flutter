@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lets_talk/common/service/reset_service.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 
 part 'auth_event.dart';
@@ -54,6 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthLogout>((event, emit) async {
       await authRepository.deleteToken();
+      getIt<ResetService>().resetAll();
       emit(AuthUnauthenticated());
     });
   }

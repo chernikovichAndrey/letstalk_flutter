@@ -18,8 +18,6 @@ class ChatInfoChatMembers extends StatelessWidget {
         final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
         final membersList = state.chat?.memberInfo ?? [];
         final chatMembers = state.members;
-        // final isImAdmin = state.members.firstWhere((member) => member.id == myId).role;
-        // print('111111 ${isImAdmin}');
 
         return Container(
           margin: const EdgeInsets.only(bottom: 22),

@@ -38,6 +38,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     this._wsService,
     this._profileBloc,
   ) : super(ChatsInitial()) {
+    on<ResetChatsBloc>(_onResetChatsBloc);
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
     on<ChatsSearch>(_onSearch);
@@ -299,6 +300,10 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     if (currentProfileState is ProfileLoaded) {
       _currentUser = currentProfileState.user;
     }
+  }
+
+  void _onResetChatsBloc(ResetChatsBloc event, Emitter<ChatsState> emit) {
+    emit(ChatsInitial());
   }
 
   @override

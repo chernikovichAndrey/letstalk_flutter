@@ -21,6 +21,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     this._chatsRepository,
     this._phoneContactsService,
   )  : super(ContactsInitial()) {
+    on<ResetContactsBloc>(_onResetContactsBloc);
     on<ContactsLoad>(_onLoad);
     on<ContactsRefresh>(_onRefresh);
     on<ContactsSearch>(_onSearch);
@@ -179,5 +180,9 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
         emit(ContactsError(e.toString()));
       }
     }
+  }
+
+  void _onResetContactsBloc(ResetContactsBloc event, Emitter<ContactsState> emit) {
+    emit(ContactsInitial());
   }
 }

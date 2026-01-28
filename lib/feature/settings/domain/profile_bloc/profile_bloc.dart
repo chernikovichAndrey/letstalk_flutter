@@ -13,6 +13,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   int _retryCount = 0;
 
   ProfileBloc(this._profileRepository) : super(ProfileInitial()) {
+    on<ResetProfileBloc>(_onResetProfileBloc);
     on<ProfileLoadEvent>(_onProfileLoad);
     on<ProfileUpdateAvatarEvent>(_onProfileUpdateAvatar);
     on<ProfileUpdateFirstNameEvent>(_onProfileUpdateFirstName);
@@ -129,5 +130,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileError(e.toString()));
       emit(currentState);
     }
+  }
+
+  void _onResetProfileBloc(ResetProfileBloc event, Emitter<ProfileState> emit) {
+    emit(ProfileInitial());
   }
 }

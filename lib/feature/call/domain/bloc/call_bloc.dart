@@ -26,6 +26,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     this._webRTCService,
     this._ringtoneService,
   ) : super(CallInitial()) {
+    on<ResetCallBloc>(_onResetCallBloc);
     on<CallInitiated>(_onCallInitiated);
     on<CallIncomingReceived>(_onCallIncomingReceived);
     on<CallOfferedReceived>(_onCallOfferedReceived);
@@ -245,5 +246,9 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
     _currentCallId = null;
     _currentTargetUserId = null;
+  }
+
+  void _onResetCallBloc(ResetCallBloc event, Emitter<CallState> emit) {
+    emit(CallInitial());
   }
 }

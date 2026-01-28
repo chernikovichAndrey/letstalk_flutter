@@ -287,19 +287,10 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
 
   void _subscribeToProfile() {
     _profileSubscription = _profileBloc.stream.listen((profileState) {
-      if (profileState is ProfileLoaded) {
-        _currentUser = profileState.user;
-      } else if (profileState is AvatarUploadLoading) {
-        _currentUser = profileState.user;
-      } else if (profileState is ProfileSaving) {
+      if (profileState.user != null) {
         _currentUser = profileState.user;
       }
     });
-
-    final currentProfileState = _profileBloc.state;
-    if (currentProfileState is ProfileLoaded) {
-      _currentUser = currentProfileState.user;
-    }
   }
 
   void _onResetChatsBloc(ResetChatsBloc event, Emitter<ChatsState> emit) {

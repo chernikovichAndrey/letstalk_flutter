@@ -8,7 +8,7 @@ class ProfileAppBar extends StatelessWidget {
   const ProfileAppBar({super.key});
 
   bool _isEnabledSave(ProfileState state) {
-    if (state is ProfileLoaded) {
+    if (state.status == ProfileStatus.loaded) {
       return state.editingBirthday != null ||
           state.editingFirstName != null ||
           state.editingLastName != null;
@@ -35,7 +35,7 @@ class ProfileAppBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GlassButton(icon: Icons.close, onTap: context.pop),
-                  if (state is ProfileSaving)
+                  if (state.status == ProfileStatus.saving)
                     const Padding(
                       padding: EdgeInsets.all(12.0),
                       child: SizedBox(
@@ -52,6 +52,7 @@ class ProfileAppBar extends StatelessWidget {
                           ProfileSaveChangesEvent(),
                         );
                         FocusScope.of(context).unfocus();
+                        context.pop();
                       },
                       isEnabled: _isEnabledSave(state)
                     ),

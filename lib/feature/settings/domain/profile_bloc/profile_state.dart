@@ -1,59 +1,54 @@
 part of 'profile_bloc.dart';
 
-@immutable
-sealed class ProfileState {}
-
-final class ProfileInitial extends ProfileState {}
-
-final class ProfileLoading extends ProfileState {}
-
-final class AvatarUploadLoading extends ProfileState {
-  final UserModel user;
-
-  AvatarUploadLoading(this.user);
+enum ProfileStatus {
+  initial,
+  loading,
+  avatarUploadLoading,
+  loaded,
+  saving,
+  error,
 }
 
-final class ProfileLoaded extends ProfileState {
-  final UserModel user;
+@immutable
+class ProfileState {
+  final ProfileStatus status;
+  final UserModel? user;
   final String? editingFirstName;
   final String? editingLastName;
   final DateTime? editingBirthday;
   final bool isBirthdayPickerExpanded;
+  final String? errorMessage;
 
-  ProfileLoaded(
-    this.user, {
+  const ProfileState({
+    required this.status,
+    this.user,
     this.editingFirstName,
     this.editingLastName,
     this.editingBirthday,
     this.isBirthdayPickerExpanded = false,
+    this.errorMessage,
   });
 
-  ProfileLoaded copyWith({
+  factory ProfileState.initial() => const ProfileState(status: ProfileStatus.initial);
+
+  ProfileState copyWith({
+    ProfileStatus? status,
     UserModel? user,
     String? editingFirstName,
     String? editingLastName,
     DateTime? editingBirthday,
     bool? isBirthdayPickerExpanded,
+    String? errorMessage,
     bool clearBirthday = false,
   }) {
-    return ProfileLoaded(
-      user ?? this.user,
+    return ProfileState(
+      status: status ?? this.status,
+      user: user ?? this.user,
       editingFirstName: editingFirstName ?? this.editingFirstName,
       editingLastName: editingLastName ?? this.editingLastName,
       editingBirthday: clearBirthday ? null : (editingBirthday ?? this.editingBirthday),
       isBirthdayPickerExpanded: isBirthdayPickerExpanded ?? this.isBirthdayPickerExpanded,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
-}
-
-final class ProfileSaving extends ProfileState {
-  final UserModel user;
-
-  ProfileSaving(this.user);
-}
-
-final class ProfileError extends ProfileState {
-  final String message;
-
-  ProfileError(this.message);
 }

@@ -33,10 +33,9 @@ class ChatInfoAddContact extends StatelessWidget {
             builder: (context, state) {
               return TextButton(
                 onPressed: () {
+                  final myId = getIt<ProfileBloc>().state.user?.id;
                   final member = state.chat?.memberInfo?.firstWhereOrNull(
-                    (member) =>
-                        member.id !=
-                        (getIt<ProfileBloc>().state as ProfileLoaded).user.id,
+                    (member) => member.id != myId,
                   );
                   if (member != null && member.phone != null) {
                     context.read<AddContactBloc>().add(

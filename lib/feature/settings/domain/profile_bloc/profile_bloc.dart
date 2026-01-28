@@ -12,7 +12,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository _profileRepository;
   int _retryCount = 0;
 
-  ProfileBloc(this._profileRepository) : super(ProfileInitial()) {
+  ProfileBloc(this._profileRepository) : super(ProfileState.initial()) {
     on<ResetProfileBloc>(_onResetProfileBloc);
     on<ProfileLoadEvent>(_onProfileLoad);
     on<ProfileUpdateAvatarEvent>(_onProfileUpdateAvatar);
@@ -27,16 +27,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileLoadEvent event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(ProfileLoading());
+    emit(state.copyWith(status: ProfileStatus.loading));
     try {
       final user = await _profileRepository.getProfile();
-      emit(ProfileLoaded(user));
+      emit(state.copyWith(
+        status: ProfileStatus.loaded,
+        user: user,
+      ));
     } catch (e) {
       if (_retryCount < 5) {
         add(ProfileLoadEvent());
         _retryCount++;
       }
-      emit(ProfileError(e.toString()));
+      emit(state.copyWith(
+        status: ProfileStatus.error,
+        errorMessage: e.toString(),
+      ));
     }
   }
 
@@ -44,17 +50,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileUpdateAvatarEvent event,
     Emitter<ProfileState> emit,
   ) async {
-    final currentState = state;
-    if (currentState is! ProfileLoaded) return;
+    if (state.status != ProfileStatus.loaded) return;
     
-    emit(AvatarUploadLoading(currentState.user));
+    emit(state.copyWith(status: ProfileStatus.avatarUploadLoading));
     try {
       await _profileRepository.updateAvatar(event.avatarPath);
       final user = await _profileRepository.getProfile();
-      emit(ProfileLoaded(user));
+      emit(state.copyWith(
+        status: ProfileStatus.loaded,
+        user: user,
+      ));
     } catch (e) {
-      emit(ProfileError(e.toString()));
-      emit(currentState);
+      emit(state.copyWith(
+        status: ProfileStatus.error,
+        errorMessage: e.toString(),
+      ));
+      emit(state.copyWith(status: ProfileStatus.loaded));
     }
   }
 
@@ -62,30 +73,27 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileUpdateFirstNameEvent event,
     Emitter<ProfileState> emit,
   ) {
-    final currentState = state;
-    if (currentState is! ProfileLoaded) return;
+    if (state.status != ProfileStatus.loaded) return;
     
-    emit(currentState.copyWith(editingFirstName: event.firstName));
+    emit(state.copyWith(editingFirstName: event.firstName));
   }
 
   void _onProfileUpdateLastName(
     ProfileUpdateLastNameEvent event,
     Emitter<ProfileState> emit,
   ) {
-    final currentState = state;
-    if (currentState is! ProfileLoaded) return;
+    if (state.status != ProfileStatus.loaded) return;
     
-    emit(currentState.copyWith(editingLastName: event.lastName));
+    emit(state.copyWith(editingLastName: event.lastName));
   }
 
   void _onProfileUpdateBirthday(
     ProfileUpdateBirthdayEvent event,
     Emitter<ProfileState> emit,
   ) {
-    final currentState = state;
-    if (currentState is! ProfileLoaded) return;
+    if (state.status != ProfileStatus.loaded) return;
     
-    emit(currentState.copyWith(
+    emit(state.copyWith(
       editingBirthday: event.birthday,
       clearBirthday: event.birthday == null,
     ));
@@ -95,11 +103,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileToggleBirthdayPickerEvent event,
     Emitter<ProfileState> emit,
   ) {
-    final currentState = state;
-    if (currentState is! ProfileLoaded) return;
+    if (state.status != ProfileStatus.loaded) return;
     
-    emit(currentState.copyWith(
-      isBirthdayPickerExpanded: !currentState.isBirthdayPickerExpanded,
+    emit(state.copyWith(
+      isBirthdayPickerExpanded: !state.isBirthdayPickerExpanded,
     ));
   }
 
@@ -107,32 +114,42 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileSaveChangesEvent event,
     Emitter<ProfileState> emit,
   ) async {
-    final currentState = state;
-    if (currentState is! ProfileLoaded) return;
+    if (state.status != ProfileStatus.loaded) return;
     
-    emit(ProfileSaving(currentState.user));
+    emit(state.copyWith(status: ProfileStatus.saving));
     try {
       String? birthday;
-      if (currentState.editingBirthday != null) {
-        birthday = '${currentState.editingBirthday!.year}-'
-            '${currentState.editingBirthday!.month.toString().padLeft(2, '0')}-'
-            '${currentState.editingBirthday!.day.toString().padLeft(2, '0')}';
+      if (state.editingBirthday != null) {
+        birthday = '${state.editingBirthday!.year}-'
+            '${state.editingBirthday!.month.toString().padLeft(2, '0')}-'
+            '${state.editingBirthday!.day.toString().padLeft(2, '0')}';
       }
       
       final updatedUser = await _profileRepository.updateProfile(
-        firstName: currentState.editingFirstName,
-        lastName: currentState.editingLastName,
+        firstName: state.editingFirstName,
+        lastName: state.editingLastName,
         birthday: birthday,
       );
       
-      emit(ProfileLoaded(updatedUser));
+      emit(state.copyWith(
+        status: ProfileStatus.loaded,
+        user: updatedUser,
+        editingBirthday: null,
+        editingFirstName: null,
+        editingLastName: null,
+        isBirthdayPickerExpanded: false,
+      ));
     } catch (e) {
-      emit(ProfileError(e.toString()));
-      emit(currentState);
+      emit(state.copyWith(
+        status: ProfileStatus.error,
+        errorMessage: e.toString(),
+        isBirthdayPickerExpanded: false,
+      ));
+      emit(state.copyWith(status: ProfileStatus.loaded));
     }
   }
 
   void _onResetProfileBloc(ResetProfileBloc event, Emitter<ProfileState> emit) {
-    emit(ProfileInitial());
+    emit(ProfileState.initial());
   }
 }

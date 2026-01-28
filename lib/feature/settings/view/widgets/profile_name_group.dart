@@ -19,9 +19,9 @@ class _ProfileNamesGroupState extends State<ProfileNamesGroup> {
   void initState() {
     super.initState();
     final profileState = context.read<ProfileBloc>().state;
-    if (profileState is ProfileLoaded) {
-      _firstNameController.text = profileState.editingFirstName ?? profileState.user.firstName ?? '';
-      _lastNameController.text = profileState.editingLastName ?? profileState.user.lastName ?? '';
+    if (profileState.user != null) {
+      _firstNameController.text = profileState.editingFirstName ?? profileState.user!.firstName ?? '';
+      _lastNameController.text = profileState.editingLastName ?? profileState.user!.lastName ?? '';
     }
   }
 

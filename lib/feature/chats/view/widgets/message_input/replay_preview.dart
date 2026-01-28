@@ -13,7 +13,7 @@ class ReplayPreview extends StatelessWidget {
   const ReplayPreview({super.key, required this.message});
 
   String _memberName() {
-    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    final myId = getIt<ProfileBloc>().state.user?.id;
     final state = getIt<ChatDetailsBloc>().state;
     final member = state.chat?.memberInfo?.firstWhereOrNull((member) => member.id != myId);
     return member?.fullName ?? member?.firstName ?? '';

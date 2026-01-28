@@ -18,7 +18,6 @@ class RemoveChatBottomSheet {
       context: context,
       backgroundColor: context.appColors.secondaryBackground,
       builder: (context) {
-        final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
         final state = getIt<ChatsBloc>().state as ChatsLoaded;
         final selectedChats = filterChatsByIds(state.chats, state.selectedChatIds);
         final onlyGroupChats = selectedChats.every((chat) => chat.type == 'group');

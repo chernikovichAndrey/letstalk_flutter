@@ -21,9 +21,9 @@ class EditProfileDetailsPage extends StatelessWidget {
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        if (state is! ProfileLoaded &&
-            state is! ProfileSaving &&
-            state is! AvatarUploadLoading) {
+        if (state.status != ProfileStatus.loaded &&
+            state.status != ProfileStatus.saving &&
+            state.status != ProfileStatus.avatarUploadLoading) {
           return Scaffold(
             body: const Center(child: CircularProgressIndicator()),
           );

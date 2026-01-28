@@ -154,7 +154,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
 
   MemberInfo? _getChatMemberInfo(ChatDetailsState state) {
     final chat = state.chat;
-    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    final myId = getIt<ProfileBloc>().state.user?.id;
     return chat?.memberInfo?.firstWhereOrNull((member) => member.id != myId);
   }
 

@@ -19,24 +19,20 @@ class ProfileBirthdayPicker extends StatelessWidget {
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        // Handle different state types
-        if (state is! ProfileLoaded && state is! ProfileSaving && state is! AvatarUploadLoading) {
+        if (state.status != ProfileStatus.loaded && 
+            state.status != ProfileStatus.saving && 
+            state.status != ProfileStatus.avatarUploadLoading) {
           return const SizedBox.shrink();
         }
 
-        // Extract user and profile data based on state type
-        final user = state is ProfileLoaded ? state.user :
-                     state is ProfileSaving ? state.user :
-                     state is AvatarUploadLoading ? state.user : null;
-        
+        final user = state.user;
         if (user == null) {
           return const SizedBox.shrink();
         }
 
-        final profileState = state is ProfileLoaded ? state : null;
-        final editingBirthday = profileState?.editingBirthday;
+        final editingBirthday = state.editingBirthday;
         final selectedBirthday = editingBirthday ?? (user.birthday != null ? DateTime.tryParse(user.birthday!) : null);
-        final isBirthdayPickerExpanded = profileState?.isBirthdayPickerExpanded ?? false;
+        final isBirthdayPickerExpanded = state.isBirthdayPickerExpanded;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

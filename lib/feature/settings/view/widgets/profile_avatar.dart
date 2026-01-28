@@ -24,16 +24,13 @@ class ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        // Handle different state types
-        if (state is! ProfileLoaded && state is! ProfileSaving && state is! AvatarUploadLoading) {
+        if (state.status != ProfileStatus.loaded && 
+            state.status != ProfileStatus.saving && 
+            state.status != ProfileStatus.avatarUploadLoading) {
           return const SizedBox.shrink();
         }
 
-        // Extract user based on state type
-        final user = state is ProfileLoaded ? state.user :
-                     state is ProfileSaving ? state.user :
-                     state is AvatarUploadLoading ? state.user : null;
-        
+        final user = state.user;
         if (user == null) {
           return const SizedBox.shrink();
         }
@@ -42,7 +39,7 @@ class ProfileAvatar extends StatelessWidget {
           imageUrl: user.avatarUrl,
           name: _getUserDisplayName(user),
           radius: 60,
-          isLoading: state is AvatarUploadLoading,
+          isLoading: state.status == ProfileStatus.avatarUploadLoading,
         );
       },
     );

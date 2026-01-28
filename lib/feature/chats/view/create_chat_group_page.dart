@@ -45,14 +45,20 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
         .toList();
   }
 
+  //TODO: refactpring with bloc
   Future<void> _createGroupChat() async {
     if (_isCreating) return;
 
     final contactsState = getIt<ContactsBloc>().state;
     if (contactsState is! ContactsLoaded) return;
 
-    final userIds = contactsState.selectedContactIds.toList()
-      ..add((getIt<ProfileBloc>().state as ProfileLoaded).user.id);
+    final profileState = getIt<ProfileBloc>().state;
+    final userIds = contactsState.selectedContactIds.toList();
+
+    if (profileState.user != null) {
+      userIds.add(profileState.user!.id);
+    }
+
 
     final title = _groupNameController.text.trim();
     if (title.isEmpty) {

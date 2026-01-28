@@ -13,7 +13,7 @@ class ChatInfoAvatar extends StatelessWidget {
   const ChatInfoAvatar({super.key});
 
   MemberInfo? _getChatMember(ChatDetailsState state) {
-    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    final myId = getIt<ProfileBloc>().state.user?.id;
     return state.chat?.memberInfo?.firstWhereOrNull((member) => member.id != myId);
   }
 
@@ -52,7 +52,7 @@ class ChatInfoAvatar extends StatelessWidget {
               imageUrl: isGroup ? state.chat?.avatar : _getMemberAvatar(state),
               name: isGroup ? state.chat?.title : _getMemberName(state),
               radius: 60,
-              isLoading: state is AvatarUploadLoading,
+              isLoading: false,
             ),
             Text(
               isGroup ? state.chat?.title ?? '' : _getMemberName(state, phone: true) ?? '',

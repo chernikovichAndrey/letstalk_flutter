@@ -26,12 +26,10 @@ class ChatInfoSheet extends StatelessWidget {
         value: getIt<ChatDetailsBloc>(),
         child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
           builder: (context, state) {
-            //TODO: add group style
             final isGroupChat = state.chat?.type == 'group';
-
-            //this is for 1x1
+            final profileState = getIt<ProfileBloc>().state;
             final member = state.chat?.memberInfo?.firstWhereOrNull((member) =>
-              member.id != (getIt<ProfileBloc>().state as ProfileLoaded).user.id
+              member.id != profileState.user?.id
             );
 
             return Stack(

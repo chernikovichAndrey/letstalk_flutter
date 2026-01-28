@@ -45,7 +45,7 @@ class ChatListItem extends StatelessWidget {
     }
   }
   MemberInfo? _getChatMember() {
-    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    final myId = getIt<ProfileBloc>().state.user?.id;
     return chat.memberInfo?.firstWhereOrNull((member) => member.id != myId);
   }
 

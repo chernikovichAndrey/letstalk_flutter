@@ -12,7 +12,7 @@ class ChatInfoUserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+    final myId = getIt<ProfileBloc>().state.user?.id;
     final member = getIt<ChatDetailsBloc>().state.chat?.memberInfo?.firstWhereOrNull((member) => member.id != myId);
     return Column(
       children: [

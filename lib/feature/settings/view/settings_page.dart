@@ -22,7 +22,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
-              if (state is ProfileLoading) {
+              if (state.status == ProfileStatus.loading) {
                 return Padding(
                   padding: EdgeInsets.only(top: topPadding),
                   child: const Center(
@@ -31,7 +31,8 @@ class SettingsPage extends StatelessWidget {
                 );
               }
 
-              if (state is ProfileLoaded || state is AvatarUploadLoading) {
+              if (state.status == ProfileStatus.loaded || 
+                  state.status == ProfileStatus.avatarUploadLoading) {
                 return CustomScrollView(
                   slivers: [
                     SliverPadding(

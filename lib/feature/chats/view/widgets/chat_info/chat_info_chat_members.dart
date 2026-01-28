@@ -15,7 +15,7 @@ class ChatInfoChatMembers extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
       builder: (context, state) {
-        final myId = (getIt<ProfileBloc>().state as ProfileLoaded).user.id;
+        final myId = getIt<ProfileBloc>().state.user?.id;
         final membersList = state.chat?.memberInfo ?? [];
         final chatMembers = state.members;
 

@@ -31,8 +31,7 @@ class ProfileWidget extends StatelessWidget {
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        final user = state is ProfileLoaded ? state.user
-            : state is AvatarUploadLoading ? state.user : null;
+        final user = state.user;
         if (user == null) return Container();
         final displayName = _getUserDisplayName(user);
         return Column(

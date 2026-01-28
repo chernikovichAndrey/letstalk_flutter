@@ -47,7 +47,7 @@ class _SelectedContactsInputState extends State<SelectedContactsInput> {
     if (getIt<ContactsBloc>().state is ContactsLoaded) {
       final state = getIt<ContactsBloc>().state as ContactsLoaded;
       return state.allContacts
-          .where((contact) => state.selectedContactIds.contains(contact.id))
+          .where((contact) => state.selectedContactIds.contains(contact.registeredUserId))
           .toList();
     } else {
       return [];
@@ -56,7 +56,7 @@ class _SelectedContactsInputState extends State<SelectedContactsInput> {
   }
 
   void _removeContact(Contact contact) {
-    if (contact.id != null) {
+    if (contact.registeredUserId != null) {
       getIt<ContactsBloc>().add(
         ContactsToggleContactSelection(contact.registeredUserId!),
       );

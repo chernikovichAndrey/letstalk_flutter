@@ -41,7 +41,7 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
 
   List<Contact> _getSelectedContacts(ContactsLoaded state) {
     return state.allContacts
-        .where((contact) => state.selectedContactIds.contains(contact.id))
+        .where((contact) => state.selectedContactIds.contains(contact.registeredUserId))
         .toList();
   }
 

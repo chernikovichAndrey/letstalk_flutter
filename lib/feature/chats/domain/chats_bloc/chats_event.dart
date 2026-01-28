@@ -51,3 +51,10 @@ class RemoveChat extends ChatsEvent {
 
   RemoveChat({required this.chatId, required this.userIds});
 }
+
+class UpdateUnreadCount extends ChatsEvent {
+  final int chatId;
+  final int count;
+
+  UpdateUnreadCount(this.chatId, this.count);
+}

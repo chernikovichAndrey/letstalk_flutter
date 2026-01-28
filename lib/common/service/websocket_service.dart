@@ -73,7 +73,7 @@ class WebSocketService with WidgetsBindingObserver {
             } else {
               return;
             }
-
+            _logger.d('WebSocket received: $map');
             sink.add(map);
           } catch (e) {
             _logger.e('Error parsing signaling message: $e');

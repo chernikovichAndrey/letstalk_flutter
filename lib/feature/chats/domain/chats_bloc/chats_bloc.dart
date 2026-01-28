@@ -23,6 +23,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   StreamSubscription? _wsSubscription;
 
   late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
+    'unread_count': _handleUnreadCount,
     'user_typing': _handleUserTyping,
     'new_message': _handleNewMessage
   };
@@ -35,6 +36,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsLoad>(_onLoad);
     on<ChatsRefresh>(_onRefresh);
     on<ChatsSearch>(_onSearch);
+    on<UpdateUnreadCount>(_onUpdateUnreadCount);
     on<ChatUpdated>(_onChatUpdated);
     on<ChatTypingUpdated>(_onChatTypingUpdated);
     on<ChatsToggleSelectionMode>(_onToggleSelectionMode);
@@ -50,7 +52,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
           (message) {
         if (message is String) {
           final decoded = jsonDecode(message);
-          print('111111 ${decoded}');
           _handleWebSocketMessage(decoded);
         }
       },
@@ -63,6 +64,12 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   void _handleWebSocketMessage(Map<String, dynamic> data) {
     final handler = _messageHandlers[data['type']];
     handler?.call(data);
+  }
+
+  void _handleUnreadCount(Map<String, dynamic> decoded) {
+    add(
+      UpdateUnreadCount(decoded['chat_id'], decoded['count'])
+    );
   }
 
   void _handleUserTyping(Map<String, dynamic> decoded) {
@@ -171,6 +178,26 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(ChatsLoaded(
         currentState.chats,
         typingUsers: newTypingUsers,
+        isSelectionMode: currentState.isSelectionMode,
+        selectedChatIds: currentState.selectedChatIds,
+      ));
+    }
+  }
+
+  void _onUpdateUnreadCount(UpdateUnreadCount event, Emitter<ChatsState> emit) {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      List<Chat> updatedChats = currentState.chats.map((chat) {
+        if (chat.id == event.chatId) {
+          return chat.copyWith(
+            unreadCount: event.count,
+          );
+        }
+        return chat;
+      }).toList();
+      emit(ChatsLoaded(
+        updatedChats,
+        typingUsers: currentState.typingUsers,
         isSelectionMode: currentState.isSelectionMode,
         selectedChatIds: currentState.selectedChatIds,
       ));

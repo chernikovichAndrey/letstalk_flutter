@@ -36,9 +36,12 @@ class ChatListItem extends StatelessWidget {
           dateTime.day == now.day) {
         // Today: HH:mm
         return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-      } else {
-        // Other days: dd.MM.yy
+      } else if (dateTime.year != now.year){
+        // Other year: dd.MM.yy
         return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${(dateTime.year % 100).toString().padLeft(2, '0')}';
+      } else {
+        // Other days: dd.MM
+        return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}}';
       }
     } catch (e) {
       return '';
@@ -71,6 +74,19 @@ class ChatListItem extends StatelessWidget {
       return member.phone;
     }
     return null;
+  }
+
+  String _lastMessagePreview(BuildContext context) {
+    if (isTyping) {
+      return context.s.typing;
+    }
+    if (chat.lastMessageText != null) {
+      return chat.lastMessageText!;
+    }
+    if (chat.type == 'group' && chat.lastMessageId == 0) {
+      return 'Группа создана';
+    }
+    return '';
   }
 
   @override
@@ -124,7 +140,7 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          isTyping ? context.s.typing : (chat.lastMessageText ?? ''),
+                          _lastMessagePreview(context),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

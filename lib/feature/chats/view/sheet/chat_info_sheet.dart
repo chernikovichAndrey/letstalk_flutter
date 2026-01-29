@@ -45,14 +45,20 @@ class ChatInfoSheet extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            ChatInfoAvatar(),
+                            ChatInfoAvatar(
+                              member: member,
+                              chat: state.chat,
+                            ),
                             SizedBox(height: 28,),
-                            ChatInfoActionsGroup(targetUserId: member?.id ?? -1),
+                            ChatInfoActionsGroup(
+                              targetUserId: member?.id ?? -1,
+                              isGroupChat: isGroupChat,
+                            ),
                             SizedBox(height: 28,),
                             if (isGroupChat)
                               ChatInfoChatMembers()
                             else
-                              ChatInfoUserInfo(),
+                              ChatInfoUserInfo(member: member),
                           ],
                         ),
                       ),

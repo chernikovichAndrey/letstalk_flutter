@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/app/router/arg/MemberInfoArgs.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/sheet/message_actions_overlay.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble_info.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_image_attach_thumbnail.dart';
@@ -24,10 +30,14 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
 
-    Color backgroundColor = isMe ? appColors.messageMeBubble : appColors.messageOtherBubble;
-    
+    Color backgroundColor = isMe
+        ? appColors.messageMeBubble
+        : appColors.messageOtherBubble;
+
     final shouldShowAvatar = isGroupChat && !isMe;
-    final senderInfo = message.fromName?.isNotEmpty == true ? message.fromName!.first : null;
+    final senderInfo = message.fromName?.isNotEmpty == true
+        ? message.fromName!.first
+        : null;
 
     final messageBubble = GestureDetector(
       onLongPress: () => MessageActionsOverlay.show(
@@ -50,14 +60,20 @@ class MessageBubble extends StatelessWidget {
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(12),
             topRight: const Radius.circular(12),
-            bottomLeft: isMe ? const Radius.circular(12) : const Radius.circular(4),
-            bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(12),
+            bottomLeft: isMe
+                ? const Radius.circular(12)
+                : const Radius.circular(4),
+            bottomRight: isMe
+                ? const Radius.circular(4)
+                : const Radius.circular(12),
           ),
         ),
         child: Column(
           children: [
             Column(
-              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isMe
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 //TODO: add forwardedFrom text
                 // if (message.forwardedFrom != null)
@@ -67,31 +83,25 @@ class MessageBubble extends StatelessWidget {
                 //     textAlign: TextAlign.start,
                 //   ),
                 if (message.replyTo != null)
-                  MessageReplay(
-                    replyTo: message.replyTo!,
-                    isMe: isMe,
-                  ),
-                if (message.messageType == 'image' && message.media?.thumbnailUrl != null)
+                  MessageReplay(replyTo: message.replyTo!, isMe: isMe),
+                if (message.messageType == 'image' &&
+                    message.media?.thumbnailUrl != null)
                   MessageImageAttachThumbnail(
                     thumbnailUrl: message.media!.thumbnailUrl!,
                     messageId: message.id,
                   ),
                 if (message.messageType == 'document')
-                  MessageDocumentAttach(
-                    message: message,
-                    isMe: isMe,
-                  ),
+                  MessageDocumentAttach(message: message, isMe: isMe),
 
                 Text(
                   message.text ?? '',
                   style: context.text.bodyMedium?.copyWith(
-                    color: isMe ? Colors.white : context.appColors.messageOtherText,
+                    color: isMe
+                        ? Colors.white
+                        : context.appColors.messageOtherText,
                   ),
                 ),
-                MessageBubbleInfo(
-                  message: message,
-                  isMe: isMe,
-                )
+                MessageBubbleInfo(message: message, isMe: isMe),
               ],
             ),
           ],
@@ -108,10 +118,24 @@ class MessageBubble extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 4, bottom: 4),
-                  child: CAvatar(
-                    imageUrl: senderInfo?.avatarUrl,
-                    name: senderInfo?.fullName ?? senderInfo?.firstName,
-                    radius: 20,
+                  child: GestureDetector(
+                    onTap: () {
+                      final chat = getIt<ChatDetailsBloc>().state.chat;
+                      final memberInfo = chat?.memberInfo?.firstWhereOrNull(
+                        (member) => member.id == message.fromUserId,
+                      );
+                      if (memberInfo != null) {
+                        context.push(
+                          Routes.memberInfoSheet,
+                          args: MemberInfoArgs(memberInfo: memberInfo),
+                        );
+                      }
+                    },
+                    child: CAvatar(
+                      imageUrl: senderInfo?.avatarUrl,
+                      name: senderInfo?.fullName ?? senderInfo?.firstName,
+                      radius: 20,
+                    ),
                   ),
                 ),
                 Flexible(child: messageBubble),

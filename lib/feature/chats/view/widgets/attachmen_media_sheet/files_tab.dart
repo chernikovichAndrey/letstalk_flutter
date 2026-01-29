@@ -10,6 +10,7 @@ class FilesTab extends StatelessWidget {
   Future<void> _pickFile(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.single.path != null && context.mounted) {
+      //TODO: add navigation to fullscreen
       Navigator.pop(context, File(result.files.single.path!));
     }
   }

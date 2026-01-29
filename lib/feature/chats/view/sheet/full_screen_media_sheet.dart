@@ -71,9 +71,7 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
   }
 
   void onSendMessage() {
-    final text = _controller.text.trim();
-
-    if (_file == null || _isSending || text.isEmpty) return;
+    if (_file == null || _isSending) return;
     setState(() {
       _isSending = true;
     });

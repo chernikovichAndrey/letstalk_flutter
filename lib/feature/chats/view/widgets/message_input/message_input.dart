@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,9 +152,15 @@ class _MessageInputState extends State<MessageInput> {
                             ChatDetailsSetEditingMessage(null),
                           );
                         } else {
-                          context.router.push(
+                          final file = await context.router.push(
                             Routes.chatAttachSheet.path,
                           );
+                          //TODO: change, look files_tab
+                          if (context.mounted && file != null) {
+                            context.read<ChatDetailsBloc>().add(
+                              ChatDetailsSendMedia(file as File),
+                            );
+                          }
                         }
                       },
                     ),

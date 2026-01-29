@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/environment/environment.dart';
+import 'package:lets_talk/app/router/arg/MemberInfoArgs.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
@@ -80,7 +83,12 @@ class _MemberItemState extends State<MemberItem>
     if (_controller.value > 0) {
       _controller.reverse();
     } else {
-      showWarningToast(context.s.notWorkingNow);
+      if (!widget.isMyself) {
+        context.push(
+          Routes.memberInfoSheet,
+          args: MemberInfoArgs(memberInfo: widget.member),
+        );
+      }
     }
   }
 

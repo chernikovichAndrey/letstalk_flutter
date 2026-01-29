@@ -49,56 +49,65 @@ class ChatDetailsAppBar extends StatelessWidget {
                       onTap: context.pop,
                     ),
                     const SizedBox(width: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: appColors.glassButtonBackground,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
-                            builder: (context, state) {
-                              return Center(
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          context.push(Routes.chatInfoSheet.path);
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: appColors.glassButtonBackground,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+                                builder: (context, state) {
+                                  return Center(
+                                    child: Text.rich(
                                       TextSpan(
-                                        text: chatTitle,
-                                        style: TextStyle(
-                                          color: baseColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: chatTitle,
+                                            style: TextStyle(
+                                              color: baseColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          if (state.typingUserIds.isNotEmpty)
+                                            TextSpan(
+                                              text: '\n${context.s.typing}',
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          if (state.chat?.type == 'group' && state.typingUserIds.isEmpty)
+                                            TextSpan(
+                                              text: '\n${context.s.participantsCount(state.chat?.memberInfo?.length ?? 1)}',
+                                              style: TextStyle(
+                                                color: baseColor,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                        ],
                                       ),
-                                      if (state.typingUserIds.isNotEmpty)
-                                        TextSpan(
-                                          text: '\n${context.s.typing}',
-                                          style: TextStyle(
-                                            color: Colors.blue,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      if (state.chat?.type == 'group' && state.typingUserIds.isEmpty)
-                                        TextSpan(
-                                          text: '\n${context.s.participantsCount(state.chat?.memberInfo?.length ?? 1)}',
-                                          style: TextStyle(
-                                            color: baseColor,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              );
-                            },
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       ),

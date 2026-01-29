@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_delete_member_button.dart';
 
 class MemberItem extends StatefulWidget {
   final MemberInfo member;
-  final ChatMember chatMember;
+  final ChatMember? chatMember;
   final bool isMyself;
   final bool showDivider;
   final String currentUserRole;
@@ -77,6 +79,8 @@ class _MemberItemState extends State<MemberItem>
   void _handleTap() {
     if (_controller.value > 0) {
       _controller.reverse();
+    } else {
+      showWarningToast(context.s.notWorkingNow);
     }
   }
 
@@ -113,7 +117,8 @@ class _MemberItemState extends State<MemberItem>
 
   @override
   Widget build(BuildContext context) {
-    final roleLabel = _getRoleLabel(widget.chatMember.role, context);
+    if (widget.chatMember == null) return SizedBox();
+    final roleLabel = _getRoleLabel(widget.chatMember!.role, context);
     final canDelete = widget.currentUserRole == 'admin' && !widget.isMyself;
 
     return GestureDetector(
@@ -125,35 +130,9 @@ class _MemberItemState extends State<MemberItem>
           ClipRect(
             child: Stack(
               children: [
-                // Delete button background
-                Positioned.fill(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _onDelete(widget.chatMember.userId),
-                        child: Container(
-                          width: _deleteButtonWidth,
-                          decoration: const BoxDecoration(
-                            color: CupertinoColors.systemRed,
-                            borderRadius: BorderRadius.horizontal(
-                              left: Radius.circular(12),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              context.s.deleteMember,
-                              style: const TextStyle(
-                                color: CupertinoColors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                ChatInfoDeleteMemberButton(
+                  onDelete: () => _onDelete(widget.chatMember!.userId),
+                  deleteButtonWidth: _deleteButtonWidth,
                 ),
                 // Member item content
                 AnimatedBuilder(

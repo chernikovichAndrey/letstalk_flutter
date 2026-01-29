@@ -26,6 +26,7 @@ enum Routes {
   addContactToGroupSheet(path: _Paths.addContactToGroupSheet, type: RouteType.bottomSheet),
   chatInfoSheet(path: _Paths.chatInfoSheet, type: RouteType.bottomSheet),
   memberInfoSheet(path: _Paths.memberInfoSheet, type: RouteType.bottomSheet),
+  languageSelectSheet(path: _Paths.languageSelectSheet, type: RouteType.bottomSheet),
   photoEditor(path: _Paths.photoEditor, type: RouteType.page);
 
   const Routes({required this.path, required this.type});
@@ -71,4 +72,5 @@ abstract class _Paths {
   static const String addContactToGroupSheet = '/add_contact_to_group_sheet';
   static const String chatInfoSheet = '/call_info_sheet';
   static const String memberInfoSheet = '/member_info_sheet';
+  static const String languageSelectSheet = '/language_select_sheet';
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_action_button.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_widget.dart';
@@ -25,13 +24,11 @@ class SettingsPage extends StatelessWidget {
               if (state.status == ProfileStatus.loading) {
                 return Padding(
                   padding: EdgeInsets.only(top: topPadding),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: const Center(child: CircularProgressIndicator()),
                 );
               }
 
-              if (state.status == ProfileStatus.loaded || 
+              if (state.status == ProfileStatus.loaded ||
                   state.status == ProfileStatus.avatarUploadLoading) {
                 return CustomScrollView(
                   slivers: [
@@ -41,16 +38,29 @@ class SettingsPage extends StatelessWidget {
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 32,
+                                horizontal: 16,
+                              ),
                               child: ProfileWidget(),
                             ),
-                            SizedBox(height: 40,),
+                            SizedBox(height: 40),
                             ProfileActionButton(
-                              onTap: () => context.push(Routes.profileAvatarSheet),
+                              onTap: () =>
+                                  context.push(Routes.profileAvatarSheet),
                               label: context.s.changePhoto,
                               labelColor: context.appColors.telegramBlue,
                               icon: Icons.add_a_photo_outlined,
                               iconColor: context.appColors.telegramBlue,
+                            ),
+                            const SizedBox(height: 12),
+                            ProfileActionButton(
+                              onTap: () =>
+                                  context.push(Routes.languageSelectSheet),
+                              label: context.s.language,
+                              labelColor: context.color.onSurface,
+                              icon: Icons.language_outlined,
+                              iconColor: context.color.onSurface,
                             ),
                             const SizedBox(height: 20),
                           ],
@@ -63,12 +73,7 @@ class SettingsPage extends StatelessWidget {
               return const SizedBox.shrink();
             },
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: const SettingsAppBar(),
-          ),
+          Positioned(top: 0, left: 0, right: 0, child: const SettingsAppBar()),
         ],
       ),
     );

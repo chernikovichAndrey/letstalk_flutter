@@ -198,5 +198,9 @@
   "deleteForMe": "Delete for me",
   "hourShort": "h",
   "minuteShort": "m",
-  "secondShort": "s"
+  "secondShort": "s",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "languageEnglish": "English",
+  "languageRussian": "Русский"
 }

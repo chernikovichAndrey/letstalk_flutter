@@ -13,6 +13,9 @@ import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/shell/connectivity/domain/bloc/connectivity_bloc.dart';
 import 'package:lets_talk/feature/shell/domain/navigation_bloc/navigation_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_event.dart';
+import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_state.dart';
 
 import 'common/l10n/generated/l10n.dart';
 
@@ -42,29 +45,34 @@ class _AppState extends State<App> {
         BlocProvider<CallBloc>.value(value: getIt()),
         BlocProvider<ConnectivityBloc>.value(value: getIt()),
         BlocProvider<NavigationBloc>.value(value: getIt()),
+        BlocProvider<LocaleBloc>.value(value: getIt()..add(LoadSavedLocale())),
       ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerConfig: router.config,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        localizationsDelegates: [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: S.delegate.supportedLocales,
-        locale: S.delegate.supportedLocales.first,
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.trackpad,
-            PointerDeviceKind.mouse,
-          },
-        ),
+      child: BlocBuilder<LocaleBloc, LocaleState>(
+        builder: (context, localeState) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            routerConfig: router.config,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: ThemeMode.system,
+            localizationsDelegates: [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: S.delegate.supportedLocales,
+            locale: localeState.locale,
+            scrollBehavior: const MaterialScrollBehavior().copyWith(
+              dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.stylus,
+                PointerDeviceKind.trackpad,
+                PointerDeviceKind.mouse,
+              },
+            ),
+          );
+        },
       ),
     );
   }

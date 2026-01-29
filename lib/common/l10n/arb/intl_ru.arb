@@ -156,5 +156,9 @@
   "deleteForMe": "Удалить у меня",
   "hourShort": "ч",
   "minuteShort": "мин",
-  "secondShort": "с"
+  "secondShort": "с",
+  "language": "Язык",
+  "selectLanguage": "Выбрать язык",
+  "languageEnglish": "English",
+  "languageRussian": "Русский"
 }

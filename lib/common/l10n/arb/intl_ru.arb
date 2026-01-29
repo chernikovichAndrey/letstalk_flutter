@@ -46,6 +46,7 @@
   "endCall": "Завершить",
   "endedCall": "Завершен",
   "rejected": "Отменен",
+  "failed": "Неудачный",
   "defaultUserName": "Пользователь",
   "selectCallType": "Выберите тип звонка",
   "audioCall": "Аудио звонок",
@@ -152,5 +153,8 @@
   "forwardedFrom": "Переслано от",
   "deleteForEveryoneWherePossible": "Удалить у всех где возможно",
   "deleteForBothParticipants": "Удалить у обоих участников",
-  "deleteForMe": "Удалить у меня"
+  "deleteForMe": "Удалить у меня",
+  "hourShort": "ч",
+  "minuteShort": "мин",
+  "secondShort": "с"
 }

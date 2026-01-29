@@ -67,6 +67,7 @@
   "endCall": "End",
   "endedCall": "Ended",
   "rejected": "Rejected",
+  "failed": "Failed",
   "defaultUserName": "User",
   "selectCallType": "Select call type",
   "audioCall": "Audio call",
@@ -194,5 +195,8 @@
   "forwardedFrom": "Forwarded from",
   "deleteForEveryoneWherePossible": "Delete for everyone where possible",
   "deleteForBothParticipants": "Delete for both participants",
-  "deleteForMe": "Delete for me"
+  "deleteForMe": "Delete for me",
+  "hourShort": "h",
+  "minuteShort": "m",
+  "secondShort": "s"
 }

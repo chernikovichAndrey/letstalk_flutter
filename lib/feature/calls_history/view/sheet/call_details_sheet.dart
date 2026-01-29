@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/arg/call_details_args.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -82,13 +83,20 @@ class _CallDetailsView extends StatelessWidget {
                   getDirectionText(context, call.direction),
                 ),
                 MapEntry(context.s.type, getTypeText(context, call.type)),
-                MapEntry(context.s.duration, call.durationFormatted ?? '-'),
+                if (call.status == 'ended')
+                  MapEntry(context.s.duration, getCallDuration(context, call)),
                 MapEntry(context.s.date, formatDate(call.startedAt)),
                 MapEntry(context.s.status, getStatusText(context, call.status)),
               ];
               return Column(
                 children: [
-                  CAvatar(name: call.peer.name, radius: 40),
+                  CAvatar(
+                    name: call.peer.name,
+                    imageUrl: call.peer.avatar != null
+                        ? '${Env.baseUrl}uploads/${call.peer.avatar}'
+                        : null,
+                    radius: 40,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     call.peer.name,

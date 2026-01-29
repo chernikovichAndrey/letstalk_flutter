@@ -16,8 +16,8 @@ class ForwardMessageSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ChatsBloc>()..add(ChatsLoad()),
+    return BlocProvider.value(
+      value: getIt<ChatsBloc>(),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: Scaffold(

@@ -10,6 +10,7 @@ import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/sheet/message_actions_overlay.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble_info.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_image_attach_thumbnail.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_document_attach.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_reply.dart';
@@ -89,9 +90,13 @@ class MessageBubble extends StatelessWidget {
                   MessageImageAttachThumbnail(
                     thumbnailUrl: message.media!.thumbnailUrl!,
                     messageId: message.id,
+                    message: message,
                   ),
                 if (message.messageType == 'document')
                   MessageDocumentAttach(message: message, isMe: isMe),
+
+                if (message.messageType == 'text')
+                  MessageForward(forwardedFrom: message.forwardedFrom),
 
                 Text(
                   message.text ?? '',

@@ -17,7 +17,7 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
   }
 
   static Locale _getInitialLocale() {
-    final supportedLanguages = ['en', 'ru'];
+    final supportedLanguages = ['en', 'ru', 'kk'];
     final deviceLocale = ui.PlatformDispatcher.instance.locale;
     final deviceLanguageCode = deviceLocale.languageCode;
 

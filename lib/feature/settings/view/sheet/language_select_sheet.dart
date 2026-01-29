@@ -51,6 +51,16 @@ class LanguageSelectSheet extends StatelessWidget {
                       context.pop();
                     },
                   ),
+                  const SizedBox(height: 12),
+                  _LanguageTile(
+                    title: context.s.languageKazakh,
+                    locale: const Locale('kk'),
+                    isSelected: state.locale.languageCode == 'kk',
+                    onTap: () {
+                      context.read<LocaleBloc>().add(LocaleChanged(const Locale('kk')));
+                      context.pop();
+                    },
+                  ),
                 ],
               );
             },

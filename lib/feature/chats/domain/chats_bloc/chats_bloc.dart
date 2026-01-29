@@ -47,6 +47,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatTypingUpdated>(_onChatTypingUpdated);
     on<ChatsToggleSelectionMode>(_onToggleSelectionMode);
     on<ChatsToggleChatSelection>(_onToggleChatSelection);
+    on<CreateChatGroup>(_onCreateChatGroup);
     on<RemoveChat>(_onRemoveChat);
 
     _subscribeToWebSocket();
@@ -251,6 +252,25 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       emit(ChatsLoaded(chats));
     } catch (e) {
       emit(ChatsError(e.toString()));
+    }
+  }
+
+  void _onCreateChatGroup(
+    CreateChatGroup event,
+    Emitter<ChatsState> emit
+  ) async {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      final response = await _chatsRepository.createGroupChat(
+        userIds: event.userIds,
+        title: event.title,
+      );
+      emit(
+        ChatsLoaded(
+          currentState.chats
+            ..add(response.chat),
+        ),
+      );
     }
   }
 

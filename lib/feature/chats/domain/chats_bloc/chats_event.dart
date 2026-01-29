@@ -69,3 +69,10 @@ class ChatMemberRemoved extends ChatsEvent {
 
   ChatMemberRemoved(this.chatId);
 }
+
+class CreateChatGroup extends ChatsEvent {
+  final List<int> userIds;
+  final String title;
+
+  CreateChatGroup(this.userIds, this.title);
+}

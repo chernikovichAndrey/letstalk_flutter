@@ -45,8 +45,7 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
         .toList();
   }
 
-  //TODO: refactpring with bloc
-  Future<void> _createGroupChat() async {
+  void _createGroupChat() {
     if (_isCreating) return;
 
     final contactsState = getIt<ContactsBloc>().state;
@@ -71,18 +70,8 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
     });
 
     try {
-      final repository = getIt<ChatsRepository>();
-      await repository.createGroupChat(
-        userIds: userIds,
-        title: title,
-      );
-
-      if (!mounted) return;
-
-      getIt<ChatsBloc>().add(ChatsRefresh());
-      getIt<ContactsBloc>().add(ContactsLoad());
+      getIt<ChatsBloc>().add(CreateChatGroup(userIds, title));
       context.replace(Routes.chats);
-      showSuccessToast(context.s.groupChatCreated);
     } catch (e) {
       if (!mounted) return;
       showErrorToast(e.toString());

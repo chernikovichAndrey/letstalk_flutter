@@ -76,13 +76,6 @@ class MessageBubble extends StatelessWidget {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                //TODO: add forwardedFrom text
-                // if (message.forwardedFrom != null)
-                //   Text(
-                //     '${context.s.forwardedFrom}\n${message.forwardedFrom?.fromName}',
-                //     style: context.text.bodyMedium,
-                //     textAlign: TextAlign.start,
-                //   ),
                 if (message.replyTo != null)
                   MessageReplay(replyTo: message.replyTo!, isMe: isMe),
                 if (message.messageType == 'image' &&

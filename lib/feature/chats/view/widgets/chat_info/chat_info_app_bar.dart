@@ -30,5 +30,4 @@ class ChatInfoAppBar extends StatelessWidget {
       ),
     );
   }
-
 }

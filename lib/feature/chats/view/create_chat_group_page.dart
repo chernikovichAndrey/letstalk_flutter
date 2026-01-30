@@ -98,7 +98,7 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
                   CreateChatGroupNameInput(
                     groupNameController: _groupNameController,
                     onPressCamera: () {
-                      //TODO: upload group title
+                      //TODO: upload group avatar
                       showWarningToast(context.s.notWorkingNow);
                     },
                     onClearInput: () {

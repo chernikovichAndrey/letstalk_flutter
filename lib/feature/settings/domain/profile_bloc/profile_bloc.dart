@@ -126,9 +126,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
       
       final updatedUser = await _profileRepository.updateProfile(
-        firstName: state.editingFirstName,
-        lastName: state.editingLastName,
-        birthday: birthday,
+        firstName: state.editingFirstName ?? state.user?.firstName,
+        lastName: state.editingLastName ?? state.user?.lastName,
+        birthday: birthday ?? state.user?.birthday,
       );
       
       emit(state.copyWith(

@@ -21,6 +21,7 @@ enum Routes {
   fullScreenMedia(path: _Paths.fullScreenMedia, type: RouteType.sheet),
   chatAttachSheet(path: _Paths.chatAttachSheet, type: RouteType.bottomSheet),
   profileAvatarSheet(path: _Paths.profileAvatarSheet, type: RouteType.bottomSheet),
+  chatAvatarSheet(path: _Paths.chatAvatarSheet, type: RouteType.bottomSheet),
   selectContactsFroGroup(path: _Paths.selectContactsFroGroup, type: RouteType.page),
   createChatGroup(path: _Paths.createChatGroup, type: RouteType.page),
   addContactToGroupSheet(path: _Paths.addContactToGroupSheet, type: RouteType.bottomSheet),
@@ -65,6 +66,7 @@ abstract class _Paths {
   static const String call = '/call';
   static const String chatAttachSheet = '/chat_attach_sheet';
   static const String profileAvatarSheet = '/profile_avatar_sheet';
+  static const String chatAvatarSheet = '/chat_avatar_sheet';
   static const String fullScreenMedia = '/full_screen_media';
   static const String photoEditor = '/photo_editor';
   static const String selectContactsFroGroup = '/select_contacts_fro_group';

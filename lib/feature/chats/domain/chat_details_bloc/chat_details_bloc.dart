@@ -63,6 +63,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<RefreshStateEvent>(_onRefreshState);
     on<AddMembersToChat>(_onAddMembersToChat);
     on<RemoveMemberFromChat>(_onRemoveMemberFromChat);
+    on<UpdateChatAvatar>(_onUpdateChatAvatar);
 
     _subscribeToWebSocket();
   }
@@ -549,6 +550,31 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         userId: event.userId,
       );
       add(ChatDetailsLoad(state.chat!.id, state.currentUser!));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onUpdateChatAvatar(
+    UpdateChatAvatar event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    if (state.chat == null) return;
+    emit(state.copyWith(status: ChatDetailsStatus.loading));
+    try {
+      final avatarUrl = await _chatDetailsRepository.updateChatAvatar(
+        chatId: state.chat!.id,
+        file: event.file,
+      );
+      emit(state.copyWith(
+        status: ChatDetailsStatus.success,
+        chat: state.chat!.copyWith(avatar: avatarUrl),
+      ));
     } catch (e) {
       emit(
         state.copyWith(

@@ -50,12 +50,13 @@ class Chat {
     int? unreadCount,
     int? lastMessageId,
     String? lastMessageText,
+    String? avatar,
   }) {
     return Chat(
       id: id,
       type: type,
       title: title,
-      avatar: avatar,
+      avatar: avatar ?? this.avatar,
       createdBy: createdBy,
       membersCount: membersCount,
       unreadCount: unreadCount ?? this.unreadCount,

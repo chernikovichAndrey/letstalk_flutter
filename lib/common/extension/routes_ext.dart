@@ -6,6 +6,7 @@ import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/create_chat_group_page.dart';
 import 'package:lets_talk/feature/chats/view/select_contact_for_group_page.dart';
 import 'package:lets_talk/feature/chats/view/sheet/add_contact_to_group_sheet.dart';
+import 'package:lets_talk/feature/chats/view/sheet/chat_avatar_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/chat_contact_sheet.dart';
 import 'package:lets_talk/common/widget/c_alert_dialog.dart';
 import 'package:lets_talk/feature/auth/view/login_page.dart';
@@ -46,6 +47,7 @@ extension RoutesExt on Routes {
       Routes.callDetails => const CallDetailsSheet(),
       Routes.chatAttachSheet => const ChatAttachmentBottomSheet(),
       Routes.profileAvatarSheet => const ProfileAvatarBottomSheet(),
+      Routes.chatAvatarSheet => const ChatAvatarBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),
       Routes.photoEditor => const PhotoEditorPage(),
       Routes.selectContactsFroGroup => const SelectContactsForGroupPage(),

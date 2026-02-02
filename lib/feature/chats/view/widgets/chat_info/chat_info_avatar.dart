@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:lets_talk/app/environment/environment.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
@@ -34,24 +37,35 @@ class ChatInfoAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CAvatar(
-          imageUrl: chat != null ? chat?.avatar : _getMemberAvatar(),
-          name: chat != null ? chat?.title : _getMemberName(),
-          radius: 60,
-          isLoading: false,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        splashColor: Colors.transparent,
+        onTap: () {
+          if (chat != null && chat?.role == 'admin') {
+            context.push(Routes.chatAvatarSheet);
+          }
+        },
+        child: Column(
+          children: [
+            CAvatar(
+              imageUrl: chat != null ? chat?.avatar : _getMemberAvatar(),
+              name: chat != null ? chat?.title : _getMemberName(),
+              radius: 60,
+              isLoading: false,
+            ),
+            Text(
+              chat != null ? chat?.title ?? '' : _getMemberName(phone: true) ?? '',
+              style: TextStyle(
+                color: context.appColors.glassForeground,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            )
+          ],
         ),
-        Text(
-          chat != null ? chat?.title ?? '' : _getMemberName(phone: true) ?? '',
-          style: TextStyle(
-            color: context.appColors.glassForeground,
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        )
-      ],
+      ),
     );
   }
 }

@@ -10,4 +10,5 @@ class ApiConstants {
   static const String messages = '/messages';
   static const String mediaUpload = '/media/upload';
   static const String profileAvatar = '/profile/avatar';
+  static String chatAvatar(int chatId) => '/chats/$chatId/avatar';
 }

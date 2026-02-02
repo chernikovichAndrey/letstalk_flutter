@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
@@ -104,5 +107,26 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
     await _apiService.delete(
       '${ApiConstants.chats}/$chatId/members/$userId',
     );
+  }
+
+  @override
+  Future<String> updateChatAvatar({
+    required int chatId,
+    required File file,
+  }) async {
+    final fileName = file.path.split('/').last;
+    final formData = FormData.fromMap({
+      'avatar': await MultipartFile.fromFile(
+        file.path,
+        filename: fileName,
+      ),
+    });
+
+    final response = await _apiService.post(
+      ApiConstants.chatAvatar(chatId),
+      data: formData,
+    );
+
+    return response.data['avatar'] as String;
   }
 }

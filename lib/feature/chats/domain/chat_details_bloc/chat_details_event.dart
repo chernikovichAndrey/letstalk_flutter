@@ -126,3 +126,9 @@ class RemoveMemberFromChat extends ChatDetailsEvent {
 
   RemoveMemberFromChat(this.userId);
 }
+
+class UpdateChatAvatar extends ChatDetailsEvent {
+  final File file;
+
+  UpdateChatAvatar(this.file);
+}

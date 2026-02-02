@@ -18,7 +18,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
   late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
     'new_message': _handleNewMessage,
-    'message_read': _handleMessageRead,
+    'unread_count': _handleMessageRead,
     'missed_call': _handleMissedCall,
   };
 
@@ -82,9 +82,10 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   void _onMessageRead(
     NavigationMessageRead event,
     Emitter<NavigationState> emit,
-  ) {
-    final newCount = state.unreadChatsCount > 0 ? state.unreadChatsCount - 1 : 0;
-    emit(state.copyWith(unreadChatsCount: newCount));
+  ) async {
+    final chats = await _chatsRepository.getChats();
+    final totalUnreadCount = chats.fold(0, (sum, chat) => sum + chat.unreadCount);
+    emit(state.copyWith(unreadChatsCount: totalUnreadCount));
   }
 
   void _onCallMissed(

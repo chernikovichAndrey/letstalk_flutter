@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
@@ -56,7 +55,7 @@ class ChatListItem extends StatelessWidget {
     final member = _getChatMember();
     if (member == null) return null;
     if (member.avatar != null && member.avatar!.isNotEmpty) {
-      return '${Env.baseUrl}uploads/${member.avatar}';
+      return member.avatar;
     }
     return null;
   }

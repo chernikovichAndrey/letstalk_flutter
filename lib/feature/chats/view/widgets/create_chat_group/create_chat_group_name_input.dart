@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
@@ -5,13 +7,32 @@ class CreateChatGroupNameInput extends StatelessWidget {
   final TextEditingController groupNameController;
   final VoidCallback onClearInput;
   final VoidCallback onPressCamera;
+  final String? avatar;
 
   const CreateChatGroupNameInput({
     super.key,
     required this.groupNameController,
     required this.onClearInput,
     required this.onPressCamera,
+    this.avatar,
   });
+
+  Widget avatarWidget(BuildContext context) {
+    if (avatar != null) {
+      return Image.file(
+        File(avatar!),
+        fit: BoxFit.scaleDown,
+        gaplessPlayback: true,
+        filterQuality:
+        FilterQuality.medium,
+      );
+    }
+    return Icon(
+      Icons.camera_alt,
+      color: context.appColors.telegramBlue,
+      size: 44,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +59,7 @@ class CreateChatGroupNameInput extends StatelessWidget {
                   color: context.appColors.telegramBlue.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.camera_alt,
-                  color: context.appColors.telegramBlue,
-                  size: 44,
-                ),
+                child: avatarWidget(context),
               ),
             ),
             const SizedBox(width: 16),

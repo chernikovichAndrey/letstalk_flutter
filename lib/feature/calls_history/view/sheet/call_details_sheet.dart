@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/arg/call_details_args.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -92,9 +91,7 @@ class _CallDetailsView extends StatelessWidget {
                 children: [
                   CAvatar(
                     name: call.peer.name,
-                    imageUrl: call.peer.avatar != null
-                        ? '${Env.baseUrl}uploads/${call.peer.avatar}'
-                        : null,
+                    imageUrl: call.peer.avatar,
                     radius: 40,
                   ),
                   const SizedBox(height: 16),

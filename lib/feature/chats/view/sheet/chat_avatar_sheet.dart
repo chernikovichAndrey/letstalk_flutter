@@ -1,4 +1,4 @@
- import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,9 +17,13 @@ class ChatAvatarBottomSheet extends StatelessWidget {
       Routes.photoEditor.path,
       extra: ProfileEditPhotoArgs(file: file),
     );
-
-    if (editedFile != null && context.mounted) {
-      getIt<ChatDetailsBloc>().add(UpdateChatAvatar(editedFile));
+    if (context.mounted && editedFile != null) {
+      final bloc = getIt<ChatDetailsBloc>();
+      if (bloc.state.chat == null) {
+        context.pop<File>(editedFile);
+        return;
+      }
+      bloc.add(UpdateChatAvatar(editedFile));
       context.pop();
     }
   }
@@ -32,7 +36,7 @@ class ChatAvatarBottomSheet extends StatelessWidget {
           child: PhoneGallery(
             onGetMediaFile: (file) => _onGetMediaFile(context, file),
           ),
-        )
+        ),
       ],
     );
   }

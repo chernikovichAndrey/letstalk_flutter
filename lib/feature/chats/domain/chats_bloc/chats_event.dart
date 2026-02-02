@@ -73,6 +73,7 @@ class ChatMemberRemoved extends ChatsEvent {
 class CreateChatGroup extends ChatsEvent {
   final List<int> userIds;
   final String title;
+  final String? avatar;
 
-  CreateChatGroup(this.userIds, this.title);
+  CreateChatGroup(this.userIds, this.title, this.avatar);
 }

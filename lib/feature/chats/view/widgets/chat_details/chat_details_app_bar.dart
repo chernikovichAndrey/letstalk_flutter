@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
@@ -122,7 +121,7 @@ class ChatDetailsAppBar extends StatelessWidget {
                         },
                         child: CAvatar(
                           radius: 25,
-                          imageUrl: avatarUrl != null ? '${Env.baseUrl}uploads/$avatarUrl' : null,
+                          imageUrl: avatarUrl,
                           name: chatTitle,
                         ),
                       ),

@@ -16,7 +16,7 @@ class ChatInfoAvatar extends StatelessWidget {
   String? _getMemberAvatar() {
     if (member == null) return null;
     if (member!.avatar != null && member!.avatar!.isNotEmpty) {
-      return '${Env.baseUrl}uploads/${member!.avatar}';
+      return member!.avatar;
     }
     return null;
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -261,14 +262,18 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ) async {
     final currentState = state;
     if (currentState is ChatsLoaded) {
+      late String? avatar;
       final response = await _chatsRepository.createGroupChat(
         userIds: event.userIds,
         title: event.title,
       );
+      if (event.avatar != null) {
+        avatar = await _chatsRepository.updateChatAvatar(chatId: response.chat.id, file: File(event.avatar!));
+      }
       emit(
         ChatsLoaded(
           currentState.chats
-            ..add(response.chat),
+            ..add(response.chat.copyWith(avatar: avatar)),
         ),
       );
     }

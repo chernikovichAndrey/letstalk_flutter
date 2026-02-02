@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 
 abstract class ChatsRepository {
@@ -14,5 +16,9 @@ abstract class ChatsRepository {
   Future<void> removeMemberFromChat({
     required int chatId,
     required int userId,
+  });
+  Future<String> updateChatAvatar({
+    required int chatId,
+    required File file,
   });
 }

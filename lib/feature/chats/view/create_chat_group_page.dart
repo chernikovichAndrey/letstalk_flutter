@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/router/routes.dart';
@@ -24,6 +26,7 @@ class CreateChatGroupPage extends StatefulWidget {
 class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
   final TextEditingController _groupNameController = TextEditingController();
   bool _isCreating = false;
+  String? _avatar = null;
 
   @override
   void initState() {
@@ -70,7 +73,7 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
     });
 
     try {
-      getIt<ChatsBloc>().add(CreateChatGroup(userIds, title));
+      getIt<ChatsBloc>().add(CreateChatGroup(userIds, title, _avatar));
       context.replace(Routes.chats);
     } catch (e) {
       if (!mounted) return;
@@ -96,9 +99,13 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
               child: Column(
                 children: [
                   CreateChatGroupNameInput(
+                    avatar: _avatar,
                     groupNameController: _groupNameController,
-                    onPressCamera: () {
-                      context.push(Routes.chatAvatarSheet);
+                    onPressCamera: () async {
+                      final avatarFile = await context.push<File>(Routes.chatAvatarSheet);
+                      setState(() {
+                        _avatar = avatarFile?.path;
+                      });
                     },
                     onClearInput: () {
                       setState(() {

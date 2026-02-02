@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/arg/call_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -30,9 +29,7 @@ class CallHistoryListItem extends StatelessWidget {
     return ListTile(
       leading: CAvatar(
         name: call.peer.name,
-        imageUrl: call.peer.avatar != null && call.peer.avatar!.isNotEmpty
-            ? '${Env.baseUrl}uploads/${call.peer.avatar}'
-            : null,
+        imageUrl: call.peer.avatar,
         radius: 24,
       ),
       title: Text(

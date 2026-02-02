@@ -118,7 +118,7 @@ class _MemberItemState extends State<MemberItem>
 
   String? _getMemberAvatar(MemberInfo memberInfo) {
     if (memberInfo.avatar != null && memberInfo.avatar!.isNotEmpty) {
-      return '${Env.baseUrl}uploads/${memberInfo.avatar}';
+      return memberInfo.avatar;
     }
     return null;
   }

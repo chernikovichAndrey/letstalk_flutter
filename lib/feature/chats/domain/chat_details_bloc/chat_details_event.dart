@@ -132,3 +132,9 @@ class UpdateChatAvatar extends ChatDetailsEvent {
 
   UpdateChatAvatar(this.file);
 }
+
+class ChatDetailsUpdatedAvatar extends ChatDetailsEvent {
+  final String avatarUrl;
+
+  ChatDetailsUpdatedAvatar(this.avatarUrl);
+}

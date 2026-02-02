@@ -35,6 +35,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     'read_confirmed': _handleReadConfirmed,
     'message_read': _handleMessageRead,
     'user_typing': _handleUserTypingMessage,
+    'chat_avatar_updated': _handleChatAvatarUpdated,
   };
 
   ChatDetailsBloc(
@@ -64,6 +65,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<AddMembersToChat>(_onAddMembersToChat);
     on<RemoveMemberFromChat>(_onRemoveMemberFromChat);
     on<UpdateChatAvatar>(_onUpdateChatAvatar);
+    on<ChatDetailsUpdatedAvatar>(_onChatDetailsUpdatedAvatar);
 
     _subscribeToWebSocket();
   }
@@ -120,6 +122,15 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       add(ChatDetailsUserTyping(
         decoded['user_id'] as int,
         decoded['is_typing'] as bool,
+      ));
+    }
+  }
+
+  void _handleChatAvatarUpdated(Map<String, dynamic> decoded) {
+    final chatId = decoded['chat_id'] as int;
+    if (state.chat?.id == chatId) {
+      add(ChatDetailsUpdatedAvatar(
+        decoded['avatar'],
       ));
     }
   }
@@ -583,6 +594,19 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         ),
       );
     }
+  }
+
+  void _onChatDetailsUpdatedAvatar(
+    ChatDetailsUpdatedAvatar event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        chat: state.chat?.copyWith(
+          avatar: event.avatarUrl,
+        )
+      )
+    );
   }
 
   @override

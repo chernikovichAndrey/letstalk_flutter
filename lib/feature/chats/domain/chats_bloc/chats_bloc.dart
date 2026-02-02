@@ -32,6 +32,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     'new_message': _handleNewMessage,
     'chat_member_removed': _handleChatMemberRemoved,
     'chat_member_added': _handleChatMemberAdded,
+    'chat_avatar_updated': _handleChatAvatarUpdated,
   };
 
   ChatsBloc(
@@ -125,6 +126,10 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
 
   void _handleChatMemberAdded(Map<String, dynamic> decoded) async {
     //TODO: add new chat from socket data
+    add(ChatsRefresh());
+  }
+
+  void _handleChatAvatarUpdated(Map<String, dynamic> decoded) {
     add(ChatsRefresh());
   }
 

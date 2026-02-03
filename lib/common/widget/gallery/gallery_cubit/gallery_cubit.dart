@@ -20,6 +20,14 @@ class GalleryCubit extends Cubit<GalleryState> {
       if (ps.isAuth || ps.hasAccess) {
         final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList(
           type: RequestType.image,
+          filterOption: FilterOptionGroup(
+            orders: [
+              const OrderOption(
+                type: OrderOptionType.createDate,
+                asc: false,
+              ),
+            ],
+          ),
         );
         if (paths.isNotEmpty) {
           _currentPath = paths[0];
@@ -41,6 +49,7 @@ class GalleryCubit extends Cubit<GalleryState> {
         emit(GalleryPermissionDenied());
       }
     } catch (e) {
+      print(e);
       emit(GalleryError(e.toString()));
     }
   }

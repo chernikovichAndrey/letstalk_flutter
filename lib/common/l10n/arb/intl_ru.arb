@@ -165,5 +165,8 @@
   "groupCreated": "Группа создана",
   "messageTypeImage": "Изображение",
   "messageTypeDocument": "Документ",
-  "chatCreated": "Чат создан"
+  "chatCreated": "Чат создан",
+  "version": "Версия",
+  "privacyPolicy": "Политика конфиденциальности",
+  "termsOfService": "Условия использования"
 }

@@ -165,5 +165,8 @@
   "groupCreated": "Топ құрылды",
   "messageTypeImage": "Сурет",
   "messageTypeDocument": "Құжат",
-  "chatCreated": "Чат құрылды"
+  "chatCreated": "Чат құрылды",
+  "version": "Нұсқасы",
+  "privacyPolicy": "Құпиялылық саясаты",
+  "termsOfService": "Пайдалану шарттары"
 }

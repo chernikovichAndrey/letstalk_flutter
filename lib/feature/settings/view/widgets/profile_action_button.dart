@@ -3,16 +3,16 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class ProfileActionButton extends StatelessWidget {
   final VoidCallback onTap;
-  final IconData icon;
-  final Color iconColor;
+  final IconData? icon;
+  final Color? iconColor;
   final String label;
   final Color labelColor;
 
   const ProfileActionButton({
     super.key,
     required this.onTap,
-    required this.icon,
-    required this.iconColor,
+    this.icon,
+    this.iconColor,
     required this.label,
     required this.labelColor,
   });

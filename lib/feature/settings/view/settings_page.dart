@@ -7,6 +7,7 @@ import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart
 import 'package:lets_talk/feature/settings/view/widgets/profile_action_button.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_widget.dart';
 import 'package:lets_talk/feature/settings/view/widgets/settings_app_bar.dart';
+import 'package:lets_talk/feature/settings/view/widgets/settings_footer.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -33,7 +34,7 @@ class SettingsPage extends StatelessWidget {
                 return CustomScrollView(
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.only(top: 28),
+                      padding: EdgeInsets.only(top: 28, bottom: 120),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           children: [
@@ -62,7 +63,6 @@ class SettingsPage extends StatelessWidget {
                               icon: Icons.language_outlined,
                               iconColor: context.color.onSurface,
                             ),
-                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -74,6 +74,15 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           Positioned(top: 0, left: 0, right: 0, child: const SettingsAppBar()),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: const SettingsFooter(),
+            ),
+          ),
         ],
       ),
     );

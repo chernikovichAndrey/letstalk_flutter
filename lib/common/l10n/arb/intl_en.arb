@@ -207,5 +207,8 @@
   "groupCreated": "Group created",
   "messageTypeImage": "Image",
   "messageTypeDocument": "Document",
-  "chatCreated": "Chat created"
+  "chatCreated": "Chat created",
+  "version": "Version",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service"
 }

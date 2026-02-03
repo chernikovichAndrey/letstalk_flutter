@@ -88,6 +88,7 @@ class _HtmlDocumentPageState extends State<HtmlDocumentPage> {
       body: Stack(
         children: [
           Container(
+            padding: EdgeInsets.only(top: context.padding.top + 66),
             child: WebViewWidget(controller: _controller),
           ),
           if (_isLoading) const Center(child: CircularProgressIndicator()),

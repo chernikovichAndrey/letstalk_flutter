@@ -2,22 +2,32 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class PrivacyPolicyPage extends StatefulWidget {
-  final String locale;
-
-  const PrivacyPolicyPage({super.key, required this.locale});
-
-  @override
-  State<PrivacyPolicyPage> createState() => _PrivacyPolicyPageState();
+enum LegalDocumentType {
+  privacyPolicy,
+  termsOfService,
 }
 
-class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
+class HtmlDocumentPage extends StatefulWidget {
+  final String locale;
+  final LegalDocumentType documentType;
+
+  const HtmlDocumentPage({
+    super.key,
+    required this.locale,
+    required this.documentType,
+  });
+
+  @override
+  State<HtmlDocumentPage> createState() => _HtmlDocumentPageState();
+}
+
+class _HtmlDocumentPageState extends State<HtmlDocumentPage> {
   late final WebViewController _controller;
   bool _isLoading = true;
 
@@ -41,7 +51,6 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
         ),
       );
 
-    // Load HTML based on locale
     final htmlPath = _getHtmlPath();
     final htmlContent = await rootBundle.loadString(htmlPath);
     await _controller.loadHtmlString(htmlContent);
@@ -49,15 +58,27 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
 
   String _getHtmlPath() {
     final localeCode = widget.locale.toLowerCase();
+    final documentPrefix = switch (widget.documentType) {
+      LegalDocumentType.privacyPolicy => 'privacy_policy',
+      LegalDocumentType.termsOfService => 'terms_of_service',
+    };
+
     switch (localeCode) {
       case 'en':
-        return 'assets/html/privacy_policy_en.html';
+        return 'assets/html/${documentPrefix}_en.html';
       case 'kk':
-        return 'assets/html/privacy_policy_kk.html';
+        return 'assets/html/${documentPrefix}_kk.html';
       case 'ru':
       default:
-        return 'assets/html/privacy_policy_ru.html';
+        return 'assets/html/${documentPrefix}_ru.html';
     }
+  }
+
+  String _getTitle() {
+    return switch (widget.documentType) {
+      LegalDocumentType.privacyPolicy => context.s.privacyPolicy,
+      LegalDocumentType.termsOfService => context.s.termsOfService,
+    };
   }
 
   @override
@@ -67,7 +88,6 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
       body: Stack(
         children: [
           Container(
-            padding: EdgeInsets.only(top: context.padding.top + 66),
             child: WebViewWidget(controller: _controller),
           ),
           if (_isLoading) const Center(child: CircularProgressIndicator()),
@@ -86,7 +106,6 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
-                          vertical: 8.0,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,

@@ -41,7 +41,7 @@ class _SettingsFooterState extends State<SettingsFooter> {
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () {
-            // Terms of Service action
+            context.push(Routes.termsOfService);
           },
           child: Text(
             context.s.termsOfService,

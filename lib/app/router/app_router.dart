@@ -62,6 +62,7 @@ class AppRouter {
       buildRoute(Routes.createChatGroup),
       buildRoute(Routes.selectContactsFroGroup),
       buildRoute(Routes.privacyPolicy),
+      buildRoute(Routes.termsOfService),
 
       //Sheets
       ...Routes.sheetRoutes.map(buildRoute),

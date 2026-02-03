@@ -35,6 +35,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     'message_read': _handleMessageRead,
     'user_typing': _handleUserTypingMessage,
     'chat_avatar_updated': _handleChatAvatarUpdated,
+    'message_deleted': _handleChatMessageDeleted,
   };
 
   ChatDetailsBloc(
@@ -127,6 +128,13 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       add(ChatDetailsUpdatedAvatar(
         decoded['avatar'],
       ));
+    }
+  }
+
+  void _handleChatMessageDeleted(Map<String, dynamic> decoded) {
+    final chatId = decoded['chat_id'] as int;
+    if (state.chat?.id == chatId) {
+      add(ChatDetailsDeleteMessage(decoded['message_id'], isOtherDeleted: true));
     }
   }
 
@@ -325,7 +333,10 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     Emitter<ChatDetailsState> emit,
   ) async {
     try {
-      await _chatDetailsRepository.deleteMessage(event.messageId);
+      if (!event.isOtherDeleted) {
+        await _chatDetailsRepository.deleteMessage(event.messageId);
+
+      }
       final messages = state.messages.where((m) => m.id != event.messageId).toList();
       emit(state.copyWith(messages: messages));
     } catch (e) {

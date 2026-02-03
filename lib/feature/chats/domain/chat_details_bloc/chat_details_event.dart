@@ -78,7 +78,8 @@ class ChatDetailsErrorReceived extends ChatDetailsEvent {
 
 class ChatDetailsDeleteMessage extends ChatDetailsEvent {
   final int messageId;
-  ChatDetailsDeleteMessage(this.messageId);
+  final bool isOtherDeleted;
+  ChatDetailsDeleteMessage(this.messageId, {this.isOtherDeleted = false});
 }
 
 class ChatDetailsEditMessage extends ChatDetailsEvent {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
+import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
 import 'package:logger/logger.dart';
 
@@ -19,6 +20,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
     'new_message': _handleNewMessage,
     'unread_count': _handleMessageRead,
+    'message_deleted': _handleChatMessageDeleted,
     'missed_call': _handleMissedCall,
   };
 
@@ -52,7 +54,21 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   }
 
   void _handleNewMessage(Map<String, dynamic> data) {
-    add(NavigationMessageReceived());
+    final unreadCount = UnreadMessagesResponse
+        .fromJson(data['unreaded_messages'])
+        .unreadedMessages
+        .fold(0, (sum, message) => sum + message.unread);
+
+    add(NavigationUpdateUnreadCount(unreadCount));
+  }
+
+  void _handleChatMessageDeleted(Map<String, dynamic> data) {
+    final unreadCount = UnreadMessagesResponse
+        .fromJson(data['unreaded_messages'])
+        .unreadedMessages
+        .fold(0, (sum, message) => sum + message.unread);
+        
+    add(NavigationUpdateUnreadCount(unreadCount));
   }
 
   void _handleMessageRead(Map<String, dynamic> data) {

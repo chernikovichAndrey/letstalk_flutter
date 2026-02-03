@@ -30,6 +30,7 @@ class Chat {
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
+    print('1111111 ${json}');
     return Chat(
       id: int.tryParse(json['id'].toString()) ?? 0,
       type: json['type'] as String? ?? '',

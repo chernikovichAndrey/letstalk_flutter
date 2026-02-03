@@ -22,6 +22,7 @@ import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
 import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
 import 'package:lets_talk/feature/settings/view/sheet/edit_profile_details_sheet.dart';
 import 'package:lets_talk/feature/settings/view/photo_editor_page.dart';
+import 'package:lets_talk/feature/settings/view/privacy_policy_page_scope.dart';
 import 'package:lets_talk/feature/settings/view/settings_page.dart';
 import 'package:lets_talk/feature/settings/view/sheet/language_select_sheet.dart';
 import 'package:lets_talk/feature/settings/view/sheet/profile_avatar_bottom_sheet.dart';
@@ -56,6 +57,7 @@ extension RoutesExt on Routes {
       Routes.chatInfoSheet => const ChatInfoSheet(),
       Routes.memberInfoSheet => const MemberInfoSheet(),
       Routes.languageSelectSheet => const LanguageSelectSheet(),
+      Routes.privacyPolicy => const PrivacyPolicyPageScope(),
     };
   }
 }

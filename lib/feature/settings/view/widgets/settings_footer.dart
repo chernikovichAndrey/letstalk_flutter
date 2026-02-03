@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -52,7 +54,7 @@ class _SettingsFooterState extends State<SettingsFooter> {
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () {
-            // Terms of Service action
+            context.push(Routes.privacyPolicy);
           },
           child: Text(
             context.s.privacyPolicy,

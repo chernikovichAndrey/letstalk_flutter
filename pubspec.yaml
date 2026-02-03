@@ -48,6 +48,7 @@ dependencies:
   image: ^4.3.0
   cached_network_image: ^3.4.1
   package_info_plus: ^8.1.3
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
     - .env
     - assets/sounds/
     - assets/images/animals/
+    - assets/html/
 
 flutter_intl:
   enabled: true

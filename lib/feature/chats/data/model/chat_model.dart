@@ -7,6 +7,7 @@ class Chat {
   final int? lastMessageId;
   final String? lastMessageText;
   final String? lastMessageAt;
+  final String? lastMessageType;
   final int unreadCount;
   final int membersCount;
   final String? role;
@@ -21,6 +22,7 @@ class Chat {
     this.lastMessageId,
     this.lastMessageText,
     this.lastMessageAt,
+    this.lastMessageType,
     required this.unreadCount,
     required this.membersCount,
     this.role,
@@ -37,6 +39,7 @@ class Chat {
       lastMessageId: int.tryParse(json['last_message_id'].toString()),
       lastMessageText: json['last_message_text'] as String?,
       lastMessageAt: json['last_message_at'] as String?,
+      lastMessageType: json['last_message_type'] as String?,
       unreadCount: int.tryParse(json['unread_count'].toString()) ?? 0,
       membersCount: int.tryParse(json['members_count'].toString()) ?? 0,
       role: json['role'] as String?,
@@ -50,6 +53,7 @@ class Chat {
     int? unreadCount,
     int? lastMessageId,
     String? lastMessageText,
+    String? lastMessageType,
     String? avatar,
   }) {
     return Chat(
@@ -63,6 +67,7 @@ class Chat {
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageText: lastMessageText ?? this.lastMessageText,
       lastMessageAt: lastMessageAt,
+      lastMessageType: lastMessageType ?? this.lastMessageType,
       role: role,
       memberInfo: memberInfo,
     );

@@ -161,5 +161,8 @@
   "selectLanguage": "Тілді таңдау",
   "languageEnglish": "English",
   "languageRussian": "Русский",
-  "languageKazakh": "Қазақша"
+  "languageKazakh": "Қазақша",
+  "groupCreated": "Топ құрылды",
+  "messageTypeImage": "Сурет",
+  "messageTypeDocument": "Құжат"
 }

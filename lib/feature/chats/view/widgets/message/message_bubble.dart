@@ -88,16 +88,21 @@ class MessageBubble extends StatelessWidget {
                 if (message.messageType == 'document')
                   MessageDocumentAttach(message: message, isMe: isMe),
 
-                if (message.messageType == 'text')
-                  MessageForward(forwardedFrom: message.forwardedFrom),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (message.messageType == 'text')
+                      MessageForward(forwardedFrom: message.forwardedFrom),
 
-                Text(
-                  message.text ?? '',
-                  style: context.text.bodyMedium?.copyWith(
-                    color: isMe
-                        ? Colors.white
-                        : context.appColors.messageOtherText,
-                  ),
+                    Text(
+                      message.text ?? '',
+                      style: context.text.bodyMedium?.copyWith(
+                        color: isMe
+                            ? Colors.white
+                            : context.appColors.messageOtherText,
+                      ),
+                    ),
+                  ],
                 ),
                 MessageBubbleInfo(message: message, isMe: isMe),
               ],

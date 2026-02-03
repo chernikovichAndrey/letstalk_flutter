@@ -161,5 +161,8 @@
   "selectLanguage": "Выбрать язык",
   "languageEnglish": "English",
   "languageRussian": "Русский",
-  "languageKazakh": "Қазақша"
+  "languageKazakh": "Қазақша",
+  "groupCreated": "Группа создана",
+  "messageTypeImage": "Изображение",
+  "messageTypeDocument": "Документ"
 }

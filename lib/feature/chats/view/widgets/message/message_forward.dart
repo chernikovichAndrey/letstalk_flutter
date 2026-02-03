@@ -12,7 +12,8 @@ class MessageForward extends StatelessWidget {
     if (forwardedFrom?.fromName != null && forwardedFrom!.fromName.isNotEmpty) {
       return forwardedFrom!.fromName;
     }
-    if (forwardedFrom?.fromPhone != null && forwardedFrom!.fromPhone!.isNotEmpty) {
+    if (forwardedFrom?.fromPhone != null &&
+        forwardedFrom!.fromPhone!.isNotEmpty) {
       return forwardedFrom!.fromPhone!;
     }
     return '';
@@ -29,21 +30,26 @@ class MessageForward extends StatelessWidget {
             context.s.forwardedFrom,
             style: context.text.bodySmall,
             textAlign: TextAlign.start,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Opacity(
+            opacity: 0,
+            child: Container(
+              padding: EdgeInsets.only(left: 20),
+              child: Text(_forwardFromName(), style: context.text.bodySmall),
+            ),
           ),
           Positioned(
             top: 20,
             child: Row(
               children: [
-                CAvatar(
-                  radius: 8,
-                  name: _forwardFromName(showPhone: false),
-                ),
-                SizedBox(width: 4,),
+                CAvatar(radius: 8, name: _forwardFromName(showPhone: false)),
+                SizedBox(width: 4),
                 Text(
                   _forwardFromName(),
                   style: context.text.bodySmall,
                   textAlign: TextAlign.start,
-                )
+                ),
               ],
             ),
           ),

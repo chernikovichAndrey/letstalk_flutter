@@ -28,12 +28,14 @@ class ChatUpdated extends ChatsEvent {
   final int? unreadCount;
   final int? lastMessageId;
   final String? lastMessageText;
+  final String? lastMessageType;
 
   ChatUpdated({
     required this.chatId,
     this.unreadCount,
     this.lastMessageId,
     this.lastMessageText,
+    this.lastMessageType,
   });
 }
 

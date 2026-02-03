@@ -203,5 +203,8 @@
   "selectLanguage": "Select Language",
   "languageEnglish": "English",
   "languageRussian": "Русский",
-  "languageKazakh": "Қазақша"
+  "languageKazakh": "Қазақша",
+  "groupCreated": "Group created",
+  "messageTypeImage": "Image",
+  "messageTypeDocument": "Document"
 }

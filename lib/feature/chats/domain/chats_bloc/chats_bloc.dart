@@ -96,6 +96,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         chatId: msg.chatId,
         lastMessageId: msg.id,
         lastMessageText: msg.text,
+        lastMessageType: msg.messageType,
         unreadCount: 0,
       ),
     );
@@ -215,6 +216,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
             unreadCount: event.unreadCount ?? chat.unreadCount,
             lastMessageId: event.lastMessageId ?? chat.lastMessageId,
             lastMessageText: event.lastMessageText ?? chat.lastMessageText,
+            lastMessageType: event.lastMessageType ?? chat.lastMessageType,
           );
         }
         return chat;

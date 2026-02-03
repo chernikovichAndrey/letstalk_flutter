@@ -32,7 +32,6 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     'new_message': _handleNewMessage,
     'message_sent': _handleSentMessage,
     'message_edit_success': _handleEditMessageSuccess,
-    'read_confirmed': _handleReadConfirmed,
     'message_read': _handleMessageRead,
     'user_typing': _handleUserTypingMessage,
     'chat_avatar_updated': _handleChatAvatarUpdated,
@@ -106,10 +105,6 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   void _handleEditMessageSuccess(Map<String, dynamic> decoded) {
     final msg = Message.fromJson(decoded['message']);
     add(ChatDetailsUpdateMessage(msg));
-  }
-
-  void _handleReadConfirmed(Map<String, dynamic> decoded) {
-    add(ChatDetailsReadMessage(decoded['chat_id'], decoded['message_id']));
   }
 
   void _handleMessageRead(Map<String, dynamic> decoded) {

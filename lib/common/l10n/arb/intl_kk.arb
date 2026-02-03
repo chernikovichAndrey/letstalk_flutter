@@ -164,5 +164,6 @@
   "languageKazakh": "Қазақша",
   "groupCreated": "Топ құрылды",
   "messageTypeImage": "Сурет",
-  "messageTypeDocument": "Құжат"
+  "messageTypeDocument": "Құжат",
+  "chatCreated": "Чат құрылды"
 }

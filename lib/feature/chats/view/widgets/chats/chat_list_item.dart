@@ -83,6 +83,9 @@ class ChatListItem extends StatelessWidget {
     if (chat.lastMessageText != null) {
       return chat.lastMessageText!;
     }
+    if (chat.type == 'private' && chat.lastMessageId == 0) {
+      return context.s.chatCreated;
+    }
     if (chat.type == 'group' && chat.lastMessageId == 0) {
       return context.s.groupCreated;
     }
@@ -135,7 +138,7 @@ class ChatListItem extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (chat.lastMessageType != 'text')
+                      if (chat.lastMessageType != null && chat.lastMessageType != 'text')
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

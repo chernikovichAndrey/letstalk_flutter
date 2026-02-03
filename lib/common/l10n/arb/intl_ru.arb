@@ -164,5 +164,6 @@
   "languageKazakh": "Қазақша",
   "groupCreated": "Группа создана",
   "messageTypeImage": "Изображение",
-  "messageTypeDocument": "Документ"
+  "messageTypeDocument": "Документ",
+  "chatCreated": "Чат создан"
 }

@@ -67,6 +67,7 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
       builder: (context, state) {
         final isDownloading = state.downloadingMessageId == widget.message.id;
         final progress = isDownloading ? state.downloadProgress : null;
+        final progressPercent = progress != null ? (progress * 100).toInt() : 0;
 
         return GestureDetector(
           onTap: isDownloading ? null : _downloadAndOpen,
@@ -125,7 +126,9 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _formatBytes(media.size, 1),
+                          isDownloading && progressPercent > 0
+                              ? '$progressPercent% • ${_formatBytes(media.size, 1)}'
+                              : _formatBytes(media.size, 1),
                           style: context.text.bodySmall?.copyWith(
                             color: textColor.withOpacity(0.7),
                             fontSize: 12,

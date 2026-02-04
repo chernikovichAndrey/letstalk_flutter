@@ -17,6 +17,7 @@ class MediaRepositoryImpl implements MediaRepository {
     required File file,
     required int chatId,
     required String fileType,
+    void Function(int, int)? onSendProgress,
   }) async {
     final fileName = file.path.split('/').last;
     final formData = FormData.fromMap({
@@ -31,6 +32,7 @@ class MediaRepositoryImpl implements MediaRepository {
     final response = await _apiService.post(
       ApiConstants.mediaUpload,
       data: formData,
+      onSendProgress: onSendProgress,
     );
 
     final mediaResponse = MediaUploadResponse.fromJson(response.data);

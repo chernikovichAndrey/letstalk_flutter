@@ -51,6 +51,13 @@ class ChatDetailsDownloadProgress extends ChatDetailsEvent {
   ChatDetailsDownloadProgress(this.count, this.total, this.messageId);
 }
 
+class ChatDetailsUploadProgress extends ChatDetailsEvent {
+  final String tempMessageId;
+  final double progress;
+
+  ChatDetailsUploadProgress(this.tempMessageId, this.progress);
+}
+
 class ChatDetailsSendTyping extends ChatDetailsEvent {
   final bool isTyping;
   ChatDetailsSendTyping(this.isTyping);

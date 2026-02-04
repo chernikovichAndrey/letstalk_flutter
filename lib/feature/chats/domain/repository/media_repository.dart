@@ -6,6 +6,7 @@ abstract class MediaRepository {
     required File file,
     required int chatId,
     required String fileType,
+    void Function(int, int)? onSendProgress,
   });
 
   Future<void> downloadMedia(

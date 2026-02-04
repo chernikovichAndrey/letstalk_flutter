@@ -42,6 +42,9 @@ class MessageImageAttachThumbnail extends StatelessWidget {
             BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
               builder: (context, state) {
                 if (state.downloadingMessageId == messageId) {
+                  final progress = state.downloadProgress ?? 0.0;
+                  final progressPercent = (progress * 100).toInt();
+                  
                   return Container(
                     width: 200,
                     height: 200,
@@ -50,9 +53,28 @@ class MessageImageAttachThumbnail extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
-                      child: CircularProgressIndicator(
-                        value: state.downloadProgress,
-                        color: Colors.white,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 56,
+                            height: 56,
+                            child: CircularProgressIndicator(
+                              value: state.downloadProgress,
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                          if (progressPercent > 0)
+                            Text(
+                              '$progressPercent%',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   );

@@ -31,6 +31,8 @@ class MessageBubble extends StatelessWidget {
   Widget _buildUploadingPreview(Message message, BuildContext context) {
     final isImage = message.messageType == 'image';
     final isVideo = message.messageType == 'video';
+    final progress = message.uploadProgress ?? 0.0;
+    final progressPercent = (progress * 100).toInt();
     
     if ((isImage || isVideo) && message.localFilePath != null) {
       return Stack(
@@ -65,9 +67,28 @@ class MessageBubble extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircularProgressIndicator(
-                  strokeWidth: 3,
-                  color: Colors.white,
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        color: Colors.white,
+                        value: progress > 0 ? progress : null,
+                      ),
+                    ),
+                    if (progressPercent > 0)
+                      Text(
+                        '$progressPercent%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -89,6 +110,8 @@ class MessageBubble extends StatelessWidget {
         message.localFilePath != null) {
       final filename = message.localFilePath!.split('/').last;
       final icon = message.messageType == 'audio' ? Icons.audiotrack : Icons.insert_drive_file;
+      final progress = message.uploadProgress ?? 0.0;
+      final progressPercent = (progress * 100).toInt();
       
       return Container(
         padding: const EdgeInsets.all(12),
@@ -117,14 +140,19 @@ class MessageBubble extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         width: 12,
                         height: 12,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          value: progress > 0 ? progress : null,
+                        ),
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        context.s.uploading,
+                        progressPercent > 0 
+                            ? '${context.s.uploading} $progressPercent%'
+                            : context.s.uploading,
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,

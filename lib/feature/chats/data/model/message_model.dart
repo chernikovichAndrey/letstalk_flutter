@@ -81,6 +81,7 @@ class Message {
   final String? tempMessageId;
   final bool isUploading;
   final String? localFilePath;
+  final double? uploadProgress;
 
   Message({
     required this.id,
@@ -101,6 +102,7 @@ class Message {
     this.tempMessageId,
     this.isUploading = false,
     this.localFilePath,
+    this.uploadProgress,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -149,6 +151,7 @@ class Message {
     String? tempMessageId,
     bool? isUploading,
     String? localFilePath,
+    double? uploadProgress,
   }) {
     return Message(
       id: id ?? this.id,
@@ -169,6 +172,7 @@ class Message {
       tempMessageId: tempMessageId ?? this.tempMessageId,
       isUploading: isUploading ?? this.isUploading,
       localFilePath: localFilePath ?? this.localFilePath,
+      uploadProgress: uploadProgress ?? this.uploadProgress,
     );
   }
 }

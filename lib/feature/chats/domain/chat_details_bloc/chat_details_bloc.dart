@@ -60,6 +60,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<DownloadDocument>(_onDownloadDocument);
     on<SaveImageToGallery>(_onSaveImageToGallery);
     on<ChatDetailsDownloadProgress>(_onDownloadProgress);
+    on<ChatDetailsUploadProgress>(_onUploadProgress);
     on<RefreshStateEvent>(_onRefreshState);
     on<AddMembersToChat>(_onAddMembersToChat);
     on<RemoveMemberFromChat>(_onRemoveMemberFromChat);
@@ -289,6 +290,19 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     }
   }
 
+  void _onUploadProgress(
+    ChatDetailsUploadProgress event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    final updatedMessages = state.messages.map((m) {
+      if (m.tempMessageId == event.tempMessageId) {
+        return m.copyWith(uploadProgress: event.progress);
+      }
+      return m;
+    }).toList();
+    emit(state.copyWith(messages: updatedMessages));
+  }
+
   void _onSetEditingMessage(
     ChatDetailsSetEditingMessage event,
     Emitter<ChatDetailsState> emit,
@@ -444,6 +458,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           tempMessageId: tempMessageId,
           isUploading: true,
           localFilePath: event.file!.path,
+          uploadProgress: 0.0,
           replyTo: state.replyMessage != null ? ReplyTo(
             messageId: state.replyMessage!.id,
             fromUserId: state.replyMessage!.fromUserId,
@@ -464,6 +479,12 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           file: event.file!,
           chatId: chatId,
           fileType: fileType,
+          onSendProgress: (sent, total) {
+            if (total != -1 && tempMessageId != null) {
+              final progress = sent / total;
+              add(ChatDetailsUploadProgress(tempMessageId, progress));
+            }
+          },
         );
         
         // Update temp message with media info

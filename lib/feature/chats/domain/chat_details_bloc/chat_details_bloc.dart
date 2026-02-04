@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/service/messages_cache_service.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
@@ -25,6 +26,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final ChatDetailsRepository _chatDetailsRepository;
   final MediaRepository _mediaRepository;
   final WebSocketService _wsService;
+  final MessagesCacheService _cacheService;
   StreamSubscription? _wsSubscription;
   static const int _limit = 20;
 
@@ -42,6 +44,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     this._chatDetailsRepository,
     this._mediaRepository,
     this._wsService,
+    this._cacheService,
   ) : super(const ChatDetailsState()) {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
@@ -156,6 +159,12 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     final messages = state.messages.map((m) {
       return m.id == event.message.id ? event.message : m;
     }).toList();
+    
+    // Update cache
+    if (state.chat?.id != null) {
+      _cacheService.updateMessage(state.chat!.id, event.message);
+    }
+    
     emit(state.copyWith(messages: messages));
   }
 
@@ -175,6 +184,8 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     }).toList();
 
     if (hasChanges) {
+      // Update cache
+      _cacheService.markMessagesAsRead(event.chatId, event.messageId);
       emit(state.copyWith(messages: messages));
     }
   }
@@ -300,6 +311,12 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       }
       return m;
     }).toList();
+    
+    // Update cache
+    if (state.chat?.id != null) {
+      _cacheService.updateUploadProgress(state.chat!.id, event.tempMessageId, event.progress);
+    }
+    
     emit(state.copyWith(messages: updatedMessages));
   }
 
@@ -349,9 +366,15 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     try {
       if (!event.isOtherDeleted) {
         await _chatDetailsRepository.deleteMessage(event.messageId);
-
       }
+      
       final messages = state.messages.where((m) => m.id != event.messageId).toList();
+      
+      // Update cache
+      if (state.chat?.id != null) {
+        _cacheService.deleteMessage(state.chat!.id, event.messageId);
+      }
+      
       emit(state.copyWith(messages: messages));
     } catch (e) {
       emit(
@@ -417,9 +440,22 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         final messages = state.messages.map((m) {
           return m.tempMessageId == event.tempMessageId ? event.message : m;
         }).toList();
+        
+        // Update cache
+        _cacheService.replaceTemporaryMessage(
+          event.message.chatId,
+          event.tempMessageId!,
+          event.message,
+        );
+        
         emit(state.copyWith(messages: messages));
       } else {
-        emit(state.copyWith(messages: [event.message, ...state.messages]));
+        final messages = [event.message, ...state.messages];
+        
+        // Update cache
+        _cacheService.addMessage(event.message.chatId, event.message);
+        
+        emit(state.copyWith(messages: messages));
       }
     }
   }
@@ -439,7 +475,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     try {
       if (hasFile) {
         // New flow: create temp message and upload in background
-        tempMessageId = 'temp_${DateTime.now().millisecondsSinceEpoch}_${chatId}';
+        tempMessageId = 'temp_${DateTime.now().millisecondsSinceEpoch}_$chatId';
         final fileType = _getFileType(event.file!.path);
         
         // Create temporary message
@@ -468,9 +504,14 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           ) : null,
         );
         
+        final updatedMessages = [tempMessage, ...state.messages];
+        
+        // Add temp message to cache
+        _cacheService.addMessage(chatId, tempMessage);
+        
         // Add temp message to UI
         emit(state.copyWith(
-          messages: [tempMessage, ...state.messages],
+          messages: updatedMessages,
           clearReplyMessage: true,
         ));
         
@@ -488,13 +529,17 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         );
         
         // Update temp message with media info
-        final updatedMessages = state.messages.map((m) {
+        final messagesWithMedia = state.messages.map((m) {
           if (m.tempMessageId == tempMessageId) {
             return m.copyWith(media: media, isUploading: false);
           }
           return m;
         }).toList();
-        emit(state.copyWith(messages: updatedMessages));
+        
+        // Update cache with media
+        _cacheService.updateMessages(chatId, messagesWithMedia);
+        
+        emit(state.copyWith(messages: messagesWithMedia));
         
         // Send message via WebSocket
         await _chatDetailsRepository.sendMessage(
@@ -524,6 +569,12 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       final messages = tempMessageId != null
           ? state.messages.where((m) => m.tempMessageId != tempMessageId).toList()
           : state.messages;
+      
+      // Remove from cache on error
+      if (tempMessageId != null) {
+        _cacheService.removeTempMessage(chatId, tempMessageId);
+      }
+      
       emit(
         state.copyWith(
           status: ChatDetailsStatus.failure,
@@ -551,8 +602,27 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     ChatDetailsLoad event,
     Emitter<ChatDetailsState> emit,
   ) async {
-    emit(state.copyWith(status: ChatDetailsStatus.loading));
+    // Check cache first
+    final cachedData = _cacheService.getChatCache(event.chatId);
+    
+    if (cachedData != null) {
+      // Load from cache immediately
+      emit(
+        state.copyWith(
+          status: ChatDetailsStatus.success,
+          chat: cachedData.chat,
+          members: cachedData.members,
+          messages: cachedData.messages,
+          hasReachedMax: cachedData.hasReachedMax,
+          currentUser: event.user,
+        ),
+      );
+    } else {
+      emit(state.copyWith(status: ChatDetailsStatus.loading));
+    }
+
     try {
+      // Load fresh data from server
       final chatDetails = await _chatDetailsRepository.getChatDetails(event.chatId);
       var messages = await _chatDetailsRepository.getMessages(
         event.chatId,
@@ -565,24 +635,75 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         } catch (_) {}
       }
 
+      final reversedMessages = messages.reversed.toList();
+      final hasReachedMax = messages.length < _limit;
+
+      // Preserve temporary messages (uploading files)
+      final tempMessages = state.messages.where((m) {
+        return m.tempMessageId != null && (m.isUploading || m.id == 0);
+      }).toList();
+
+      // Merge temp messages with server messages
+      final mergedMessages = _mergeMessages(reversedMessages, tempMessages);
+
+      // Update cache
+      _cacheService.setChatCache(
+        event.chatId,
+        ChatCacheData(
+          messages: mergedMessages,
+          chat: chatDetails.chat,
+          members: chatDetails.members,
+          hasReachedMax: hasReachedMax,
+        ),
+      );
+
       emit(
         state.copyWith(
           status: ChatDetailsStatus.success,
           chat: chatDetails.chat,
           members: chatDetails.members,
-          messages: messages.reversed.toList(),
-          hasReachedMax: messages.length < _limit,
+          messages: mergedMessages,
+          hasReachedMax: hasReachedMax,
           currentUser: event.user,
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: ChatDetailsStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
+      // If we have cache and network failed, keep cached data
+      if (cachedData == null) {
+        emit(
+          state.copyWith(
+            status: ChatDetailsStatus.failure,
+            errorMessage: e.toString(),
+          ),
+        );
+      }
     }
+  }
+
+  List<Message> _mergeMessages(List<Message> serverMessages, List<Message> tempMessages) {
+    if (tempMessages.isEmpty) return serverMessages;
+    
+    // Add temp messages at the beginning (they are new)
+    final result = [...tempMessages];
+    
+    // Add server messages that are not already represented by temp messages
+    for (final serverMsg in serverMessages) {
+      final alreadyExists = tempMessages.any((temp) => 
+        temp.tempMessageId != null && serverMsg.id == temp.id
+      );
+      if (!alreadyExists) {
+        result.add(serverMsg);
+      }
+    }
+    
+    // Sort by creation time (newest first)
+    result.sort((a, b) {
+      final aTime = DateTime.tryParse(a.createdAt) ?? DateTime.now();
+      final bTime = DateTime.tryParse(b.createdAt) ?? DateTime.now();
+      return bTime.compareTo(aTime);
+    });
+    
+    return result;
   }
 
   Future<void> _onLoadMore(
@@ -594,19 +715,35 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
 
     emit(state.copyWith(status: ChatDetailsStatus.loading));
     try {
-      final lastMessageId = state.messages.isNotEmpty
-          ? state.messages.last.id
-          : null;
+      // Find last real message (not temporary) for pagination
+      final realMessages = state.messages.where((m) => m.id > 0 && m.tempMessageId == null).toList();
+      final lastMessageId = realMessages.isNotEmpty ? realMessages.last.id : null;
+      
       final messages = await _chatDetailsRepository.getMessages(
         event.chatId,
         limit: _limit,
         toMessageId: lastMessageId,
       );
+      
+      final updatedMessages = List.of(state.messages)..addAll(messages.reversed);
+      final hasReachedMax = messages.length < _limit;
+      
+      // Update cache
+      _cacheService.setChatCache(
+        event.chatId,
+        ChatCacheData(
+          messages: updatedMessages,
+          chat: state.chat,
+          members: state.members,
+          hasReachedMax: hasReachedMax,
+        ),
+      );
+      
       emit(
         state.copyWith(
           status: ChatDetailsStatus.success,
-          messages: List.of(state.messages)..addAll(messages.reversed),
-          hasReachedMax: messages.length < _limit,
+          messages: updatedMessages,
+          hasReachedMax: hasReachedMax,
         ),
       );
     } catch (e) {
@@ -667,6 +804,10 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         chatId: state.chat!.id,
         file: event.file,
       );
+      
+      // Update cache
+      _cacheService.updateChatAvatar(state.chat!.id, avatarUrl);
+      
       emit(state.copyWith(
         status: ChatDetailsStatus.success,
         chat: state.chat!.copyWith(avatar: avatarUrl),
@@ -685,6 +826,11 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     ChatDetailsUpdatedAvatar event,
     Emitter<ChatDetailsState> emit,
   ) {
+    // Update cache
+    if (state.chat?.id != null) {
+      _cacheService.updateChatAvatar(state.chat!.id, event.avatarUrl);
+    }
+    
     emit(
       state.copyWith(
         chat: state.chat?.copyWith(

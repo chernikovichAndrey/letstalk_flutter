@@ -168,5 +168,6 @@
   "chatCreated": "Чат создан",
   "version": "Версия",
   "privacyPolicy": "Политика конфиденциальности",
-  "termsOfService": "Условия использования"
+  "termsOfService": "Условия использования",
+  "uploading": "Загрузка..."
 }

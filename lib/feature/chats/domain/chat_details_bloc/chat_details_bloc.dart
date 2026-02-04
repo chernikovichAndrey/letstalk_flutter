@@ -46,7 +46,6 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsLoad>(_onLoad);
     on<ChatDetailsLoadMore>(_onLoadMore);
     on<ChatDetailsSendMessage>(_onSendMessage);
-    on<ChatDetailsSendMedia>(_onSendMedia);
     on<ChatDetailsSendTyping>(_onSendTyping);
     on<ChatDetailsUserTyping>(_onUserTyping);
     on<ChatDetailsNewMessageReceived>(_onNewMessageReceived);
@@ -100,7 +99,8 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
 
   void _handleSentMessage(Map<String, dynamic> decoded) {
     final msg = Message.fromJson(decoded['message']);
-    add(ChatDetailsNewMessageReceived(msg));
+    final tempMessageId = decoded['temp_message_id'] as String?;
+    add(ChatDetailsNewMessageReceived(msg, tempMessageId: tempMessageId));
   }
 
   void _handleEditMessageSuccess(Map<String, dynamic> decoded) {
@@ -398,7 +398,15 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     Emitter<ChatDetailsState> emit,
   ) {
     if (state.chat?.id == event.message.chatId) {
-      emit(state.copyWith(messages: [event.message, ...state.messages]));
+      if (event.tempMessageId != null) {
+        // Replace temp message with real one
+        final messages = state.messages.map((m) {
+          return m.tempMessageId == event.tempMessageId ? event.message : m;
+        }).toList();
+        emit(state.copyWith(messages: messages));
+      } else {
+        emit(state.copyWith(messages: [event.message, ...state.messages]));
+      }
     }
   }
 
@@ -407,54 +415,104 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     Emitter<ChatDetailsState> emit,
   ) async {
     final chatId = state.chat?.id;
-    if (chatId == null) return;
+    final currentUser = state.currentUser;
+    if (chatId == null || currentUser == null) return;
+
+    final hasFile = event.file != null;
+    final hasAttachedMedia = state.attachedMedia != null;
+    String? tempMessageId;
 
     try {
-      await _chatDetailsRepository.sendMessage(
-        chatId,
-        event.text,
-        mediaId: state.attachedMedia?.id,
-        messageType: state.attachedMedia?.type,
-        replyToMessageId: state.replyMessage?.id,
-      );
-      emit(state.copyWith(
-        clearAttachedMedia: true,
-        clearReplyMessage: true,
-      ));
+      if (hasFile) {
+        // New flow: create temp message and upload in background
+        tempMessageId = 'temp_${DateTime.now().millisecondsSinceEpoch}_${chatId}';
+        final fileType = _getFileType(event.file!.path);
+        
+        // Create temporary message
+        final tempMessage = Message(
+          id: 0,
+          chatId: chatId,
+          fromUserId: currentUser.id,
+          fromPhone: currentUser.phone,
+          text: event.text,
+          messageType: fileType,
+          media: null,
+          read: false,
+          createdAt: DateTime.now().toString(),
+          isEdited: false,
+          editCount: 0,
+          tempMessageId: tempMessageId,
+          isUploading: true,
+          localFilePath: event.file!.path,
+          replyTo: state.replyMessage != null ? ReplyTo(
+            messageId: state.replyMessage!.id,
+            fromUserId: state.replyMessage!.fromUserId,
+            textPreview: state.replyMessage!.text ?? '',
+            messageType: state.replyMessage!.messageType,
+            media: state.replyMessage!.media,
+          ) : null,
+        );
+        
+        // Add temp message to UI
+        emit(state.copyWith(
+          messages: [tempMessage, ...state.messages],
+          clearReplyMessage: true,
+        ));
+        
+        // Upload file in background
+        final media = await _mediaRepository.uploadMedia(
+          file: event.file!,
+          chatId: chatId,
+          fileType: fileType,
+        );
+        
+        // Update temp message with media info
+        final updatedMessages = state.messages.map((m) {
+          if (m.tempMessageId == tempMessageId) {
+            return m.copyWith(media: media, isUploading: false);
+          }
+          return m;
+        }).toList();
+        emit(state.copyWith(messages: updatedMessages));
+        
+        // Send message via WebSocket
+        await _chatDetailsRepository.sendMessage(
+          chatId,
+          event.text,
+          mediaId: media.id,
+          messageType: fileType,
+          replyToMessageId: state.replyMessage?.id,
+          tempMessageId: tempMessageId,
+        );
+      } else {
+        // Old flow for text or already uploaded media
+        await _chatDetailsRepository.sendMessage(
+          chatId,
+          event.text,
+          mediaId: hasAttachedMedia ? state.attachedMedia!.id : null,
+          messageType: hasAttachedMedia ? state.attachedMedia!.type : null,
+          replyToMessageId: state.replyMessage?.id,
+        );
+        emit(state.copyWith(
+          clearAttachedMedia: true,
+          clearReplyMessage: true,
+        ));
+      }
     } catch (e) {
+      // Remove temp message on error by tempMessageId
+      final messages = tempMessageId != null
+          ? state.messages.where((m) => m.tempMessageId != tempMessageId).toList()
+          : state.messages;
       emit(
         state.copyWith(
           status: ChatDetailsStatus.failure,
           errorMessage: e.toString(),
+          messages: messages,
         ),
       );
     }
   }
 
-  Future<void> _onSendMedia(
-    ChatDetailsSendMedia event,
-    Emitter<ChatDetailsState> emit,
-  ) async {
-    final chatId = state.chat?.id;
-    if (chatId == null) return;
-
-    try {
-      final fileType = _getFileType(event.file.path);
-      final media = await _mediaRepository.uploadMedia(
-        file: event.file,
-        chatId: chatId,
-        fileType: fileType,
-      );
-      emit(state.copyWith(attachedMedia: media));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: ChatDetailsStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
-  }
 
   String _getFileType(String path) {
     final ext = path.split('.').last.toLowerCase();

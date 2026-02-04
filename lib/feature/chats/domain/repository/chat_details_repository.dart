@@ -12,6 +12,7 @@ abstract class ChatDetailsRepository {
     int? mediaId,
     String? messageType,
     int? replyToMessageId,
+    String? tempMessageId,
   });
   Future<void> sendTyping(int chatId, bool isTyping);
   Future<void> deleteMessage(int messageId);

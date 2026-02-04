@@ -210,5 +210,6 @@
   "chatCreated": "Chat created",
   "version": "Version",
   "privacyPolicy": "Privacy Policy",
-  "termsOfService": "Terms of Service"
+  "termsOfService": "Terms of Service",
+  "uploading": "Uploading..."
 }

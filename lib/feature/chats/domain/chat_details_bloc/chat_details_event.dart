@@ -15,12 +15,8 @@ class ChatDetailsLoadMore extends ChatDetailsEvent {
 
 class ChatDetailsSendMessage extends ChatDetailsEvent {
   final String text;
-  ChatDetailsSendMessage(this.text);
-}
-
-class ChatDetailsSendMedia extends ChatDetailsEvent {
-  final File file;
-  ChatDetailsSendMedia(this.file);
+  final File? file;
+  ChatDetailsSendMessage(this.text, {this.file});
 }
 
 class DownloadDocument extends ChatDetailsEvent {
@@ -68,7 +64,8 @@ class ChatDetailsUserTyping extends ChatDetailsEvent {
 
 class ChatDetailsNewMessageReceived extends ChatDetailsEvent {
   final Message message;
-  ChatDetailsNewMessageReceived(this.message);
+  final String? tempMessageId;
+  ChatDetailsNewMessageReceived(this.message, {this.tempMessageId});
 }
 
 class ChatDetailsErrorReceived extends ChatDetailsEvent {

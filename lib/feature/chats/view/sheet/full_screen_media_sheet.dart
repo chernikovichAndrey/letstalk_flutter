@@ -75,7 +75,13 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
     setState(() {
       _isSending = true;
     });
-    getIt<ChatDetailsBloc>().add(ChatDetailsSendMedia(_file!));
+    getIt<ChatDetailsBloc>().add(
+      ChatDetailsSendMessage(_controller.text, file: _file),
+    );
+    // Close full screen media sheet
+    context.pop();
+    // Close attachment bottom sheet
+    context.pop();
   }
 
   @override
@@ -83,20 +89,10 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
     return BlocListener<ChatDetailsBloc, ChatDetailsState>(
       bloc: getIt<ChatDetailsBloc>(),
       listener: (context, state) {
-        if (_isSending) {
-          if (state.status == ChatDetailsStatus.failure) {
-            setState(() {
-              _isSending = false;
-            });
-          } else if (state.attachedMedia != null) {
-            getIt<ChatDetailsBloc>().add(
-              ChatDetailsSendMessage(_controller.text),
-            );
-            //close full screen media sheet
-            context.pop();
-            //close attachment bottom sheet
-            context.pop();
-          }
+        if (_isSending && state.status == ChatDetailsStatus.failure) {
+          setState(() {
+            _isSending = false;
+          });
         }
       },
       child: Scaffold(

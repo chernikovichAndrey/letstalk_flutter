@@ -78,6 +78,9 @@ class Message {
   final ReplyTo? replyTo;
   final ForwardedFrom? forwardedFrom;
   final List<UserModel>? fromName;
+  final String? tempMessageId;
+  final bool isUploading;
+  final String? localFilePath;
 
   Message({
     required this.id,
@@ -95,6 +98,9 @@ class Message {
     this.replyTo,
     this.forwardedFrom,
     this.fromName,
+    this.tempMessageId,
+    this.isUploading = false,
+    this.localFilePath,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -140,6 +146,9 @@ class Message {
     ReplyTo? replyTo,
     ForwardedFrom? forwardedFrom,
     List<UserModel>? fromName,
+    String? tempMessageId,
+    bool? isUploading,
+    String? localFilePath,
   }) {
     return Message(
       id: id ?? this.id,
@@ -157,6 +166,9 @@ class Message {
       replyTo: replyTo ?? this.replyTo,
       forwardedFrom: forwardedFrom ?? this.forwardedFrom,
       fromName: fromName ?? this.fromName,
+      tempMessageId: tempMessageId ?? this.tempMessageId,
+      isUploading: isUploading ?? this.isUploading,
+      localFilePath: localFilePath ?? this.localFilePath,
     );
   }
 }

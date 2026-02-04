@@ -73,15 +73,17 @@ class _MessageInputState extends State<MessageInput> {
     super.dispose();
   }
 
-  void _onSendMessage(ChatDetailsState state, bool isEditing) {
+  void _onSendMessage(ChatDetailsState state, bool isEditing, {File? file}) {
     final text = _controller.text.trim();
-    if (text.isNotEmpty || state.attachedMedia != null) {
+    if (text.isNotEmpty || state.attachedMedia != null || file != null) {
       if (isEditing) {
         context.read<ChatDetailsBloc>().add(
           ChatDetailsEditMessage(state.messageToEdit!.id, text),
         );
       } else {
-        context.read<ChatDetailsBloc>().add(ChatDetailsSendMessage(text));
+        context.read<ChatDetailsBloc>().add(
+          ChatDetailsSendMessage(text, file: file),
+        );
       }
       widget.controller.animateTo(
         0,
@@ -155,10 +157,11 @@ class _MessageInputState extends State<MessageInput> {
                           final file = await context.router.push(
                             Routes.chatAttachSheet.path,
                           );
-                          //TODO: change, look files_tab
                           if (context.mounted && file != null) {
-                            context.read<ChatDetailsBloc>().add(
-                              ChatDetailsSendMedia(file as File),
+                            _onSendMessage(
+                              context.read<ChatDetailsBloc>().state,
+                              false,
+                              file: file as File,
                             );
                           }
                         }

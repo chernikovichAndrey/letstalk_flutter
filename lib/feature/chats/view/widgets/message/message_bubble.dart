@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/arg/MemberInfoArgs.dart';
 import 'package:lets_talk/app/router/routes.dart';
@@ -26,6 +27,127 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
     this.isGroupChat = false,
   });
+
+  Widget _buildUploadingPreview(Message message, BuildContext context) {
+    final isImage = message.messageType == 'image';
+    final isVideo = message.messageType == 'video';
+    
+    if ((isImage || isVideo) && message.localFilePath != null) {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(
+              File(message.localFilePath!),
+              width: 200,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 200,
+                height: 200,
+                color: Colors.grey[800],
+                child: Icon(
+                  isVideo ? Icons.videocam : Icons.image,
+                  color: Colors.white70,
+                  size: 48,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  context.s.uploading,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+    
+    // For documents and audio show filename with loading indicator
+    if ((message.messageType == 'document' || message.messageType == 'audio') && 
+        message.localFilePath != null) {
+      final filename = message.localFilePath!.split('/').last;
+      final icon = message.messageType == 'audio' ? Icons.audiotrack : Icons.insert_drive_file;
+      
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white70, size: 24),
+            const SizedBox(width: 12),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    filename,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        context.s.uploading,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // Fallback
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: const Center(
+        child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,15 +200,26 @@ class MessageBubble extends StatelessWidget {
               children: [
                 if (message.replyTo != null)
                   MessageReplay(replyTo: message.replyTo!, isMe: isMe),
-                if (message.messageType == 'image' &&
-                    message.media?.thumbnailUrl != null)
-                  MessageImageAttachThumbnail(
-                    thumbnailUrl: message.media!.thumbnailUrl!,
-                    messageId: message.id,
-                    message: message,
-                  ),
-                if (message.messageType == 'document')
-                  MessageDocumentAttach(message: message, isMe: isMe),
+                if (message.isUploading && message.localFilePath != null)
+                  _buildUploadingPreview(message, context)
+                else if (message.isUploading)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                else ...[
+                  if (message.messageType == 'image' &&
+                      message.media?.thumbnailUrl != null)
+                    MessageImageAttachThumbnail(
+                      thumbnailUrl: message.media!.thumbnailUrl!,
+                      messageId: message.id,
+                      message: message,
+                    ),
+                  if (message.messageType == 'document')
+                    MessageDocumentAttach(message: message, isMe: isMe),
+                ],
 
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

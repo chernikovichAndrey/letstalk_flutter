@@ -51,6 +51,7 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
     int? mediaId,
     String? messageType,
     int? replyToMessageId,
+    String? tempMessageId,
   }) async {
     _wsService.sendMessage(
       chatId,
@@ -58,6 +59,7 @@ class ChatDetailsRepositoryImpl extends ChatDetailsRepository {
       messageType: messageType,
       mediaId: mediaId,
       replyToMessageId: replyToMessageId,
+      tempMessageId: tempMessageId,
     );
   }
 

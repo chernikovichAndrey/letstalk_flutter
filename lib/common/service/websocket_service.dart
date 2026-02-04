@@ -188,6 +188,7 @@ class WebSocketService with WidgetsBindingObserver {
         String? messageType,
         int? mediaId,
         int? replyToMessageId,
+        String? tempMessageId,
       }) {
     final Map<String, dynamic> data = {
       'type': 'message',
@@ -202,6 +203,9 @@ class WebSocketService with WidgetsBindingObserver {
     }
     if (replyToMessageId != null) {
       data['reply_to_message_id'] = replyToMessageId;
+    }
+    if (tempMessageId != null) {
+      data['temp_message_id'] = tempMessageId;
     }
     send(data);
   }

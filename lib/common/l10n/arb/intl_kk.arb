@@ -168,5 +168,6 @@
   "chatCreated": "Чат құрылды",
   "version": "Нұсқасы",
   "privacyPolicy": "Құпиялылық саясаты",
-  "termsOfService": "Пайдалану шарттары"
+  "termsOfService": "Пайдалану шарттары",
+  "uploading": "Жүктелуде..."
 }

@@ -171,3 +171,6 @@ app.*.symbols
 .env
 lib/common/l10n/generated/
 /pubspec.lock
+
+#firebase
+firebase.json

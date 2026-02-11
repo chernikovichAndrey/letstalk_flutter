@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lets_talk/common/constants/api_constants.dart';
+import 'package:lets_talk/common/service/api_service.dart';
 import 'package:logger/logger.dart';
 
 // Top-level function for background message handling
@@ -16,6 +18,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 @singleton
 class PushNotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final ApiService _apiService;
   final Logger _logger = Logger();
   
   final StreamController<RemoteMessage> _messageStreamController =
@@ -26,7 +29,7 @@ class PushNotificationService {
 
   String? _fcmToken;
 
-  PushNotificationService();
+  PushNotificationService(this._apiService);
 
   Stream<RemoteMessage> get onMessage => _messageStreamController.stream;
   Stream<RemoteMessage> get onNotificationTap => _notificationTapStreamController.stream;
@@ -51,6 +54,7 @@ class PushNotificationService {
       _messaging.onTokenRefresh.listen((newToken) {
         _logger.i('FCM Token refreshed: $newToken');
         _fcmToken = newToken;
+        _sendTokenToServer(newToken);
       });
 
       // Handle foreground messages
@@ -135,6 +139,25 @@ class PushNotificationService {
     } catch (e, stackTrace) {
       _logger.e('Failed to delete FCM token', error: e, stackTrace: stackTrace);
       rethrow;
+    }
+  }
+
+  Future<void> _sendTokenToServer(String token) async {
+    try {
+      final platform = Platform.isIOS ? 'ios' : 'android';
+      _logger.i('Sending FCM token to server (platform: $platform)');
+      
+      await _apiService.post(
+        ApiConstants.updateFcmToken,
+        data: {
+          'fcm_token': token,
+          'platform': platform,
+        },
+      );
+      
+      _logger.i('FCM token sent to server successfully');
+    } catch (e, stackTrace) {
+      _logger.e('Failed to send FCM token to server', error: e, stackTrace: stackTrace);
     }
   }
 

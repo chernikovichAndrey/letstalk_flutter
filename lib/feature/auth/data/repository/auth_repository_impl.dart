@@ -89,4 +89,15 @@ class AuthRepositoryImpl extends AuthRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
   }
+
+  @override
+  Future<void> updateFcmToken(String fcmToken, String platform) async {
+    await _apiService.post(
+      ApiConstants.updateFcmToken,
+      data: {
+        'fcm_token': fcmToken,
+        'platform': platform,
+      },
+    );
+  }
 }

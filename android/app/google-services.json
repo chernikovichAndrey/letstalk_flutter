@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "796005852692",
+    "project_id": "messenger-71296",
+    "storage_bucket": "messenger-71296.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796005852692:android:716ab012fe1561605c2901",
+        "android_client_info": {
+          "package_name": "com.letstalk.chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4ug8nfZzdd-d6SnM6mTle1Dq2hgsSEPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

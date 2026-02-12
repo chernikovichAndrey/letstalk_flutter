@@ -24,7 +24,7 @@ class ReplyTo {
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
       fromName: json['from_name'] as String?,
       textPreview: json['text_preview'] as String? ?? '',
-      messageType: json['message_type'] as String? ?? 'text',
+      messageType: json['"msg_type'] as String? ?? 'text',
       media: json['media'] != null ? Media.fromJson(json['media']) : null,
     );
   }
@@ -112,7 +112,7 @@ class Message {
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
       fromPhone: json['from_phone'] as String?,
       text: json['text'] as String?,
-      messageType: json['message_type'] as String? ?? 'text',
+      messageType: json['"msg_type'] as String? ?? 'text',
       media: json['media'] != null ? Media.fromJson(json['media']) : null,
       read: json['read'] as bool? ?? false,
       createdAt: json['created_at'] as String? ?? '',

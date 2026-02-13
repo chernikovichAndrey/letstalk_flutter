@@ -169,5 +169,6 @@
   "version": "Нұсқасы",
   "privacyPolicy": "Құпиялылық саясаты",
   "termsOfService": "Пайдалану шарттары",
-  "uploading": "Жүктелуде..."
+  "uploading": "Жүктелуде...",
+  "deleteAccount": "Аккаунтты жою"
 }

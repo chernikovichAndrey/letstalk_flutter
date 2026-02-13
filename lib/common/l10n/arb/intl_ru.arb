@@ -169,5 +169,6 @@
   "version": "Версия",
   "privacyPolicy": "Политика конфиденциальности",
   "termsOfService": "Условия использования",
-  "uploading": "Загрузка..."
+  "uploading": "Загрузка...",
+  "deleteAccount": "Удалить аккаунт"
 }

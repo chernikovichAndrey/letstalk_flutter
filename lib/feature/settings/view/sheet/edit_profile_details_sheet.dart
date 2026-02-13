@@ -90,6 +90,35 @@ class EditProfileDetailsPage extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              margin: const EdgeInsets.only(bottom: 18),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // TODO: implement delete account functionality
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: cardColor,
+                                    foregroundColor: Colors.red,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    context.s.deleteAccount,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),

@@ -211,5 +211,6 @@
   "version": "Version",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
-  "uploading": "Uploading..."
+  "uploading": "Uploading...",
+  "deleteAccount": "Delete Account"
 }

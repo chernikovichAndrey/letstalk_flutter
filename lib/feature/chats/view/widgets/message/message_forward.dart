@@ -9,10 +9,12 @@ class MessageForward extends StatelessWidget {
   const MessageForward({super.key, this.forwardedFrom});
 
   String _forwardFromName({bool? showPhone = true}) {
-    if (forwardedFrom?.fromName != null && forwardedFrom!.fromName.isNotEmpty) {
-      return forwardedFrom!.fromName;
+    if (forwardedFrom?.fromName != null && forwardedFrom!.fromName!.isNotEmpty) {
+      final user = forwardedFrom!.fromName!.first;
+      return user.fullName ?? user.firstName ?? '';
     }
-    if (forwardedFrom?.fromPhone != null &&
+    if (showPhone == true &&
+        forwardedFrom?.fromPhone != null &&
         forwardedFrom!.fromPhone!.isNotEmpty) {
       return forwardedFrom!.fromPhone!;
     }

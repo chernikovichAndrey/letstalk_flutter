@@ -54,26 +54,29 @@ class MessageReplay extends StatelessWidget {
                   ),
                   SizedBox(width: 6.0),
                 ],
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    replyTo.fromName ?? '',
-                    style: context.text.labelMedium?.copyWith(
-                      color: textColor,
-                      fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      replyTo.fromName?.firstOrNull?.fullName ?? 
+                      replyTo.fromName?.firstOrNull?.firstName ?? '',
+                      style: context.text.labelMedium?.copyWith(
+                        color: textColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    replyTo.textPreview,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.text.bodySmall?.copyWith(
-                      color: textColor,
+                    const SizedBox(height: 2),
+                    Text(
+                      replyTo.textPreview,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.text.bodySmall?.copyWith(
+                        color: textColor,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           ),

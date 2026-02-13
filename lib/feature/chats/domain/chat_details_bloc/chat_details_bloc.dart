@@ -498,6 +498,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           replyTo: state.replyMessage != null ? ReplyTo(
             messageId: state.replyMessage!.id,
             fromUserId: state.replyMessage!.fromUserId,
+            fromName: state.replyMessage!.fromName,
             textPreview: state.replyMessage!.text ?? '',
             messageType: state.replyMessage!.messageType,
             media: state.replyMessage!.media,

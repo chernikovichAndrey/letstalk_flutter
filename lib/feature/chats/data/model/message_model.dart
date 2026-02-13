@@ -4,7 +4,7 @@ import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 class ReplyTo {
   final int messageId;
   final int fromUserId;
-  final String? fromName;
+  final List<UserModel>? fromName;
   final String textPreview;
   final String messageType;
   final Media? media;
@@ -22,7 +22,11 @@ class ReplyTo {
     return ReplyTo(
       messageId: int.tryParse(json['message_id'].toString()) ?? 0,
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
-      fromName: json['from_name'] as String?,
+      fromName: json['from_name'] != null && json['from_name'] is! String
+          ? (json['from_name'] as List<dynamic>)
+              .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
       textPreview: json['text_preview'] as String? ?? '',
       messageType: json['"msg_type'] as String? ?? 'text',
       media: json['media'] != null ? Media.fromJson(json['media']) : null,
@@ -35,7 +39,7 @@ class ForwardedFrom {
   final int chatId;
   final int fromUserId;
   final String? fromPhone;
-  final String fromName;
+  final List<UserModel>? fromName;
   final String? text;
   final String createdAt;
 
@@ -55,7 +59,11 @@ class ForwardedFrom {
       chatId: int.tryParse(json['chat_id'].toString()) ?? 0,
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
       fromPhone: json['from_phone'] as String?,
-      fromName: json['from_name'] as String? ?? '',
+      fromName: json['from_name'] != null && json['from_name'] is! String
+          ? (json['from_name'] as List<dynamic>)
+              .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
       text: json['text'] as String?,
       createdAt: json['created_at'] as String? ?? '',
     );
@@ -106,7 +114,6 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    print('1111111 ${json}');
     return Message(
       id: int.tryParse(json['id'].toString()) ?? 0,
       chatId: int.tryParse(json['chat_id'].toString()) ?? 0,

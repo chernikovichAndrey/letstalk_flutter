@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -37,6 +36,8 @@ class ChatInfoAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isGroup = chat?.type == 'group';
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -49,13 +50,13 @@ class ChatInfoAvatar extends StatelessWidget {
         child: Column(
           children: [
             CAvatar(
-              imageUrl: chat != null ? chat?.avatar : _getMemberAvatar(),
-              name: chat != null ? chat?.title : _getMemberName(),
+              imageUrl: isGroup ? chat?.avatar : _getMemberAvatar(),
+              name: isGroup ? chat?.title : _getMemberName(),
               radius: 60,
               isLoading: false,
             ),
             Text(
-              chat != null ? chat?.title ?? '' : _getMemberName(phone: true) ?? '',
+              isGroup ? chat?.title ?? '' : _getMemberName(phone: true) ?? '',
               style: TextStyle(
                 color: context.appColors.glassForeground,
                 fontSize: 24,

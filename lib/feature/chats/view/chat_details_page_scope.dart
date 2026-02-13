@@ -18,7 +18,10 @@ class ChatDetailsPageScope extends StatelessWidget {
         if (state.status == ProfileStatus.loaded && state.user != null && chatId != null) {
           return BlocProvider<ChatDetailsBloc>.value(
             value: getIt()..add(ChatDetailsLoad(chatId, state.user!)),
-            child: ChatDetailsPage(chatId: chatId),
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: ChatDetailsPage(chatId: chatId),
+            ),
           );
         }
         return Container();

@@ -8,4 +8,6 @@ abstract class ProfileRepository {
     String? lastName,
     String? birthday,
   });
+  Future<void> requestDeleteAccountCode(String phone);
+  Future<void> deleteAccount(String confirmCode);
 }

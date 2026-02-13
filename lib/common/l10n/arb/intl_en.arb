@@ -212,5 +212,22 @@
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
   "uploading": "Uploading...",
-  "deleteAccount": "Delete Account"
+  "deleteAccount": "Delete Account",
+  "deleteAccountConfirmTitle": "Delete Account",
+  "deleteAccountConfirmMessage": "Are you sure you want to delete your account? This action cannot be undone.",
+  "deleteAccountConfirmButton": "Request Code",
+  "deleteAccountCodeTitle": "Enter Confirmation Code",
+  "deleteAccountCodeMessage": "A confirmation code has been sent to {phone}",
+  "@deleteAccountCodeMessage": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccountCodeHint": "Enter code",
+  "deleteAccountCodeButton": "Delete Account",
+  "deleteAccountSuccess": "Account deleted successfully",
+  "deleteAccountRequestingCode": "Requesting code...",
+  "deleteAccountDeleting": "Deleting account..."
 }

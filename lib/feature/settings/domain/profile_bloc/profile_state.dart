@@ -7,6 +7,8 @@ enum ProfileStatus {
   loaded,
   saving,
   error,
+  deletingAccount,
+  accountDeleted,
 }
 
 @immutable

@@ -95,6 +95,28 @@ class ProfileRepositoryImpl implements ProfileRepository {
     return UserModel.fromJson(response.data['user']);
   }
 
+  @override
+  Future<void> requestDeleteAccountCode(String phone) async {
+    await _apiService.post(
+      ApiConstants.loginCode,
+      data: {'phone': phone},
+      options: Options(
+        contentType: Headers.jsonContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<void> deleteAccount(String confirmCode) async {
+    await _apiService.delete(
+      ApiConstants.profile,
+      data: {'confirm_code': confirmCode},
+      options: Options(
+        contentType: Headers.jsonContentType,
+      ),
+    );
+  }
+
   String _getMimeType(String extension) {
     switch (extension) {
       case 'jpg':

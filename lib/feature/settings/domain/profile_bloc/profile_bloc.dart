@@ -21,6 +21,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileUpdateBirthdayEvent>(_onProfileUpdateBirthday);
     on<ProfileToggleBirthdayPickerEvent>(_onToggleBirthdayPicker);
     on<ProfileSaveChangesEvent>(_onSaveChanges);
+    on<ProfileRequestDeleteAccountCodeEvent>(_onRequestDeleteAccountCode);
+    on<ProfileDeleteAccountEvent>(_onDeleteAccount);
   }
 
   Future<void> _onProfileLoad(
@@ -144,6 +146,41 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         status: ProfileStatus.error,
         errorMessage: e.toString(),
         isBirthdayPickerExpanded: false,
+      ));
+      emit(state.copyWith(status: ProfileStatus.loaded));
+    }
+  }
+
+  Future<void> _onRequestDeleteAccountCode(
+    ProfileRequestDeleteAccountCodeEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
+    if (state.user == null) return;
+    
+    try {
+      await _profileRepository.requestDeleteAccountCode(state.user!.phone);
+      emit(state.copyWith(status: ProfileStatus.loaded));
+    } catch (e) {
+      emit(state.copyWith(
+        status: ProfileStatus.error,
+        errorMessage: e.toString(),
+      ));
+      emit(state.copyWith(status: ProfileStatus.loaded));
+    }
+  }
+
+  Future<void> _onDeleteAccount(
+    ProfileDeleteAccountEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileStatus.deletingAccount));
+    try {
+      await _profileRepository.deleteAccount(event.confirmCode);
+      emit(state.copyWith(status: ProfileStatus.accountDeleted));
+    } catch (e) {
+      emit(state.copyWith(
+        status: ProfileStatus.error,
+        errorMessage: e.toString(),
       ));
       emit(state.copyWith(status: ProfileStatus.loaded));
     }

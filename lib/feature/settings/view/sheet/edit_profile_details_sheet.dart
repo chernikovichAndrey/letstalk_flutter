@@ -5,6 +5,7 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
+import 'package:lets_talk/feature/settings/view/widgets/delete_account_dialog.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_app_bar.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_avatar.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_birthday_picker.dart';
@@ -19,8 +20,14 @@ class EditProfileDetailsPage extends StatelessWidget {
     final topPadding = context.padding.top;
     final cardColor = appColors.surfaceSecondary;
 
-    return BlocBuilder<ProfileBloc, ProfileState>(
-      builder: (context, state) {
+    return BlocListener<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state.status == ProfileStatus.accountDeleted) {
+          context.read<AuthBloc>().add(AuthLogout());
+        }
+      },
+      child: BlocBuilder<ProfileBloc, ProfileState>(
+        builder: (context, state) {
         if (state.status != ProfileStatus.loaded &&
             state.status != ProfileStatus.saving &&
             state.status != ProfileStatus.avatarUploadLoading) {
@@ -96,12 +103,12 @@ class EditProfileDetailsPage extends StatelessWidget {
                               child: SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    // TODO: implement delete account functionality
-                                  },
+                                  onPressed: () => showDeleteAccountConfirmDialog(context),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: cardColor,
                                     foregroundColor: Colors.red,
+                                    disabledBackgroundColor: cardColor.withOpacity(0.5),
+                                    disabledForegroundColor: Colors.red.withOpacity(0.5),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
                                     ),
@@ -130,7 +137,8 @@ class EditProfileDetailsPage extends StatelessWidget {
             ),
           ),
         );
-      },
+        },
+      ),
     );
   }
 }

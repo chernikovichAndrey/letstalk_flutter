@@ -170,5 +170,22 @@
   "privacyPolicy": "Құпиялылық саясаты",
   "termsOfService": "Пайдалану шарттары",
   "uploading": "Жүктелуде...",
-  "deleteAccount": "Аккаунтты жою"
+  "deleteAccount": "Аккаунтты жою",
+  "deleteAccountConfirmTitle": "Аккаунтты жою",
+  "deleteAccountConfirmMessage": "Аккаунтты жойғыңыз келетініне сенімдісіз бе? Бұл әрекетті болдырмауға болмайды.",
+  "deleteAccountConfirmButton": "Код сұрау",
+  "deleteAccountCodeTitle": "Растау кодын енгізіңіз",
+  "deleteAccountCodeMessage": "Растау коды {phone} нөміріне жіберілді",
+  "@deleteAccountCodeMessage": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccountCodeHint": "Кодты енгізіңіз",
+  "deleteAccountCodeButton": "Аккаунтты жою",
+  "deleteAccountSuccess": "Аккаунт сәтті жойылды",
+  "deleteAccountRequestingCode": "Код сұралуда...",
+  "deleteAccountDeleting": "Аккаунт жойылуда..."
 }

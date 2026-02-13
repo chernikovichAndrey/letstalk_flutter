@@ -170,5 +170,22 @@
   "privacyPolicy": "Политика конфиденциальности",
   "termsOfService": "Условия использования",
   "uploading": "Загрузка...",
-  "deleteAccount": "Удалить аккаунт"
+  "deleteAccount": "Удалить аккаунт",
+  "deleteAccountConfirmTitle": "Удалить аккаунт",
+  "deleteAccountConfirmMessage": "Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить.",
+  "deleteAccountConfirmButton": "Запросить код",
+  "deleteAccountCodeTitle": "Введите код подтверждения",
+  "deleteAccountCodeMessage": "Код подтверждения был отправлен на {phone}",
+  "@deleteAccountCodeMessage": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccountCodeHint": "Введите код",
+  "deleteAccountCodeButton": "Удалить аккаунт",
+  "deleteAccountSuccess": "Аккаунт успешно удален",
+  "deleteAccountRequestingCode": "Запрос кода...",
+  "deleteAccountDeleting": "Удаление аккаунта..."
 }

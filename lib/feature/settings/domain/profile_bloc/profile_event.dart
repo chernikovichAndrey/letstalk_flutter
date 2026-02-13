@@ -34,3 +34,11 @@ class ProfileUpdateBirthdayEvent extends ProfileEvent {
 class ProfileToggleBirthdayPickerEvent extends ProfileEvent {}
 
 class ProfileSaveChangesEvent extends ProfileEvent {}
+
+class ProfileRequestDeleteAccountCodeEvent extends ProfileEvent {}
+
+class ProfileDeleteAccountEvent extends ProfileEvent {
+  final String confirmCode;
+  
+  ProfileDeleteAccountEvent(this.confirmCode);
+}

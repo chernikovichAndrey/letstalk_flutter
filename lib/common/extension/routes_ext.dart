@@ -17,6 +17,7 @@ import 'package:lets_talk/feature/chats/view/sheet/chat_attachment_bottom_sheet.
 import 'package:lets_talk/feature/chats/view/sheet/chat_info_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/forward_message_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/full_screen_media_sheet.dart';
+import 'package:lets_talk/feature/chats/view/sheet/media_viewer_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/member_info_sheet.dart';
 import 'package:lets_talk/feature/contacts/view/contacts_page_scope.dart';
 import 'package:lets_talk/feature/contacts/view/create_contact_page_scope.dart';
@@ -51,6 +52,7 @@ extension RoutesExt on Routes {
       Routes.profileAvatarSheet => const ProfileAvatarBottomSheet(),
       Routes.chatAvatarSheet => const ChatAvatarBottomSheet(),
       Routes.fullScreenMedia => const FullScreenMediaSheet(),
+      Routes.mediaViewer => const MediaViewerSheet(),
       Routes.photoEditor => const PhotoEditorPage(),
       Routes.selectContactsFroGroup => const SelectContactsForGroupPage(),
       Routes.createChatGroup => const CreateChatGroupPage(),

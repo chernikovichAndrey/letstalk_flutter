@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/arg/MemberInfoArgs.dart';
+import 'package:lets_talk/app/router/arg/media_viewer_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -197,6 +198,18 @@ class MessageBubble extends StatelessWidget {
         isMe,
         isGroupChat: isGroupChat,
       ),
+      onTap: () => {
+        if (message.messageType != 'document' && message.messageType != 'text') {
+          context.push(
+            Routes.mediaViewer,
+            args: MediaViewerArgs(
+              mediaUrl: message.media!.downloadUrl,
+              mediaType: message.messageType,
+              thumbnailUrl: message.media!.thumbnailUrl,
+            ),
+          )
+        }
+      },
       child: Container(
         margin: EdgeInsets.only(
           left: shouldShowAvatar ? 8 : 16,

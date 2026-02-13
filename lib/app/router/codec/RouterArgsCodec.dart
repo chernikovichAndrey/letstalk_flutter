@@ -4,6 +4,7 @@ import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/arg/forward_message_args.dart';
 import 'package:lets_talk/app/router/arg/profile_edit_photo_args.dart';
 import 'package:lets_talk/app/router/arg/media_perview_args.dart';
+import 'package:lets_talk/app/router/arg/media_viewer_args.dart';
 
 class RouterArgsCodec extends Codec<Object?, Object?> {
   const RouterArgsCodec();
@@ -51,6 +52,15 @@ class _RouterArgsEncoder extends Converter<Object?, Object?> {
       };
     }
 
+    if (input is MediaViewerArgs) {
+      return {
+        '_type': 'MediaViewerArgs',
+        'mediaUrl': input.mediaUrl,
+        'mediaType': input.mediaType,
+        'thumbnailUrl': input.thumbnailUrl,
+      };
+    }
+
     return input;
   }
 }
@@ -91,6 +101,14 @@ class _RouterArgsDecoder extends Converter<Object?, Object?> {
         return MediaPreviewArgs(
           file: File(filePath),
         );
+
+      case 'MediaViewerArgs':
+        return MediaViewerArgs(
+          mediaUrl: input['mediaUrl'] as String,
+          mediaType: input['mediaType'] as String,
+          thumbnailUrl: input['thumbnailUrl'] as String?,
+        );
+
       default:
         return input;
     }

@@ -92,6 +92,16 @@ class ChatListItem extends StatelessWidget {
     return '';
   }
 
+  String _messageTypeText(BuildContext context) {
+    if (chat.lastMessageType == 'image') {
+      return context.s.messageTypeImage;
+    }
+    if (chat.lastMessageType == 'document') {
+      return context.s.messageTypeDocument;
+    }
+    return context.s.video;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -149,9 +159,7 @@ class ChatListItem extends StatelessWidget {
                                 size: 16,
                               ),
                               Text(
-                                chat.lastMessageType == 'image'
-                                    ? context.s.messageTypeImage
-                                    : context.s.messageTypeDocument,
+                                _messageTypeText(context),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],

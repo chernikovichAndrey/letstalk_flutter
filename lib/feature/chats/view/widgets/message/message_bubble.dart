@@ -14,6 +14,7 @@ import 'package:lets_talk/feature/chats/view/sheet/message_actions_overlay.dart'
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble_info.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_image_attach_thumbnail.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/message_video_attach_thumbnail.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_document_attach.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_reply.dart';
 
@@ -254,6 +255,13 @@ class MessageBubble extends StatelessWidget {
                   if (message.messageType == 'image' &&
                       message.media?.thumbnailUrl != null)
                     MessageImageAttachThumbnail(
+                      thumbnailUrl: message.media!.thumbnailUrl!,
+                      messageId: message.id,
+                      message: message,
+                    ),
+                  if (message.messageType == 'video' &&
+                      message.media?.thumbnailUrl != null)
+                    MessageVideoAttachThumbnail(
                       thumbnailUrl: message.media!.thumbnailUrl!,
                       messageId: message.id,
                       message: message,

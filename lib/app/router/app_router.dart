@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/c_page.dart';
+import 'package:lets_talk/app/router/codec/RouterArgsCodec.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/routes_ext.dart';
 import 'package:lets_talk/feature/shell/view/bottom_navigation_shell.dart';
@@ -15,6 +16,7 @@ class AppRouter {
     initialLocation: Routes.splash.path,
     navigatorKey: navigatorKey,
     debugLogDiagnostics: true,
+    extraCodec: const RouterArgsCodec(),
     routes: [
       ShellRoute(
         builder: (context, state, child) {

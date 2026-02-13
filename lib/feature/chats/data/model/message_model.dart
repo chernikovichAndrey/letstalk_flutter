@@ -106,13 +106,14 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
+    print('1111111 ${json}');
     return Message(
       id: int.tryParse(json['id'].toString()) ?? 0,
       chatId: int.tryParse(json['chat_id'].toString()) ?? 0,
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
       fromPhone: json['from_phone'] as String?,
       text: json['text'] as String?,
-      messageType: json['"msg_type'] as String? ?? 'text',
+      messageType: json['msg_type'] as String? ?? 'text',
       media: json['media'] != null ? Media.fromJson(json['media']) : null,
       read: json['read'] as bool? ?? false,
       createdAt: json['created_at'] as String? ?? '',

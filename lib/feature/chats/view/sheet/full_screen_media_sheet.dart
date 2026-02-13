@@ -9,6 +9,8 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/view/widgets/full_screen_media_sheet/image_preview.dart';
+import 'package:lets_talk/feature/chats/view/widgets/full_screen_media_sheet/video_preview.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/pure_message_input.dart';
 
 class FullScreenMediaSheet extends StatefulWidget {
@@ -25,6 +27,7 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
   File? _file;
   bool _isLoading = true;
   bool _isSending = false;
+  bool _isVideo = false;
 
   @override
   void initState() {
@@ -33,9 +36,21 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
     _loadFile();
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    _typingTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _loadFile() async {
     final args = context.getArgsOrNull<MediaPreviewArgs>();
     final file = args!.file;
+    
+    final extension = file.path.split('.').last.toLowerCase();
+    final videoExtensions = ['mp4', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'webm', 'm4v'];
+    _isVideo = videoExtensions.contains(extension);
+
     if (mounted) {
       setState(() {
         _file = file;
@@ -105,21 +120,11 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
                 bottom: 120,
                 left: 0,
                 right: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 40),
-                  width: double.infinity,
-                  decoration: _file != null
-                      ? BoxDecoration(
-                    image: DecorationImage(
-                      image: FileImage(_file!),
-                      fit: BoxFit.contain,
-                    ),
-                  )
-                      : null,
-                  child: (_isLoading || _isSending)
-                      ? const Center(child: CircularProgressIndicator())
-                      : null,
-                ),
+                child: (_isLoading || _isSending)
+                    ? const Center(child: CircularProgressIndicator())
+                    : _isVideo
+                        ? VideoPreview(file: _file!)
+                        : ImagePreview(file: _file),
               ),
               Positioned(
                 top: 8,

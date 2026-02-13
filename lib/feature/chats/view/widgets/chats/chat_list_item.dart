@@ -139,24 +139,26 @@ class ChatListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (chat.lastMessageType != null && chat.lastMessageType != 'text')
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.attach_file,
-                              color: Colors.grey[600],
-                              size: 16,
-                            ),
-                            Text(
-                              chat.lastMessageType == 'image'
-                                  ? context.s.messageTypeImage
-                                  : context.s.messageTypeDocument,
-                              style: TextStyle(
-                                fontSize: 14,
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.attach_file,
                                 color: Colors.grey[600],
+                                size: 16,
                               ),
-                            ),
-                          ],
+                              Text(
+                                chat.lastMessageType == 'image'
+                                    ? context.s.messageTypeImage
+                                    : context.s.messageTypeDocument,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
                         )
                       else
                         Expanded(

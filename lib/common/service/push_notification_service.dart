@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
+import 'package:lets_talk/common/service/local_notification_service.dart';
 import 'package:logger/logger.dart';
 
 // Top-level function for background message handling
@@ -19,6 +20,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class PushNotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final ApiService _apiService;
+  final LocalNotificationService _localNotificationService;
   final Logger _logger = Logger();
   
   final StreamController<RemoteMessage> _messageStreamController =
@@ -30,7 +32,10 @@ class PushNotificationService {
   String? _fcmToken;
   RemoteMessage? _initialMessage;
 
-  PushNotificationService(this._apiService);
+  PushNotificationService(
+    this._apiService,
+    this._localNotificationService,
+  );
 
   Stream<RemoteMessage> get onMessage => _messageStreamController.stream;
   Stream<RemoteMessage> get onNotificationTap => _notificationTapStreamController.stream;
@@ -43,12 +48,22 @@ class PushNotificationService {
     try {
       _logger.i('Initializing push notification service');
 
+      // Initialize local notifications
+      await _localNotificationService.initialize();
+
       // Request permissions
       final settings = await requestPermission();
       if (settings.authorizationStatus != AuthorizationStatus.authorized) {
         _logger.w('Push notification permission not granted');
         return;
       }
+
+      // Set foreground notification presentation options for iOS
+      await _messaging.setForegroundNotificationPresentationOptions(
+        alert: false, // We'll show local notification instead
+        badge: true,
+        sound: false,
+      );
 
       // Get FCM token
       _fcmToken = await _messaging.getToken();
@@ -67,6 +82,10 @@ class PushNotificationService {
         _logger.d('Title: ${message.notification?.title}');
         _logger.d('Body: ${message.notification?.body}');
         _logger.d('Data: ${message.data}');
+        
+        // Show local notification if chat is not currently open
+        _handleForegroundMessage(message);
+        
         _messageStreamController.add(message);
       });
 
@@ -144,6 +163,50 @@ class PushNotificationService {
     } catch (e, stackTrace) {
       _logger.e('Failed to delete FCM token', error: e, stackTrace: stackTrace);
       rethrow;
+    }
+  }
+
+  void _handleForegroundMessage(RemoteMessage message) {
+    _logger.i('Handling foreground message');
+    _logger.d('Message data: ${message.data}');
+    
+    final data = message.data;
+    final chatIdStr = data['chat_id'] ?? data['id'];
+    
+    _logger.d('Extracted chat_id string: $chatIdStr');
+    
+    if (chatIdStr == null) {
+      _logger.w('No chat_id in push notification data');
+      return;
+    }
+
+    final chatId = int.tryParse(chatIdStr.toString());
+    if (chatId == null) {
+      _logger.w('Invalid chat_id format: $chatIdStr');
+      return;
+    }
+
+    _logger.i('Parsed chat_id: $chatId');
+
+    // Check if this message is for a different chat
+    final currentChatId = _localNotificationService.currentChatId;
+    _logger.i('Current chat_id: $currentChatId');
+    
+    if (currentChatId != chatId) {
+      _logger.i('Chat IDs differ - showing local notification for chat $chatId (current: $currentChatId)');
+      
+      final title = message.notification?.title ?? data['title'] ?? 'New message';
+      final body = message.notification?.body ?? data['body'] ?? '';
+      
+      _logger.i('Notification title: $title, body: $body');
+      
+      _localNotificationService.showMessageNotification(
+        chatId: chatId,
+        title: title,
+        body: body,
+      );
+    } else {
+      _logger.d('Message is for current chat $chatId, skipping notification');
     }
   }
 

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
@@ -84,6 +83,7 @@ class _AppState extends State<App> with HandlePushNotification {
   @override
   void dispose() {
     notificationSubscription?.cancel();
+    localNotificationSubscription?.cancel();
     router.dispose();
     getIt<WebSocketService>().disconnect();
     getIt<WebRTCService>().dispose();

@@ -6,6 +6,7 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
+import 'package:lets_talk/common/service/local_notification_service.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
@@ -33,6 +34,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
 
   @override
   void deactivate() {
+    getIt<LocalNotificationService>().setCurrentChatId(null);
     context.read<ChatDetailsBloc>().add(RefreshStateEvent());
     super.deactivate();
   }
@@ -40,6 +42,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
   @override
   void initState() {
     super.initState();
+    getIt<LocalNotificationService>().setCurrentChatId(widget.chatId);
     _scrollController.addListener(_onScroll);
   }
 

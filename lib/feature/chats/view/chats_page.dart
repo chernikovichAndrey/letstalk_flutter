@@ -36,7 +36,6 @@ class ChatsPage extends StatelessWidget {
                 onRefresh: () => _onRefresh(context),
                 slivers: [
                   ChatSlivers(
-                    state: state,
                     onSelectChat: (id) async {
                       context.push(
                         '${Routes.chats.path}/${Routes.chatDetails.path}',

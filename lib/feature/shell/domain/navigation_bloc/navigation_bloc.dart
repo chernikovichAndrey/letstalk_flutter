@@ -22,6 +22,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     'unread_count': _handleMessageRead,
     'message_deleted': _handleChatMessageDeleted,
     'missed_call': _handleMissedCall,
+    'message_forwarded': _handleMessageForwarded,
   };
 
   NavigationBloc(
@@ -69,6 +70,10 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         .fold(0, (sum, message) => sum + message.unread);
         
     add(NavigationUpdateUnreadCount(unreadCount));
+  }
+
+  void _handleMessageForwarded(Map<String, dynamic> data) {
+    add(NavigationUpdateUnreadCount(state.unreadChatsCount + 1));
   }
 
   void _handleMessageRead(Map<String, dynamic> data) {

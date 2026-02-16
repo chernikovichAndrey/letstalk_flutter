@@ -39,7 +39,6 @@ class ForwardMessageSheet extends StatelessWidget {
                   slivers: [
                     SliverPadding(padding: EdgeInsets.only(top: 60)),
                     ChatSlivers(
-                      state: state,
                       forwardChatId: args?.chatId,
                       onSelectChat: (id) {
                         if (args != null) {

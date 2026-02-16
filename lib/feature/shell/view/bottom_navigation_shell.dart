@@ -17,7 +17,6 @@ class BottomNavigationShell extends StatelessWidget {
     return BlocConsumer<NavigationBloc, NavigationState>(
       listener: (context, state) {
         if (state.unreadChatsCount > 0) {
-          print('111111 ${state.unreadChatsCount}');
           FlutterAppBadger.updateBadgeCount(state.unreadChatsCount);
         } else {
           FlutterAppBadger.removeBadge();

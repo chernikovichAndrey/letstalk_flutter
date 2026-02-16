@@ -34,6 +34,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     'chat_member_added': _handleChatMemberAdded,
     'chat_avatar_updated': _handleChatAvatarUpdated,
     'message_deleted': _handleChatMessageDeleted,
+    'message_forwarded': _handleChatMessageForwarded,
   };
 
   ChatsBloc(
@@ -116,6 +117,20 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         lastMessageId: msg.id,
         lastMessageText: msg.text,
         unreadCount: unreadCount,
+      ),
+    );
+  }
+
+  void _handleChatMessageForwarded(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['new_message']);
+    final st = state as ChatsLoaded;
+    final unreadCount = st.chats.fold(0, (sum, chat) => sum + chat.unreadCount);
+    add(
+      ChatUpdated(
+        chatId: msg.chatId,
+        lastMessageId: msg.id,
+        lastMessageText: msg.text,
+        unreadCount: unreadCount + 1,
       ),
     );
   }
@@ -214,17 +229,25 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   Future<void> _onChatUpdated(ChatUpdated event, Emitter<ChatsState> emit) async {
     final currentState = state;
     if (currentState is ChatsLoaded) {
-      List<Chat> updatedChats = currentState.chats.map((chat) {
+      Chat? updatedChat;
+      final otherChats = <Chat>[];
+
+      for (final chat in currentState.chats) {
         if (chat.id == event.chatId) {
-          return chat.copyWith(
+          updatedChat = chat.copyWith(
             unreadCount: event.unreadCount ?? chat.unreadCount,
             lastMessageId: event.lastMessageId ?? chat.lastMessageId,
             lastMessageText: event.lastMessageText ?? chat.lastMessageText,
             lastMessageType: event.lastMessageType ?? chat.lastMessageType,
           );
+        } else {
+          otherChats.add(chat);
         }
-        return chat;
-      }).toList();
+      }
+
+      final updatedChats = updatedChat != null 
+          ? [updatedChat, ...otherChats] 
+          : currentState.chats;
 
       emit(ChatsLoaded(
         updatedChats,

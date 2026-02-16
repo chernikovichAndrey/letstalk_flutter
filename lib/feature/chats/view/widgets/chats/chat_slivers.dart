@@ -8,12 +8,10 @@ import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_item.dart';
 
 class ChatSlivers extends StatefulWidget {
-  final ChatsState state;
   final ValueChanged<int> onSelectChat;
   final int? forwardChatId;
 
   const ChatSlivers({
-    required this.state,
     required this.onSelectChat,
     this.forwardChatId,
     super.key,
@@ -43,52 +41,55 @@ class _ChatSliversState extends State<ChatSlivers> {
 
   @override
   Widget build(BuildContext context) {
-    final state = widget.state;
-    return SliverMainAxisGroup(
-      slivers: [
-        SliverToBoxAdapter(
-          child: CSearchBar(
-            hintText: context.s.search,
-            onChanged: _onSearchChanged,
-          ),
-        ),
-        if (state is ChatsError)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: Text(state.message)),
-          )
-        else if (state is ChatsLoaded)
-          if (state.chats.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(child: Text(context.s.noChats)),
-            )
-          else
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final chat = state.chats.where((chat) => chat.id != widget.forwardChatId).toList()[index];
-                  final isTyping =
-                      state.typingUsers[chat.id]?.isNotEmpty ?? false;
-                  final isSelectionMode = state.isSelectionMode;
-                  final isSelected = state.selectedChatIds.contains(chat.id);
-                  return ChatListItem(
-                    chat: chat,
-                    isTyping: isTyping,
-                    isSelectionMode: isSelectionMode,
-                    isSelected: isSelected,
-                    onSelect: (_) => context
-                        .read<ChatsBloc>()
-                        .add(ChatsToggleChatSelection(chat.id)),
-                    onTap: () => widget.onSelectChat(chat.id),
-                  );
-                },
-                childCount: state.chats.length - (widget.forwardChatId == null ? 0 : 1),
+    return BlocBuilder<ChatsBloc, ChatsState>(
+      builder: (context, state) {
+        return SliverMainAxisGroup(
+          slivers: [
+            SliverToBoxAdapter(
+              child: CSearchBar(
+                hintText: context.s.search,
+                onChanged: _onSearchChanged,
               ),
-            )
-        else
-          const SliverToBoxAdapter(child: SizedBox.shrink()),
-      ],
+            ),
+            if (state is ChatsError)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(child: Text(state.message)),
+              )
+            else if (state is ChatsLoaded)
+              if (state.chats.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: Text(context.s.noChats)),
+                )
+              else
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      final chat = state.chats.where((chat) => chat.id != widget.forwardChatId).toList()[index];
+                      final isTyping =
+                          state.typingUsers[chat.id]?.isNotEmpty ?? false;
+                      final isSelectionMode = state.isSelectionMode;
+                      final isSelected = state.selectedChatIds.contains(chat.id);
+                      return ChatListItem(
+                        chat: state.chats[index],
+                        isTyping: isTyping,
+                        isSelectionMode: isSelectionMode,
+                        isSelected: isSelected,
+                        onSelect: (_) => context
+                            .read<ChatsBloc>()
+                            .add(ChatsToggleChatSelection(chat.id)),
+                        onTap: () => widget.onSelectChat(chat.id),
+                      );
+                    },
+                    childCount: state.chats.length - (widget.forwardChatId == null ? 0 : 1),
+                  ),
+                )
+            else
+              const SliverToBoxAdapter(child: SizedBox.shrink()),
+          ],
+        );
+      },
     );
   }
 }

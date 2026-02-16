@@ -4,13 +4,39 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/shell/domain/navigation_bloc/navigation_bloc.dart';
 import 'package:lets_talk/feature/shell/view/widget/icon_with_badge.dart';
 
-class BottomNavigationShell extends StatelessWidget {
+class BottomNavigationShell extends StatefulWidget {
   const BottomNavigationShell({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
+
+  @override
+  State<BottomNavigationShell> createState() => _BottomNavigationShellState();
+}
+
+class _BottomNavigationShellState extends State<BottomNavigationShell> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getIt<NavigationBloc>().add(NavigationInitEvent());
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +50,14 @@ class BottomNavigationShell extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          body: navigationShell,
+          body: widget.navigationShell,
           bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
             ),
             child: BottomNavigationBar(
-              currentIndex: navigationShell.currentIndex,
+              currentIndex: widget.navigationShell.currentIndex,
               onTap: (int idx) => _onItemTapped(idx, context),
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color(0xFF50A7EA),
@@ -80,9 +106,9 @@ class BottomNavigationShell extends StatelessWidget {
   }
 
   void _onItemTapped(int index, BuildContext context) {
-    navigationShell.goBranch(
+    widget.navigationShell.goBranch(
       index,
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
 }

@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/arg/forward_message_args.dart';
+import 'package:lets_talk/app/router/arg/member_info_args.dart';
 import 'package:lets_talk/app/router/arg/profile_edit_photo_args.dart';
 import 'package:lets_talk/app/router/arg/media_perview_args.dart';
 import 'package:lets_talk/app/router/arg/media_viewer_args.dart';
+import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 
 class RouterArgsCodec extends Codec<Object?, Object?> {
   const RouterArgsCodec();
@@ -27,6 +29,20 @@ class _RouterArgsEncoder extends Converter<Object?, Object?> {
       return {
         '_type': 'ChatDetailsArgs',
         'chatId': input.chatId,
+      };
+    }
+
+    if (input is MemberInfoArgs) {
+      return {
+        '_type': 'MemberInfoArgs',
+        'memberInfo': {
+          'id': input.memberInfo.id,
+          'phone': input.memberInfo.phone,
+          'first_name': input.memberInfo.firstName,
+          'last_name': input.memberInfo.lastName,
+          'full_name': input.memberInfo.fullName,
+          'avatar': input.memberInfo.avatar,
+        },
       };
     }
 
@@ -80,6 +96,13 @@ class _RouterArgsDecoder extends Converter<Object?, Object?> {
       case 'ChatDetailsArgs':
         return ChatDetailsArgs(
           chatId: input['chatId'] as int,
+        );
+
+      case 'MemberInfoArgs':
+        final memberInfoMap = input['memberInfo'] as Map<String, dynamic>?;
+        if (memberInfoMap == null) return null;
+        return MemberInfoArgs(
+          memberInfo: MemberInfo.fromJson(memberInfoMap),
         );
 
       case 'ForwardMessageArgs':

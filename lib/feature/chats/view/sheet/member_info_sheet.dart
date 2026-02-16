@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lets_talk/app/router/arg/MemberInfoArgs.dart';
+import 'package:lets_talk/app/router/arg/member_info_args.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_actions_group.dart';

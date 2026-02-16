@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:lets_talk/app/router/arg/MemberInfoArgs.dart';
+import 'package:lets_talk/app/router/arg/member_info_args.dart';
 import 'package:lets_talk/app/router/arg/media_viewer_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';

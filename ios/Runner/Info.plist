@@ -45,6 +45,7 @@
 		<string>remote-notification</string>
 		<string>processing</string>
 		<string>fetch</string>
+		<string>voip</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>

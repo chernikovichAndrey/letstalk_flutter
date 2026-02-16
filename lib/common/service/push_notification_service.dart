@@ -28,12 +28,16 @@ class PushNotificationService {
       StreamController<RemoteMessage>.broadcast();
 
   String? _fcmToken;
+  RemoteMessage? _initialMessage;
 
   PushNotificationService(this._apiService);
 
   Stream<RemoteMessage> get onMessage => _messageStreamController.stream;
   Stream<RemoteMessage> get onNotificationTap => _notificationTapStreamController.stream;
   String? get fcmToken => _fcmToken;
+  RemoteMessage? get initialMessage => _initialMessage;
+
+  void clearInitialMessage() => _initialMessage = null;
 
   Future<void> initialize() async {
     try {
@@ -76,6 +80,7 @@ class PushNotificationService {
       final initialMessage = await _messaging.getInitialMessage();
       if (initialMessage != null) {
         _logger.i('App opened from notification: ${initialMessage.messageId}');
+        _initialMessage = initialMessage;
         _notificationTapStreamController.add(initialMessage);
       }
 

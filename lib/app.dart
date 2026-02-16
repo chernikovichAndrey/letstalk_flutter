@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +21,7 @@ import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_event.dart'
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_state.dart';
 
 import 'common/l10n/generated/l10n.dart';
+import 'common/mixin/handle_push_notification.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -26,14 +30,14 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-class _AppState extends State<App> {
-  late final AppRouter router;
+class _AppState extends State<App> with HandlePushNotification {
 
   @override
   void initState() {
     super.initState();
     router = AppRouter();
     getIt<WebSocketService>().connect();
+    setupPushNotifications();
   }
 
   @override
@@ -79,6 +83,7 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
+    notificationSubscription?.cancel();
     router.dispose();
     getIt<WebSocketService>().disconnect();
     getIt<WebRTCService>().dispose();

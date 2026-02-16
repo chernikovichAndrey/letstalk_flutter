@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -13,7 +14,15 @@ class BottomNavigationShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NavigationBloc, NavigationState>(
+    return BlocConsumer<NavigationBloc, NavigationState>(
+      listener: (context, state) {
+        if (state.unreadChatsCount > 0) {
+          print('111111 ${state.unreadChatsCount}');
+          FlutterAppBadger.updateBadgeCount(state.unreadChatsCount);
+        } else {
+          FlutterAppBadger.removeBadge();
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           body: navigationShell,

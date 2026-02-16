@@ -29,9 +29,9 @@ class MediaViewerSheet extends StatelessWidget {
                     vertical: 34,
                     horizontal: 4,
                   ),
-                  child: args!.mediaType == 'image'
-                      ? NetworkImageViewer(imageUrl: args.mediaUrl)
-                      : NetworkVideoViewer(videoUrl: args.mediaUrl),
+                  child: args?.mediaType == 'image'
+                      ? NetworkImageViewer(imageUrl: args?.mediaUrl)
+                      : NetworkVideoViewer(videoUrl: args?.mediaUrl),
                 ),
               ),
             ],

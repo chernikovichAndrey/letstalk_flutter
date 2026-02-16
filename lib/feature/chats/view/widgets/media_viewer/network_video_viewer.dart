@@ -4,7 +4,7 @@ import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:video_player/video_player.dart';
 
 class NetworkVideoViewer extends StatefulWidget {
-  final String videoUrl;
+  final String? videoUrl;
 
   const NetworkVideoViewer({
     super.key,
@@ -31,7 +31,7 @@ class _NetworkVideoViewerState extends State<NetworkVideoViewer> {
       final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
       
       _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl),
+        Uri.parse(widget.videoUrl ?? ''),
         httpHeaders: {'Authorization': 'Bearer $token'},
       );
 

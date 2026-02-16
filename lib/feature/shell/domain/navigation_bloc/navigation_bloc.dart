@@ -73,7 +73,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   }
 
   void _handleMessageForwarded(Map<String, dynamic> data) {
-    add(NavigationUpdateUnreadCount(state.unreadChatsCount + 1));
+    add(NavigationUpdateUnreadCount(state.unreadChatsCount));
   }
 
   void _handleMessageRead(Map<String, dynamic> data) {

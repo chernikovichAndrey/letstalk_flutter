@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 
 class NetworkImageViewer extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
 
   const NetworkImageViewer({
     super.key,
@@ -19,7 +19,7 @@ class NetworkImageViewer extends StatelessWidget {
       maxScale: 4.0,
       child: Center(
         child: Image.network(
-          imageUrl,
+          imageUrl ?? '',
           headers: {'Authorization': 'Bearer $token'},
           fit: BoxFit.contain,
           loadingBuilder: (context, child, loadingProgress) {

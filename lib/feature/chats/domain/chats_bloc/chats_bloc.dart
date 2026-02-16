@@ -135,7 +135,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         lastMessageId: msg.id,
         lastMessageText: msg.text,
         lastMessageAt: msg.createdAt,
-        unreadCount: unreadCount + 1,
+        unreadCount: unreadCount,
       ),
     );
   }

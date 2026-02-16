@@ -317,7 +317,7 @@ class MessageBubble extends StatelessWidget {
                       }
                     },
                     child: CAvatar(
-                      imageUrl: senderInfo?.avatarUrl,
+                      imageUrl: senderInfo?.avatar,
                       name: senderInfo?.fullName ?? senderInfo?.firstName,
                       radius: 20,
                     ),

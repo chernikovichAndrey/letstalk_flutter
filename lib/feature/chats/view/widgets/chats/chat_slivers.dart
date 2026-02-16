@@ -72,7 +72,7 @@ class _ChatSliversState extends State<ChatSlivers> {
                       final isSelectionMode = state.isSelectionMode;
                       final isSelected = state.selectedChatIds.contains(chat.id);
                       return ChatListItem(
-                        chat: state.chats[index],
+                        chat: chat,
                         isTyping: isTyping,
                         isSelectionMode: isSelectionMode,
                         isSelected: isSelected,

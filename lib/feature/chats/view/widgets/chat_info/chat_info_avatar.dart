@@ -43,7 +43,7 @@ class ChatInfoAvatar extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.transparent,
         onTap: () {
-          if (chat != null && chat?.role == 'admin') {
+          if (chat != null && chat?.type == 'group' && chat?.role == 'admin') {
             context.push(Routes.chatAvatarSheet);
           }
         },

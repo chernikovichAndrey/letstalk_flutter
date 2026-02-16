@@ -54,6 +54,7 @@ class Chat {
     int? lastMessageId,
     String? lastMessageText,
     String? lastMessageType,
+    String? lastMessageAt,
     String? avatar,
   }) {
     return Chat(
@@ -66,7 +67,7 @@ class Chat {
       unreadCount: unreadCount ?? this.unreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageText: lastMessageText ?? this.lastMessageText,
-      lastMessageAt: lastMessageAt,
+      lastMessageAt: lastMessageAt ?? this.lastMessageAt,
       lastMessageType: lastMessageType ?? this.lastMessageType,
       role: role,
       memberInfo: memberInfo,

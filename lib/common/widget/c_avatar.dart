@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/custom_cache_manager.dart';
+import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 
 class CAvatar extends StatelessWidget {
   final String? imageUrl;
@@ -58,10 +60,12 @@ class CAvatar extends StatelessWidget {
     final hasName = name != null && name!.isNotEmpty && name![0] != '+';
 
     Widget avatar;
+    final token = (getIt<AuthBloc>().state as AuthAuthenticated).token;
 
     if (hasImage) {
       avatar = CachedNetworkImage(
         imageUrl: imageUrl!,
+        httpHeaders: {'Authorization': 'Bearer $token'},
         cacheManager: CustomCacheManager.instance,
         fadeInDuration: Duration.zero,
         fadeOutDuration: Duration.zero,

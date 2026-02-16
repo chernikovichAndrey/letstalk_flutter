@@ -29,6 +29,7 @@ class ChatUpdated extends ChatsEvent {
   final int? lastMessageId;
   final String? lastMessageText;
   final String? lastMessageType;
+  final String? lastMessageAt;
 
   ChatUpdated({
     required this.chatId,
@@ -36,6 +37,7 @@ class ChatUpdated extends ChatsEvent {
     this.lastMessageId,
     this.lastMessageText,
     this.lastMessageType,
+    this.lastMessageAt,
   });
 }
 

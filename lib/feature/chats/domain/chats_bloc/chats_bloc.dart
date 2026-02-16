@@ -99,6 +99,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         lastMessageId: msg.id,
         lastMessageText: msg.text,
         lastMessageType: msg.messageType,
+        lastMessageAt: msg.createdAt,
         unreadCount: 0,
       ),
     );
@@ -117,6 +118,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         lastMessageType: msg.messageType,
         lastMessageId: msg.id,
         lastMessageText: msg.text,
+        lastMessageAt: msg.createdAt,
         unreadCount: unreadCount,
       ),
     );
@@ -129,8 +131,10 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     add(
       ChatUpdated(
         chatId: msg.chatId,
+        lastMessageType: msg.messageType,
         lastMessageId: msg.id,
         lastMessageText: msg.text,
+        lastMessageAt: msg.createdAt,
         unreadCount: unreadCount + 1,
       ),
     );
@@ -230,25 +234,25 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   Future<void> _onChatUpdated(ChatUpdated event, Emitter<ChatsState> emit) async {
     final currentState = state;
     if (currentState is ChatsLoaded) {
-      Chat? updatedChat;
-      final otherChats = <Chat>[];
-
-      for (final chat in currentState.chats) {
+      List<Chat> updatedChats = currentState.chats.map((chat) {
         if (chat.id == event.chatId) {
-          updatedChat = chat.copyWith(
+          return chat.copyWith(
             unreadCount: event.unreadCount ?? chat.unreadCount,
             lastMessageId: event.lastMessageId ?? chat.lastMessageId,
             lastMessageText: event.lastMessageText ?? chat.lastMessageText,
             lastMessageType: event.lastMessageType ?? chat.lastMessageType,
+            lastMessageAt: event.lastMessageAt ?? chat.lastMessageAt,
           );
-        } else {
-          otherChats.add(chat);
         }
-      }
+        return chat;
+      }).toList();
 
-      final updatedChats = updatedChat != null 
-          ? [updatedChat, ...otherChats] 
-          : currentState.chats;
+      updatedChats.sort((a, b) {
+        if (a.lastMessageAt == null && b.lastMessageAt == null) return 0;
+        if (a.lastMessageAt == null) return 1;
+        if (b.lastMessageAt == null) return -1;
+        return b.lastMessageAt!.compareTo(a.lastMessageAt!);
+      });
 
       emit(ChatsLoaded(
         updatedChats,

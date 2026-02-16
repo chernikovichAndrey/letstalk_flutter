@@ -114,6 +114,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     add(
       ChatUpdated(
         chatId: msg.chatId,
+        lastMessageType: msg.messageType,
         lastMessageId: msg.id,
         lastMessageText: msg.text,
         unreadCount: unreadCount,

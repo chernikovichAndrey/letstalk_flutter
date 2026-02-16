@@ -1,6 +1,6 @@
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -42,11 +42,7 @@ class _BottomNavigationShellState extends State<BottomNavigationShell> with Widg
   Widget build(BuildContext context) {
     return BlocConsumer<NavigationBloc, NavigationState>(
       listener: (context, state) {
-        if (state.unreadChatsCount > 0) {
-          FlutterAppBadger.updateBadgeCount(state.unreadChatsCount);
-        } else {
-          FlutterAppBadger.removeBadge();
-        }
+        AppBadgePlus.updateBadge(state.unreadChatsCount);
       },
       builder: (context, state) {
         return Scaffold(

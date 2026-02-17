@@ -57,7 +57,7 @@ mixin HandlePushNotification {
     if (chatIdStr != null) {
       final chatId = int.tryParse(chatIdStr.toString());
       if (chatId != null) {
-        router.config.push(
+        router.config.replace(
           '${Routes.chats.path}/${Routes.chatDetails.path}',
           extra: ChatDetailsArgs(chatId: chatId),
         );

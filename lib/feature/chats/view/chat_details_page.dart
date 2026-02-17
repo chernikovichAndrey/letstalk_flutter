@@ -29,8 +29,15 @@ class ChatDetailsPage extends StatefulWidget {
   State<ChatDetailsPage> createState() => _ChatDetailsPageState();
 }
 
-class _ChatDetailsPageState extends State<ChatDetailsPage> {
+class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingObserver {
   final _scrollController = ScrollController();
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getIt<LocalNotificationService>().cancelNotification(widget.chatId);
+    }
+  }
 
   @override
   void deactivate() {

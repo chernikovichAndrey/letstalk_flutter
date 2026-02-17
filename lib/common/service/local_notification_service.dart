@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
@@ -62,45 +63,12 @@ class LocalNotificationService {
   void setCurrentChatId(int? chatId) {
     _currentChatId = chatId;
     _logger.d('Current chat ID set to: $chatId');
+    if (chatId != null) {
+      cancelNotification(chatId);
+    }
   }
 
   int? get currentChatId => _currentChatId;
-
-  // Test method to verify notifications work
-  Future<void> showTestNotification() async {
-    try {
-      _logger.i('Showing test notification');
-
-      const androidDetails = AndroidNotificationDetails(
-        'messages_channel',
-        'Messages',
-        channelDescription: 'Notifications for new messages',
-        importance: Importance.high,
-        priority: Priority.high,
-      );
-      final iosDetails = DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      );
-
-      final details = NotificationDetails(
-        android: androidDetails,
-        iOS: iosDetails,
-      );
-
-      await _notifications.show(
-        id: 0,
-        title: 'Test Notification',
-        body: 'This is a test notification',
-        notificationDetails: details,
-      );
-
-      _logger.i('Test notification shown');
-    } catch (e, stackTrace) {
-      _logger.e('Failed to show test notification', error: e, stackTrace: stackTrace);
-    }
-  }
 
   Future<void> showMessageNotification({
     required int chatId,
@@ -116,13 +84,14 @@ class LocalNotificationService {
     try {
       _logger.i('Showing local notification for chat $chatId $_currentChatId');
 
-      const androidDetails = AndroidNotificationDetails(
+      final androidDetails = AndroidNotificationDetails(
         'messages_channel',
         'Messages',
         channelDescription: 'Notifications for new messages',
         importance: Importance.high,
         priority: Priority.high,
         showWhen: true,
+        tag: chatId.toString(),
       );
 
       const iosDetails = DarwinNotificationDetails(
@@ -131,13 +100,13 @@ class LocalNotificationService {
         presentSound: true,
       );
 
-      const details = NotificationDetails(
+      final details = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
 
       await _notifications.show(
-        id: DateTime.now().microsecond,
+        id: chatId,
         title: title,
         body: body,
         notificationDetails: details,
@@ -147,6 +116,34 @@ class LocalNotificationService {
       _logger.i('Local notification shown successfully');
     } catch (e, stackTrace) {
       _logger.e('Failed to show local notification', error: e, stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> cancelNotification(int chatId) async {
+    try {
+      if (Platform.isAndroid) {
+        final list = await _notifications.getActiveNotifications();
+        final an = list.where((item) => item.tag == chatId.toString()).firstOrNull;
+        if (an != null) {
+          await _notifications.cancel(id: an.id ?? 0, tag: an.tag);
+        } else {
+          await _notifications.cancel(id: chatId);
+        }
+      }
+
+
+      _logger.d('Notification cancelled for chat $chatId');
+    } catch (e, stackTrace) {
+      _logger.e('Failed to cancel notification', error: e, stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> cancelAllNotifications() async {
+    try {
+      await _notifications.cancelAll();
+      _logger.d('All notifications cancelled');
+    } catch (e, stackTrace) {
+      _logger.e('Failed to cancel notifications', error: e, stackTrace: stackTrace);
     }
   }
 }

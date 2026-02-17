@@ -24,6 +24,7 @@ class WebRTCService {
   final List<RTCIceCandidate> _pendingCandidates = [];
   bool _isInitialized = false;
   bool _remoteDescriptionSet = false;
+  List<Map<String, dynamic>>? _iceServers;
 
   // Callbacks
   OnIceCandidateCallback? onIceCandidate;
@@ -39,6 +40,10 @@ class WebRTCService {
   RTCPeerConnection? get peerConnection => _peerConnection;
 
   /* ================= INITIALIZATION ================= */
+
+  void setIceServers(List<Map<String, dynamic>> iceServers) {
+    _iceServers = iceServers;
+  }
 
   Future<void> initialize() async {
     if (_isInitialized) {
@@ -69,32 +74,32 @@ class WebRTCService {
     try {
       _logger.d('Creating PeerConnection');
 
+      final defaultIceServers = [
+        {'urls': 'stun:stun.relay.metered.ca:80'},
+        {
+          'urls': 'turn:global.relay.metered.ca:80',
+          'username': '4abfeabd2ed84d7afda25bba',
+          'credential': 'xzfonFAO6csyuqXb',
+        },
+        {
+          'urls': 'turn:global.relay.metered.ca:80?transport=tcp',
+          'username': '4abfeabd2ed84d7afda25bba',
+          'credential': 'xzfonFAO6csyuqXb',
+        },
+        {
+          'urls': 'turn:global.relay.metered.ca:443',
+          'username': '4abfeabd2ed84d7afda25bba',
+          'credential': 'xzfonFAO6csyuqXb',
+        },
+        {
+          'urls': 'turns:global.relay.metered.ca:443?transport=tcp',
+          'username': '4abfeabd2ed84d7afda25bba',
+          'credential': 'xzfonFAO6csyuqXb',
+        },
+      ];
+
       final config = {
-        'iceServers': [
-          {
-            'urls': "stun:stun.relay.metered.ca:80",
-          },
-          {
-            'urls': "turn:global.relay.metered.ca:80",
-            'username': "4abfeabd2ed84d7afda25bba",
-            'credential': "xzfonFAO6csyuqXb",
-          },
-          {
-            'urls': "turn:global.relay.metered.ca:80?transport=tcp",
-            'username': "4abfeabd2ed84d7afda25bba",
-            'credential': "xzfonFAO6csyuqXb",
-          },
-          {
-            'urls': "turn:global.relay.metered.ca:443",
-            'username': "4abfeabd2ed84d7afda25bba",
-            'credential': "xzfonFAO6csyuqXb",
-          },
-          {
-            'urls': "turns:global.relay.metered.ca:443?transport=tcp",
-            'username': "4abfeabd2ed84d7afda25bba",
-            'credential': "xzfonFAO6csyuqXb",
-          },
-        ],
+        'iceServers': _iceServers?.isNotEmpty == true ? _iceServers! : defaultIceServers,
         'sdpSemantics': 'unified-plan',
         'iceCandidatePoolSize': 2,
         'iceTransportPolicy': 'all',

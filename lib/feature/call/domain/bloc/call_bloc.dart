@@ -21,6 +21,9 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   int? _currentCallId;
   int? _currentTargetUserId;
 
+  // Buffer ICE candidates until offer is sent (caller side)
+  final List<RTCIceCandidate> _pendingIceCandidates = [];
+
   CallBloc(
     this._callRepository,
     this._webRTCService,
@@ -46,24 +49,26 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       add(CallSignalingReceived(data));
     });
 
-    _webRTCService.onIceCandidate = (candidate) {
-      if (_currentTargetUserId != null) {
-        _callRepository.sendIceCandidate(
-          targetUserId: _currentTargetUserId!,
-          candidate: {
-            'candidate': candidate.candidate,
-            'sdpMid': candidate.sdpMid,
-            'sdpMLineIndex': candidate.sdpMLineIndex,
-          },
-        );
-      }
-    };
+    _webRTCService.onIceCandidate = _sendIceCandidate;
 
     _webRTCService.onTrack = (stream) {
       // Stream handling is typically done via WebRTCService renderers
       // but if we need to update UI state specifically for stream ready, we can emit a state here
       // For now, CallActive implies connection.
     };
+  }
+
+  void _sendIceCandidate(RTCIceCandidate candidate) {
+    if (_currentTargetUserId != null) {
+      _callRepository.sendIceCandidate(
+        targetUserId: _currentTargetUserId!,
+        candidate: {
+          'candidate': candidate.candidate,
+          'sdpMid': candidate.sdpMid,
+          'sdpMLineIndex': candidate.sdpMLineIndex,
+        },
+      );
+    }
   }
 
   @override
@@ -78,6 +83,12 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     Emitter<CallState> emit,
   ) async {
     try {
+      final iceResponse = await _callRepository.getIceServers();
+      if (iceResponse.iceServers.isNotEmpty) {
+        _webRTCService.setIceServers(
+          iceResponse.iceServers.map((e) => e.toJson()).toList(),
+        );
+      }
       await _webRTCService.initialize();
       await _ringtoneService.playOutgoingCall();
       _currentTargetUserId = event.targetUserId;
@@ -86,13 +97,26 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         isVideo: event.isVideo,
       ));
 
-      final offer = await _webRTCService.createOffer(callType: event.isVideo ? CallType.video: CallType.audio);
+      // Buffer ICE until offer is sent so callee receives offer first
+      _webRTCService.onIceCandidate = (candidate) => _pendingIceCandidates.add(candidate);
+
+      final offer = await _webRTCService.createOffer(callType: event.isVideo ? CallType.video : CallType.audio);
+
       await _callRepository.sendOffer(
         targetUserId: event.targetUserId,
         callType: event.isVideo ? 'video' : 'audio',
         sdp: offer.sdp ?? '',
       );
+
+      // Flush buffered candidates then restore normal handler
+      for (final c in _pendingIceCandidates) {
+        _sendIceCandidate(c);
+      }
+      _pendingIceCandidates.clear();
+      _webRTCService.onIceCandidate = _sendIceCandidate;
     } catch (e) {
+      _pendingIceCandidates.clear();
+      _webRTCService.onIceCandidate = _sendIceCandidate;
       emit(CallFailure(e.toString()));
     }
   }

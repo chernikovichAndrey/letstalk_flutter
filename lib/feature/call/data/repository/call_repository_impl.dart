@@ -1,15 +1,19 @@
 import 'dart:async';
 
 import 'package:injectable/injectable.dart';
+import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/model/call_signaling_type.dart';
+import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
+import 'package:lets_talk/feature/call/data/model/ice_servers_response.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
 
 @LazySingleton(as: CallRepository)
 class CallRepositoryImpl implements CallRepository {
   final WebSocketService _wsService;
+  final ApiService _apiService;
 
-  CallRepositoryImpl(this._wsService);
+  CallRepositoryImpl(this._wsService, this._apiService);
 
   @override
   Stream<Map<String, dynamic>> get signalingStream => _wsService.signalingStream;
@@ -66,5 +70,11 @@ class CallRepositoryImpl implements CallRepository {
       'type': CallSignalingType.callReject.value,
       'call_id': callId,
     });
+  }
+
+  @override
+  Future<IceServersResponse> getIceServers() async {
+    final response = await _apiService.get(ApiConstants.turnCredentials);
+    return IceServersResponse.fromJson(response.data);
   }
 }

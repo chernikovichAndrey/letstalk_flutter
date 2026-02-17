@@ -11,5 +11,6 @@ class ApiConstants {
   static const String mediaUpload = '/media/upload';
   static const String profileAvatar = '/profile/avatar';
   static const String updateFcmToken = '/device/update-fcm-token';
+  static const String turnCredentials = '/turn/credentials';
   static String chatAvatar(int chatId) => '/chats/$chatId/avatar';
 }

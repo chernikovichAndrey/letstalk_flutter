@@ -1,3 +1,5 @@
+import 'package:lets_talk/feature/call/data/model/ice_servers_response.dart';
+
 abstract class CallRepository {
   Stream<Map<String, dynamic>> get signalingStream;
   Future<void> sendOffer({
@@ -15,4 +17,5 @@ abstract class CallRepository {
   });
   Future<void> sendHangup({required int callId});
   Future<void> sendReject({required int callId});
+  Future<IceServersResponse> getIceServers();
 }

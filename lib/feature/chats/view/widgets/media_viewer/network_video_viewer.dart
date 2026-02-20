@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/app/environment/environment.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:video_player/video_player.dart';
 
@@ -71,19 +73,19 @@ class _NetworkVideoViewerState extends State<NetworkVideoViewer> {
   @override
   Widget build(BuildContext context) {
     if (_hasError) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: Colors.white70,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'Failed to load video',
-              style: TextStyle(color: Colors.white70),
+              context.s.failedToLoadVideo,
+              style: const TextStyle(color: Colors.white70),
             ),
           ],
         ),

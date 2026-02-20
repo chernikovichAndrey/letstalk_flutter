@@ -61,7 +61,7 @@
   "callDirection": "Бағыты",
   "callDirectionIncoming": "Кіріс",
   "callDirectionOutgoing": "Шығыс",
-  "download": "Суретті сақтау",
+  "download": "Суретті",
   "copy": "Көшіру",
   "reply": "Жауап беру",
   "edit": "Өзгерту",
@@ -187,5 +187,15 @@
   "deleteAccountCodeButton": "Аккаунтты жою",
   "deleteAccountSuccess": "Аккаунт сәтті жойылды",
   "deleteAccountRequestingCode": "Код сұралуда...",
-  "deleteAccountDeleting": "Аккаунт жойылуда..."
+  "deleteAccountDeleting": "Аккаунт жойылуда...",
+  "failedToLoadVideo": "Бейнені жүктеу мүмкін болмады",
+  "galleryPermissionDenied": "Галереяға қол жеткізуге рұқсат жоқ",
+  "fileSizeLimitExceeded": "Файл тым үлкен. Максималды өлшем: {size} МБ",
+  "@fileSizeLimitExceeded": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  }
 }

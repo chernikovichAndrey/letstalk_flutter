@@ -204,7 +204,7 @@ class MessageBubble extends StatelessWidget {
           context.push(
             Routes.mediaViewer,
             args: MediaViewerArgs(
-              mediaUrl: message.media!.downloadUrl,
+              videoUrl: message.media!.videoUrl!,
               mediaType: message.messageType,
               thumbnailUrl: message.media!.thumbnailUrl,
             ),
@@ -259,10 +259,9 @@ class MessageBubble extends StatelessWidget {
                       messageId: message.id,
                       message: message,
                     ),
-                  if (message.messageType == 'video' &&
-                      message.media?.thumbnailUrl != null)
+                  if (message.messageType == 'video')
                     MessageVideoAttachThumbnail(
-                      thumbnailUrl: message.media!.thumbnailUrl!,
+                      mediaId: message.media!.id,
                       messageId: message.id,
                       message: message,
                     ),

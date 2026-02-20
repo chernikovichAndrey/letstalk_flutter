@@ -35,7 +35,7 @@ class MemberInfoSheet extends StatelessWidget {
                       children: [
                         ChatInfoAvatar(member: memberInfo),
                         SizedBox(height: 28,),
-                        ChatInfoActionsGroup(targetUserId: memberInfo.id),
+                        ChatInfoActionsGroup(member: memberInfo),
                         SizedBox(height: 28,),
                         ChatInfoUserInfo(member: memberInfo),
                       ],

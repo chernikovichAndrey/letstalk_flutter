@@ -29,6 +29,7 @@ class Media {
   final int? height;
   final String? thumbnailUrl;
   final String downloadUrl;
+  final String? videoUrl;
   final UploadedBy? uploadedBy;
 
   Media({
@@ -41,6 +42,7 @@ class Media {
     this.width,
     this.height,
     this.thumbnailUrl,
+    this.videoUrl,
     required this.downloadUrl,
     this.uploadedBy,
   });
@@ -57,6 +59,7 @@ class Media {
       height: int.tryParse(json['height'].toString()),
       thumbnailUrl: json['thumbnail_url'] as String?,
       downloadUrl: json['download_url'] as String? ?? '',
+      videoUrl: json['video_url'] as String? ?? '',
       uploadedBy: json['uploaded_by'] != null
           ? UploadedBy.fromJson(json['uploaded_by'] as Map<String, dynamic>)
           : null,

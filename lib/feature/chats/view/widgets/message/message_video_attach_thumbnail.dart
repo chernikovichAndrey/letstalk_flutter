@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
@@ -7,22 +8,24 @@ import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dar
 import 'package:video_player/video_player.dart';
 
 class MessageVideoAttachThumbnail extends StatefulWidget {
-  final String thumbnailUrl;
+  final int mediaId;
   final int messageId;
   final Message message;
 
   const MessageVideoAttachThumbnail({
     super.key,
-    required this.thumbnailUrl,
+    required this.mediaId,
     required this.messageId,
     required this.message,
   });
 
   @override
-  State<MessageVideoAttachThumbnail> createState() => _MessageVideoAttachThumbnailState();
+  State<MessageVideoAttachThumbnail> createState() =>
+      _MessageVideoAttachThumbnailState();
 }
 
-class _MessageVideoAttachThumbnailState extends State<MessageVideoAttachThumbnail> {
+class _MessageVideoAttachThumbnailState
+    extends State<MessageVideoAttachThumbnail> {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _hasError = false;
@@ -36,14 +39,16 @@ class _MessageVideoAttachThumbnailState extends State<MessageVideoAttachThumbnai
   Future<void> _initializeVideo() async {
     try {
       final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
-      
       _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.thumbnailUrl),
+        Uri.parse('${Env.baseUrl}media/stream/${widget.mediaId}'),
         httpHeaders: {'Authorization': 'Bearer $token'},
       );
 
       await _controller!.initialize();
       await _controller!.seekTo(Duration.zero);
+      _controller?.setLooping(true);
+      _controller?.setVolume(0);
+      _controller?.play();
 
       if (mounted) {
         setState(() {
@@ -77,38 +82,43 @@ class _MessageVideoAttachThumbnailState extends State<MessageVideoAttachThumbnai
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: _hasError
-                  ? const SizedBox(
+                  ? Container(
                       width: 200,
                       height: 200,
-                      child: Icon(Icons.videocam, color: Colors.white70, size: 20),
+                      color: Colors.black,
+                      child: Icon(
+                        Icons.videocam_off,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
                     )
                   : _isInitialized
-                      ? SizedBox(
-                          width: 200,
-                          height: 200,
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: SizedBox(
-                              width: _controller!.value.size.width,
-                              height: _controller!.value.size.height,
-                              child: VideoPlayer(_controller!),
-                            ),
-                          ),
-                        )
-                      : const SizedBox(
-                          width: 200,
-                          height: 200,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                  ? Container(
+                      constraints: BoxConstraints(
+                        maxWidth: 200,
+                        maxHeight: 400,
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: SizedBox(
+                          width: _controller!.value.size.width,
+                          height: _controller!.value.size.height,
+                          child: VideoPlayer(_controller!),
                         ),
+                      ),
+                    )
+                  : const SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
             ),
             BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
               builder: (context, state) {
                 if (state.downloadingMessageId == widget.messageId) {
                   final progress = state.downloadProgress ?? 0.0;
                   final progressPercent = (progress * 100).toInt();
-                  
+
                   return Container(
                     width: 200,
                     height: 200,
@@ -143,19 +153,7 @@ class _MessageVideoAttachThumbnailState extends State<MessageVideoAttachThumbnai
                     ),
                   );
                 }
-                return Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                );
+                return SizedBox();
               },
             ),
           ],

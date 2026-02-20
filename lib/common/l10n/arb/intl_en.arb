@@ -89,7 +89,7 @@
   "callDirection": "Direction",
   "callDirectionIncoming": "Incoming",
   "callDirectionOutgoing": "Outgoing",
-  "download": "Save photo",
+  "download": "Save",
   "copy": "Copy",
   "reply": "Reply",
   "edit": "Edit",
@@ -229,5 +229,15 @@
   "deleteAccountCodeButton": "Delete Account",
   "deleteAccountSuccess": "Account deleted successfully",
   "deleteAccountRequestingCode": "Requesting code...",
-  "deleteAccountDeleting": "Deleting account..."
+  "deleteAccountDeleting": "Deleting account...",
+  "failedToLoadVideo": "Failed to load video",
+  "galleryPermissionDenied": "No permission to access gallery",
+  "fileSizeLimitExceeded": "File is too large. Max size: {size} MB",
+  "@fileSizeLimitExceeded": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  }
 }

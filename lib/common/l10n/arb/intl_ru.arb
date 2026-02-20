@@ -61,7 +61,7 @@
   "callDirection": "Направление",
   "callDirectionIncoming": "Входящий",
   "callDirectionOutgoing": "Исходящий",
-  "download": "Сохранить фото",
+  "download": "Сохранить",
   "copy": "Скопировать",
   "reply": "Ответить",
   "edit": "Изменить",
@@ -187,5 +187,15 @@
   "deleteAccountCodeButton": "Удалить аккаунт",
   "deleteAccountSuccess": "Аккаунт успешно удален",
   "deleteAccountRequestingCode": "Запрос кода...",
-  "deleteAccountDeleting": "Удаление аккаунта..."
+  "deleteAccountDeleting": "Удаление аккаунта...",
+  "failedToLoadVideo": "Не удалось загрузить видео",
+  "galleryPermissionDenied": "Нет разрешения на доступ к галерее",
+  "fileSizeLimitExceeded": "Файл слишком большой. Максимальный размер: {size} МБ",
+  "@fileSizeLimitExceeded": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  }
 }

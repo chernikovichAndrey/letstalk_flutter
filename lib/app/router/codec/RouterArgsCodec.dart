@@ -71,7 +71,7 @@ class _RouterArgsEncoder extends Converter<Object?, Object?> {
     if (input is MediaViewerArgs) {
       return {
         '_type': 'MediaViewerArgs',
-        'mediaUrl': input.mediaUrl,
+        'videoUrl': input.videoUrl,
         'mediaType': input.mediaType,
         'thumbnailUrl': input.thumbnailUrl,
       };
@@ -127,7 +127,7 @@ class _RouterArgsDecoder extends Converter<Object?, Object?> {
 
       case 'MediaViewerArgs':
         return MediaViewerArgs(
-          mediaUrl: input['mediaUrl'] as String,
+          videoUrl: input['videoUrl'] as String,
           mediaType: input['mediaType'] as String,
           thumbnailUrl: input['thumbnailUrl'] as String?,
         );

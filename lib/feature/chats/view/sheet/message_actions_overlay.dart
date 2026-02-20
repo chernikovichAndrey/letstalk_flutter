@@ -66,7 +66,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
 
     setState(() {
       _isCopyVisible = widget.message.text != null && widget.message.text!.isNotEmpty;
-      _isDownloadVisible = widget.message.messageType == 'image' &&
+      _isDownloadVisible = widget.message.messageType != 'text' &&
           widget.message.media != null;
     });
   }
@@ -132,7 +132,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     }
   }
 
-  void _onDownloadImage() {
+  void _onDownloadMedia() {
     final media = widget.message.media;
     if (media == null) return;
 
@@ -140,6 +140,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     final messageId = widget.message.id;
     final downloadUrl = media.downloadUrl;
     final filename = media.filename;
+    final mediaType = media.type;
 
     if (context.mounted) {
       context.pop();
@@ -212,7 +213,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               onForward: _onForwardMessage,
                               onDelete: _onDeleteMessage,
                               onDownload: _isDownloadVisible
-                                  ? _onDownloadImage
+                                  ? _onDownloadMedia
                                   : null,
                             ),
                             const SizedBox(height: 12),

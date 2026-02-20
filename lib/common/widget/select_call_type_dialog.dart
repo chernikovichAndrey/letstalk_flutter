@@ -5,7 +5,12 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 
 class SelectCallTypeDialog {
-  SelectCallTypeDialog(int id, BuildContext context) {
+  SelectCallTypeDialog(
+    int id,
+    String? fullName,
+    String? avatar,
+    BuildContext context,
+  ) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -18,7 +23,13 @@ class SelectCallTypeDialog {
               title: Text(context.s.audioCall),
               onTap: () {
                 context.pop();
-                context.read<CallBloc>().add(CallInitiated(targetUserId: id));
+                context.read<CallBloc>().add(
+                  CallInitiated(
+                    targetUserId: id,
+                    fullName: fullName,
+                    avatar: avatar,
+                  ),
+                );
               },
             ),
             ListTile(
@@ -26,9 +37,14 @@ class SelectCallTypeDialog {
               title: Text(context.s.videoCall),
               onTap: () {
                 context.pop();
-                context
-                    .read<CallBloc>()
-                    .add(CallInitiated(targetUserId: id, isVideo: true));
+                context.read<CallBloc>().add(
+                  CallInitiated(
+                    targetUserId: id,
+                    fullName: fullName,
+                    avatar: avatar,
+                    isVideo: true,
+                  ),
+                );
               },
             ),
           ],

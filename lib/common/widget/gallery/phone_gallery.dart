@@ -4,12 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/gallery/gallery_cubit/gallery_cubit.dart';
 import 'package:lets_talk/common/widget/gallery/gallery_cubit/gallery_state.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/asset_thumbnail.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/galery_camera_preview.dart';
 import 'package:photo_manager/photo_manager.dart';
+
+const _fileSizeLimits = {
+  AssetType.image: 20 * 1024 * 1024,
+  AssetType.video: 500 * 1024 * 1024,
+  AssetType.audio: 50 * 1024 * 1024,
+};
 
 class PhoneGallery extends StatelessWidget {
   final Function(File file) onGetMediaFile;
@@ -62,6 +70,12 @@ class _GalleryContentState extends State<_GalleryContent> {
     return currentScroll >= (maxScroll * 0.9);
   }
 
+  bool _checkFileSizeLimit(File file, AssetType type) {
+    final sizeInBytes = file.lengthSync();
+    final limit = _fileSizeLimits[type] ?? (50 * 1024 * 1024);
+    return sizeInBytes <= limit;
+  }
+
   Future<void> openCamera() async {
     final ImagePicker picker = ImagePicker();
     final XFile? photo = await picker.pickImage(
@@ -81,10 +95,10 @@ class _GalleryContentState extends State<_GalleryContent> {
         }
 
         if (state is GalleryPermissionDenied) {
-          return const Center(
+          return Center(
             child: Text(
-              'No permission to access gallery',
-              style: TextStyle(color: Colors.grey),
+              context.s.galleryPermissionDenied,
+              style: const TextStyle(color: Colors.grey),
             ),
           );
         }
@@ -131,8 +145,13 @@ class _GalleryContentState extends State<_GalleryContent> {
                     asset: asset,
                     onTapAsset: (asset) async {
                       final file = await asset.file;
-                      if (file != null) {
-                        widget.onGetMediaFile(file);
+                      if (file != null && mounted) {
+                        if (_checkFileSizeLimit(file, asset.type)) {
+                          widget.onGetMediaFile(file);
+                        } else {
+                          final limit = _fileSizeLimits[asset.type] ?? (50 * 1024 * 1024);
+                          showErrorToast(context.s.fileSizeLimitExceeded(limit ~/ (1024 * 1024)));
+                        }
                       }
                     },
                   );
@@ -155,8 +174,13 @@ class _GalleryContentState extends State<_GalleryContent> {
                       asset: asset,
                       onTapAsset: (asset) async {
                         final file = await asset.file;
-                        if (file != null) {
-                          widget.onGetMediaFile(file);
+                        if (file != null && mounted) {
+                          if (_checkFileSizeLimit(file, asset.type)) {
+                            widget.onGetMediaFile(file);
+                          } else {
+                            final limit = _fileSizeLimits[asset.type] ?? (50 * 1024 * 1024);
+                            showErrorToast(context.s.fileSizeLimitExceeded(limit ~/ (1024 * 1024)));
+                          }
                         }
                       },
                     );

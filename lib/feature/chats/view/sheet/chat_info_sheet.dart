@@ -50,10 +50,11 @@ class ChatInfoSheet extends StatelessWidget {
                               chat: state.chat,
                             ),
                             SizedBox(height: 28,),
-                            ChatInfoActionsGroup(
-                              targetUserId: member?.id ?? -1,
-                              isGroupChat: isGroupChat,
-                            ),
+                            if (member != null)
+                              ChatInfoActionsGroup(
+                                member: member,
+                                isGroupChat: isGroupChat,
+                              ),
                             SizedBox(height: 28,),
                             if (isGroupChat)
                               ChatInfoChatMembers()

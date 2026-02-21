@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/add_contact_bloc/add_contact_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/create_contact_app_bar.dart';
@@ -54,7 +55,7 @@ class _CreateContactPageState extends State<CreateContactPage> {
       imageUrl: '',
     );
 
-    context.read<AddContactBloc>().add(AddContactSubmitted(contact));
+    getIt<AddContactBloc>().add(AddContactSubmitted(contact));
   }
 
   void _onInit(code) {

@@ -52,7 +52,12 @@ class _CallDetailsView extends StatelessWidget {
                 onTap: () {
                   final state = context.read<CallDetailsCubit>().state;
                   if (state is CallDetailsLoaded) {
-                    SelectCallTypeDialog(state.call.peer.userId, context);
+                    SelectCallTypeDialog(
+                      state.call.peer.userId,
+                      state.call.peer.name,
+                      state.call.peer.avatar,
+                      context,
+                    );
                   }
                 },
               ),
@@ -115,8 +120,7 @@ class _CallDetailsView extends StatelessWidget {
                               label: entry.key,
                               value: entry.value,
                             ),
-                            if (entry.key != context.s.status)
-                              const Divider(),
+                            if (entry.key != context.s.status) const Divider(),
                           ],
                         ],
                       ),

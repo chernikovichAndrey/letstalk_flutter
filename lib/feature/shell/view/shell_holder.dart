@@ -27,8 +27,8 @@ class ShellHolder extends StatelessWidget {
                 if (state.token != null) {
                   getIt<WebSocketService>().authenticate(state.token!);
                 }
-                context.read<ProfileBloc>().add(ProfileLoadEvent());
-                context.read<NavigationBloc>().add(NavigationInitEvent());
+                getIt<ProfileBloc>().add(ProfileLoadEvent());
+                getIt<NavigationBloc>().add(NavigationInitEvent());
                 context.go(Routes.contacts.path);
               } else if (state is AuthUnauthenticated) {
                 context.go(Routes.login.path);
@@ -46,17 +46,15 @@ class ShellHolder extends StatelessWidget {
                   barrierColor: Colors.black54,
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return IncomingCallBanner(
-                      callerName: context.s.userCallerName(state.callerId.toString()),
+                      callerName: state.callerInfo?.fullName ?? context.s.userCallerName(state.callerId.toString()),
+                      callerAvatar: state.callerInfo?.avatar,
                       callType: state.callType,
                       onDecline: () {
-                        context
-                            .read<CallBloc>()
+                        getIt<CallBloc>()
                             .add(CallRejected(callId: state.callId));
-                        context.pop();
                       },
                       onAccept: () {
-                        context.pop();
-                        context.read<CallBloc>().add(CallAccepted(
+                        getIt<CallBloc>().add(CallAccepted(
                           callId: state.callId,
                           callerId: state.callerId,
                           offer: state.offer,

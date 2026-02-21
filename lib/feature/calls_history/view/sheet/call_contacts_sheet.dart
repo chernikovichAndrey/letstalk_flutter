@@ -14,7 +14,11 @@ class CallContactsSheet extends StatelessWidget {
 
   void _onSelectContact(int? id, BuildContext context) {
     if (id != null) {
-      SelectCallTypeDialog(id, context);
+      final state = getIt<ContactsBloc>().state as ContactsLoaded;
+      final contact = state.contacts.where((contact) => contact.registeredUserId == id).firstOrNull;
+      if (contact != null) {
+        SelectCallTypeDialog(id, contact.fullName, contact.imageUrl, context);
+      }
     }
   }
 

@@ -62,6 +62,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<ChatDetailsReadMessage>(_onReadMessage);
     on<DownloadDocument>(_onDownloadDocument);
     on<SaveImageToGallery>(_onSaveImageToGallery);
+    on<SaveVideoToGallery>(_onSaveVideoToGallery);
     on<ChatDetailsDownloadProgress>(_onDownloadProgress);
     on<ChatDetailsUploadProgress>(_onUploadProgress);
     on<RefreshStateEvent>(_onRefreshState);
@@ -213,6 +214,61 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       );
 
       await Gal.putImage(savePath);
+
+      final file = File(savePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+
+      if (state.downloadingMessageId == event.messageId) {
+        emit(state.copyWith(
+          clearDownloadingMessageId: true,
+          clearDownloadProgress: true,
+          isDownloadSuccess: true,
+        ));
+      } else {
+        emit(state.copyWith(isDownloadSuccess: true));
+      }
+    } catch (e) {
+      if (state.downloadingMessageId == event.messageId) {
+        emit(state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+          clearDownloadingMessageId: true,
+          clearDownloadProgress: true,
+        ));
+      } else {
+        emit(state.copyWith(
+          status: ChatDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ));
+      }
+    }
+  }
+
+  Future<void> _onSaveVideoToGallery(
+    SaveVideoToGallery event,
+    Emitter<ChatDetailsState> emit,
+  ) async {
+    emit(state.copyWith(
+      downloadingMessageId: event.messageId,
+      downloadProgress: 0,
+      clearDownloadSuccess: true,
+    ));
+
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final savePath = '${tempDir.path}/${event.filename}';
+
+      await _mediaRepository.downloadMedia(
+        event.videoUrl,
+        savePath,
+        onReceiveProgress: (count, total) {
+          add(ChatDetailsDownloadProgress(count, total, event.messageId));
+        },
+      );
+
+      await Gal.putVideo(savePath);
 
       final file = File(savePath);
       if (await file.exists()) {

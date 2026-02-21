@@ -43,6 +43,18 @@ class SaveImageToGallery extends ChatDetailsEvent {
   });
 }
 
+class SaveVideoToGallery extends ChatDetailsEvent {
+  final String videoUrl;
+  final String filename;
+  final int messageId;
+
+  SaveVideoToGallery({
+    required this.videoUrl,
+    required this.filename,
+    required this.messageId,
+  });
+}
+
 class ChatDetailsDownloadProgress extends ChatDetailsEvent {
   final int count;
   final int total;

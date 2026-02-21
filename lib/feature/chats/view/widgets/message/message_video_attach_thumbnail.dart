@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_video_caching/flutter_video_caching.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
@@ -8,13 +9,13 @@ import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dar
 import 'package:video_player/video_player.dart';
 
 class MessageVideoAttachThumbnail extends StatefulWidget {
-  final int mediaId;
+  final String videoUrl;
   final int messageId;
   final Message message;
 
   const MessageVideoAttachThumbnail({
     super.key,
-    required this.mediaId,
+    required this.videoUrl,
     required this.messageId,
     required this.message,
   });
@@ -40,20 +41,23 @@ class _MessageVideoAttachThumbnailState
     try {
       final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
       _controller = VideoPlayerController.networkUrl(
-        Uri.parse('${Env.baseUrl}media/stream/${widget.mediaId}'),
+        Uri.parse(widget.videoUrl),
         httpHeaders: {'Authorization': 'Bearer $token'},
       );
-
+      // VideoCaching.precache(
+      //   widget.videoUrl,
+      //   headers: {'Authorization': 'Bearer $token'},
+      // );
       await _controller!.initialize();
-      await _controller!.seekTo(Duration.zero);
-      _controller?.setLooping(true);
-      _controller?.setVolume(0);
-      _controller?.play();
 
       if (mounted) {
         setState(() {
           _isInitialized = true;
         });
+        await _controller!.seekTo(Duration.zero);
+        _controller?.setLooping(true);
+        _controller?.setVolume(0);
+        _controller?.play();
       }
     } catch (e) {
       if (mounted) {

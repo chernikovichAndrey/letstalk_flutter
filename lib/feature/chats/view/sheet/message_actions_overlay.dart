@@ -10,6 +10,7 @@ import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_menu.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MessageActionsOverlay extends StatefulWidget {
   final Message message;
@@ -132,7 +133,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     }
   }
 
-  void _onDownloadMedia() {
+  Future<void> _onDownloadMedia() async {
     final media = widget.message.media;
     if (media == null) return;
 
@@ -146,13 +147,33 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
       context.pop();
     }
 
-    bloc.add(
-      SaveImageToGallery(
-        imageUrl: downloadUrl,
-        filename: filename,
-        messageId: messageId,
-      ),
-    );
+    if (mediaType == 'image') {
+      bloc.add(
+        SaveImageToGallery(
+          imageUrl: downloadUrl,
+          filename: filename,
+          messageId: messageId,
+        ),
+      );
+    } else if (mediaType == 'video') {
+      bloc.add(
+        SaveVideoToGallery(
+          videoUrl: downloadUrl,
+          filename: filename,
+          messageId: messageId,
+        ),
+      );
+    } else {
+      final dir = await getApplicationDocumentsDirectory();
+      final savePath = '${dir.path}/$filename';
+      bloc.add(
+        DownloadDocument(
+          mediaUrl: downloadUrl,
+          savePath: savePath,
+          messageId: messageId,
+        ),
+      );
+    }
   }
 
   void _onReply() {

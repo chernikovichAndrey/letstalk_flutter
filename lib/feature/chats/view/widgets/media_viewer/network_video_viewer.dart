@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_video_caching/flutter_video_caching.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
@@ -35,6 +36,10 @@ class _NetworkVideoViewerState extends State<NetworkVideoViewer> {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl ?? ''),
         httpHeaders: {'Authorization': 'Bearer $token'},
+      );
+      VideoCaching.precache(
+        widget.videoUrl ?? '',
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       await _controller.initialize();

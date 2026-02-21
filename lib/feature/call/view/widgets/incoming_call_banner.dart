@@ -4,6 +4,7 @@ import 'package:lets_talk/common/widget/c_avatar.dart';
 
 class IncomingCallBanner extends StatelessWidget {
   final String callerName;
+  final String? callerAvatar;
   final String callType;
   final VoidCallback onAccept;
   final VoidCallback onDecline;
@@ -14,6 +15,7 @@ class IncomingCallBanner extends StatelessWidget {
     required this.callType,
     required this.onAccept,
     required this.onDecline,
+    this.callerAvatar,
   });
 
   @override
@@ -41,6 +43,8 @@ class IncomingCallBanner extends StatelessWidget {
             child: Row(
               children: [
                 CAvatar(
+                  imageUrl: callerAvatar,
+                  name: callerName,
                   radius: 24,
                 ),
                 const SizedBox(width: 12),

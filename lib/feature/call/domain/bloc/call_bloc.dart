@@ -95,6 +95,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       emit(CallOutgoing(
         targetUserId: event.targetUserId,
         isVideo: event.isVideo,
+        avatar: event.avatar,
+        fullName: event.fullName,
       ));
 
       // Buffer ICE until offer is sent so callee receives offer first
@@ -125,13 +127,11 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       CallOfferedReceived event,
       Emitter<CallState> emit,
       ) async {
-    if (event.signal.status == 'success') {
-      final currentState = state as CallOutgoing;
-      _currentCallId = event.signal.callId;
-      emit(currentState.copyWith(
-        callId: event.signal.callId,
-      ));
-    }
+    final currentState = state as CallOutgoing;
+    _currentCallId = event.signal.callId;
+    emit(currentState.copyWith(
+      callId: event.signal.callId,
+    ));
   }
 
   Future<void> _onCallIncomingReceived(
@@ -140,16 +140,22 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   ) async {
     // Only accept incoming if not already in a call
     if (state is CallInitial || state is CallEnded || state is CallFailure) {
-       await _webRTCService.initialize();
-       await _ringtoneService.playIncomingCall();
-       _currentCallId = event.signal.callId;
-       _currentTargetUserId = event.signal.callerId;
-       emit(CallIncoming(
-         callId: event.signal.callId,
-         callerId: event.signal.callerId,
-         offer: event.signal.offer,
-         callType: event.signal.callType,
-       ));
+      if (event.signal.iceServers.isNotEmpty) {
+        _webRTCService.setIceServers(
+          event.signal.iceServers.map((e) => e.toJson()).toList(),
+        );
+      }
+      await _webRTCService.initialize();
+      await _ringtoneService.playIncomingCall();
+      _currentCallId = event.signal.callId;
+      _currentTargetUserId = event.signal.callerId;
+      emit(CallIncoming(
+        callId: event.signal.callId,
+        callerId: event.signal.callerId,
+        offer: event.signal.offer,
+        callType: event.signal.callType,
+        callerInfo: event.signal.callerInfo,
+      ));
     }
   }
 

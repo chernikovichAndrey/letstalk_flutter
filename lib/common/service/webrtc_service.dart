@@ -99,7 +99,7 @@ class WebRTCService {
       ];
 
       final config = {
-        'iceServers': _iceServers?.isNotEmpty == true ? _iceServers! : defaultIceServers,
+        'iceServers': _iceServers,
         'sdpSemantics': 'unified-plan',
         'iceCandidatePoolSize': 2,
         'iceTransportPolicy': 'all',
@@ -249,7 +249,7 @@ class WebRTCService {
         'offerToReceiveVideo': callType == CallType.video,
       };
 
-      final offer = await _peerConnection!.createOffer();
+      final offer = await _peerConnection!.createOffer(offerOptions);
       await _peerConnection!.setLocalDescription(offer);
 
       _logger.i('Offer created: ${offer.type}');
@@ -276,7 +276,7 @@ class WebRTCService {
         'offerToReceiveVideo': callType == CallType.video,
       };
 
-      final answer = await _peerConnection!.createAnswer();
+      final answer = await _peerConnection!.createAnswer(answerOptions);
       await _peerConnection!.setLocalDescription(answer);
 
       _logger.i('Answer created: ${answer.type}');
@@ -405,6 +405,11 @@ class WebRTCService {
 
   bool get isVideoEnabled {
     final videoTracks = _localStream?.getVideoTracks() ?? [];
+    return videoTracks.isNotEmpty && videoTracks.first.enabled;
+  }
+
+  bool get isRemoteVideoEnabled {
+    final videoTracks = _remoteStream?.getVideoTracks() ?? [];
     return videoTracks.isNotEmpty && videoTracks.first.enabled;
   }
 

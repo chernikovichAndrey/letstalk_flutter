@@ -5,26 +5,29 @@ abstract class CallEvent {}
 class ResetCallBloc extends CallEvent {}
 
 class CallInitiated extends CallEvent {
+  final String? fullName;
+  final String? avatar;
   final int targetUserId;
   final bool isVideo;
 
-  CallInitiated({required this.targetUserId, this.isVideo = false});
+  CallInitiated({
+    required this.targetUserId,
+    required this.fullName,
+    required this.avatar,
+    this.isVideo = false,
+  });
 }
 
 class CallOfferedReceived extends CallEvent {
   final CallOfferedSignal signal;
 
-  CallOfferedReceived({
-    required this.signal,
-  });
+  CallOfferedReceived({required this.signal});
 }
 
 class CallIncomingReceived extends CallEvent {
   final CallIncomingSignal signal;
 
-  CallIncomingReceived({
-    required this.signal,
-  });
+  CallIncomingReceived({required this.signal});
 }
 
 class CallAccepted extends CallEvent {

@@ -45,25 +45,105 @@ class CallOfferedSignal extends SignalingEvent {
   }
 }
 
+class CallerInfo {
+  final int userId;
+  final String phone;
+  final String? avatar;
+  final String firstName;
+  final String lastName;
+  final String fullName;
+
+  const CallerInfo({
+    required this.userId,
+    required this.phone,
+    this.avatar,
+    required this.firstName,
+    required this.lastName,
+    required this.fullName,
+  });
+
+  factory CallerInfo.fromJson(Map<String, dynamic> json) {
+    return CallerInfo(
+      userId: int.tryParse(json['user_id'].toString()) ?? 0,
+      phone: json['phone'] as String? ?? '',
+      avatar: json['avatar'] as String?,
+      firstName: json['first_name'] as String? ?? '',
+      lastName: json['last_name'] as String? ?? '',
+      fullName: json['full_name'] as String? ?? '',
+    );
+  }
+}
+
+class IceServer {
+  final List<String> urls;
+  final String? username;
+  final String? credential;
+
+  const IceServer({
+    required this.urls,
+    this.username,
+    this.credential,
+  });
+
+  factory IceServer.fromJson(Map<String, dynamic> json) {
+    final rawUrls = json['urls'];
+    final urls = rawUrls is List
+        ? rawUrls.map((e) => e.toString()).toList()
+        : <String>[];
+    return IceServer(
+      urls: urls,
+      username: json['username'] as String?,
+      credential: json['credential'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'urls': urls,
+        if (username != null) 'username': username,
+        if (credential != null) 'credential': credential,
+      };
+}
+
 class CallIncomingSignal extends SignalingEvent {
   final int callId;
   final int callerId;
   final String offer;
   final String callType;
+  final CallerInfo? callerInfo;
+  final List<IceServer> iceServers;
 
   const CallIncomingSignal({
     required this.callId,
     required this.callerId,
     required this.offer,
     this.callType = 'audio',
+    this.callerInfo,
+    this.iceServers = const [],
   });
 
   factory CallIncomingSignal.fromJson(Map<String, dynamic> json) {
+    final callerInfoJson = json['caller_info'];
+    final rawIceServers = json['ice_servers'];
+    final iceServers = rawIceServers is List
+        ? rawIceServers
+            .map((e) => IceServer.fromJson(
+                  e is Map<String, dynamic> ? e : Map<String, dynamic>.from(e),
+                ))
+            .toList()
+        : <IceServer>[];
     return CallIncomingSignal(
       callId: int.tryParse(json['call_id'].toString()) ?? 0,
-      callerId: json['caller_id'] as int? ?? 0,
+      callerId: int.tryParse(json['caller_id'].toString()) ?? 0,
       offer: json['offer'] as String? ?? '',
       callType: json['call_type'] as String? ?? 'audio',
+      callerInfo: callerInfoJson != null
+          ? CallerInfo.fromJson(
+              callerInfoJson is Map<String, dynamic>
+                  ? callerInfoJson
+                  : Map<String, dynamic>.from(callerInfoJson),
+            )
+          : null,
+      iceServers: iceServers,
     );
   }
 }
@@ -71,16 +151,26 @@ class CallIncomingSignal extends SignalingEvent {
 class CallAnsweredSignal extends SignalingEvent {
   final int callId;
   final String answer;
+  final CallerInfo? callerInfo;
 
   const CallAnsweredSignal({
     required this.callId,
     required this.answer,
+    this.callerInfo,
   });
 
   factory CallAnsweredSignal.fromJson(Map<String, dynamic> json) {
+    final callerInfoJson = json['caller_info'];
     return CallAnsweredSignal(
       callId: int.tryParse(json['call_id'].toString()) ?? 0,
       answer: json['answer'] as String? ?? '',
+      callerInfo: callerInfoJson != null
+          ? CallerInfo.fromJson(
+        callerInfoJson is Map<String, dynamic>
+            ? callerInfoJson
+            : Map<String, dynamic>.from(callerInfoJson),
+      )
+          : null,
     );
   }
 }

@@ -8,7 +8,6 @@ import 'package:injectable/injectable.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
-import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:lets_talk/feature/shell/connectivity/domain/bloc/connectivity_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -89,10 +88,17 @@ class WebSocketService with WidgetsBindingObserver {
     if (_channel != null) return;
 
     try {
-      _channel = WebSocketChannel.connect(
-        Uri.parse(Env.wsUrl),
-        protocols: protocols,
-      );
+      final bloc = getIt<AuthBloc>();
+      final token = bloc.state is AuthAuthenticated
+          ? (bloc.state as AuthAuthenticated).token
+          : null;
+
+      final baseUri = Uri.parse(Env.wsUrl);
+      final uri = token != null
+          ? baseUri.replace(queryParameters: {'token': token})
+          : baseUri;
+
+      _channel = WebSocketChannel.connect(uri, protocols: protocols);
 
       _socketSubscription = _channel!.stream.listen(
             (data) {
@@ -111,11 +117,7 @@ class WebSocketService with WidgetsBindingObserver {
         },
       );
 
-      _logger.i('WebSocket connected to ${Env.wsUrl}');
-      final bloc = getIt<AuthBloc>();
-      if (bloc.state is AuthAuthenticated) {
-        authenticate((bloc.state as AuthAuthenticated).token!);
-      }
+      _logger.i('WebSocket connected to $uri');
     } catch (e) {
       _logger.e('WebSocket connection error: $e');
       _scheduleReconnect();

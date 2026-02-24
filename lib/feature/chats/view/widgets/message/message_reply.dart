@@ -70,7 +70,7 @@ class MessageReplay extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         (replyTo.media != null && replyTo.textPreview.isEmpty)
-                            ? getMessageTypeText(context, replyTo.messageType)
+                            ? getMessageTypeText(context, replyTo.media!.type)
                             : replyTo.textPreview,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

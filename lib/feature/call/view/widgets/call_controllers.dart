@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -8,7 +9,6 @@ import 'package:lets_talk/feature/call/view/widgets/call_action_button.dart';
 
 class CallControllers extends StatefulWidget {
   final bool isVideo;
-
 
   const CallControllers({super.key, required this.isVideo});
 
@@ -78,7 +78,14 @@ class _CallControllersState extends State<CallControllers> {
               CallActionButton(
                 label: context.s.video,
                 icon: _webRTCService.isVideoEnabled ? Icons.videocam : Icons.videocam_off,
-                onTap: () => _webRTCService.toggleVideo(),
+                onTap: () {
+                  getIt<CallBloc>().add(
+                    CallCameraToggleRequested(
+                      callId: getIt<CallBloc>().state.callId ?? -1,
+                      enabled: !_webRTCService.isVideoEnabled,
+                    ),
+                  );
+                },
               ),
             CallActionButton(
               label: context.s.mute,

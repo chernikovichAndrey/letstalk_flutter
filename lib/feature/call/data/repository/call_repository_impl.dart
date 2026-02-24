@@ -73,6 +73,15 @@ class CallRepositoryImpl implements CallRepository {
   }
 
   @override
+  Future<void> sendCameraToggle({required int callId, required bool enabled}) async {
+    _wsService.send({
+      'type': CallSignalingType.callCameraToggle.value,
+      'call_id': callId,
+      'enabled': enabled,
+    });
+  }
+
+  @override
   Future<IceServersResponse> getIceServers() async {
     final response = await _apiService.get(ApiConstants.turnCredentials);
     return IceServersResponse.fromJson(response.data);

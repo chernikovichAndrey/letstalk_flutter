@@ -17,5 +17,6 @@ abstract class CallRepository {
   });
   Future<void> sendHangup({required int callId});
   Future<void> sendReject({required int callId});
+  Future<void> sendCameraToggle({required int callId, required bool enabled});
   Future<IceServersResponse> getIceServers();
 }

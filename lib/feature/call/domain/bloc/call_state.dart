@@ -1,5 +1,14 @@
 part of 'call_bloc.dart';
 
+extension CallStateX on CallState {
+  int? get callId => switch (this) {
+    CallActive(:final callId) => callId,
+    CallOutgoing(:final callId) => callId,
+    CallIncoming(:final callId) => callId,
+    _ => null,
+  };
+}
+
 abstract class CallState {}
 
 class CallInitial extends CallState {}
@@ -58,6 +67,7 @@ class CallActive extends CallState {
   final bool isCaller;
   final bool isVideo;
   final bool isRemoteVideoEnabled;
+  final bool isLocalVideoEnabled;
 
   CallActive({
     required this.callId,
@@ -65,15 +75,17 @@ class CallActive extends CallState {
     required this.isCaller,
     required this.isVideo,
     this.isRemoteVideoEnabled = true,
+    this.isLocalVideoEnabled = true,
   });
 
-  CallActive copyWith({bool? isRemoteVideoEnabled}) {
+  CallActive copyWith({bool? isRemoteVideoEnabled, bool? isLocalVideoEnabled}) {
     return CallActive(
       callId: callId,
       targetUserId: targetUserId,
       isCaller: isCaller,
       isVideo: isVideo,
       isRemoteVideoEnabled: isRemoteVideoEnabled ?? this.isRemoteVideoEnabled,
+      isLocalVideoEnabled: isLocalVideoEnabled ?? this.isLocalVideoEnabled,
     );
   }
 }

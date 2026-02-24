@@ -26,6 +26,7 @@ class _CallPageState extends State<CallPage> {
   final _webRTCService = getIt<WebRTCService>();
   String? _avatar;
   String? _fullName;
+  bool _isRemoteVideoEnabled = false;
 
   @override
   void initState() {
@@ -84,12 +85,15 @@ class _CallPageState extends State<CallPage> {
             isVideo = state.isVideo;
             _avatar = state.avatar;
             _fullName = state.fullName;
+            _isRemoteVideoEnabled = false;
           } else if (state is CallActive) {
             isVideo = state.isVideo;
+            _isRemoteVideoEnabled = state.isRemoteVideoEnabled;
           } else if (state is CallIncoming) {
             isVideo = state.callType == 'video';
             _avatar = state.callerInfo?.avatar;
             _fullName = state.callerInfo?.fullName;
+            _isRemoteVideoEnabled = false;
           }
           return Stack(
             children: [
@@ -105,6 +109,7 @@ class _CallPageState extends State<CallPage> {
               // Video Views (if video call)
               if (isVideo) ...[
                 // Remote Video (Full Screen)
+                if (_isRemoteVideoEnabled)
                 Positioned.fill(
                   child: RTCVideoView(
                     _webRTCService.remoteRenderer,
@@ -116,7 +121,14 @@ class _CallPageState extends State<CallPage> {
                       duration: _duration,
                     ),
                   ),
-                ),
+                )
+                else
+                  CallAvatar(
+                    avatar: _avatar,
+                    fullName: _fullName,
+                    state: state,
+                    duration: _duration,
+                  ),
 
                 // Local Video (Small floating)
                 Positioned(

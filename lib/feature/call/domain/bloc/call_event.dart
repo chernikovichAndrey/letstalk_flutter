@@ -61,3 +61,16 @@ class CallSignalingReceived extends CallEvent {
 
   CallSignalingReceived(this.data);
 }
+
+class CallCameraToggleRequested extends CallEvent {
+  final int callId;
+  final bool enabled;
+
+  CallCameraToggleRequested({required this.callId, required this.enabled});
+}
+
+class CallCameraToggleReceived extends CallEvent {
+  final CallCameraToggleSignal signal;
+
+  CallCameraToggleReceived({required this.signal});
+}

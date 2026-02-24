@@ -9,7 +9,8 @@ enum CallSignalingType {
   callOffer('call_offer'),
   callAnswer('call_answer'),
   callHangup('call_hangup'),
-  callReject('call_reject');
+  callReject('call_reject'),
+  callCameraToggle('call_camera_toggle');
 
   final String value;
   const CallSignalingType(this.value);

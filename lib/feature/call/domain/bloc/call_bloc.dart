@@ -37,6 +37,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     on<CallRejected>(_onCallRejected);
     on<CallHangup>(_onCallHangup);
     on<CallSignalingReceived>(_onCallSignalingReceived);
+    on<CallCameraToggleRequested>(_onCallCameraToggleRequested);
+    on<CallCameraToggleReceived>(_onCallCameraToggleReceived);
   }
 
   @postConstruct
@@ -265,6 +267,9 @@ class CallBloc extends Bloc<CallEvent, CallState> {
           emit(CallFailure(signal.reason));
         }
         break;
+      case CallCameraToggleSignal():
+        add(CallCameraToggleReceived(signal: signal));
+        break;
       case UnknownSignal():
         break;
     }
@@ -276,6 +281,26 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
     _currentCallId = null;
     _currentTargetUserId = null;
+  }
+
+  Future<void> _onCallCameraToggleRequested(
+    CallCameraToggleRequested event,
+    Emitter<CallState> emit,
+  ) async {
+    _webRTCService.toggleVideo();
+    await _callRepository.sendCameraToggle(callId: event.callId, enabled: event.enabled);
+    if (state is CallActive) {
+      emit((state as CallActive).copyWith(isLocalVideoEnabled: event.enabled));
+    }
+  }
+
+  Future<void> _onCallCameraToggleReceived(
+    CallCameraToggleReceived event,
+    Emitter<CallState> emit,
+  ) async {
+    if (state is CallActive) {
+      emit((state as CallActive).copyWith(isRemoteVideoEnabled: event.signal.enabled));
+    }
   }
 
   void _onResetCallBloc(ResetCallBloc event, Emitter<CallState> emit) {

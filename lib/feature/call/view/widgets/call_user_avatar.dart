@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/app/config/app_gradients_extension.dart';
+import 'package:lets_talk/app/config/app_theme.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -10,19 +12,30 @@ class CallUserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = getIt<ProfileBloc>().state.user;
+    final oppositeGradient = (context.theme.brightness == Brightness.dark
+        ? AppTheme.light
+        : AppTheme.dark)
+        .extension<AppGradientsExtension>()!
+        .backgroundGradient;
 
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(11),
-      ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.45),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
       child: Stack(
         children: [
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
-                gradient: context.appGradients.backgroundGradient,
+                gradient: oppositeGradient,
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),

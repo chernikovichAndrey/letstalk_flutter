@@ -22,6 +22,8 @@ abstract class SignalingEvent {
         return CallRejectedSignal.fromJson(json);
       case CallSignalingType.callFailed:
         return CallFailedSignal.fromJson(json);
+      case CallSignalingType.callCameraToggle:
+        return CallCameraToggleSignal.fromJson(json);
       default:
         return UnknownSignal(typeStr, json);
     }
@@ -220,6 +222,26 @@ class CallFailedSignal extends SignalingEvent {
   factory CallFailedSignal.fromJson(Map<String, dynamic> json) {
     return CallFailedSignal(
       reason: json['reason'] as String? ?? 'Call failed',
+    );
+  }
+}
+
+class CallCameraToggleSignal extends SignalingEvent {
+  final int callId;
+  final int userId;
+  final bool enabled;
+
+  const CallCameraToggleSignal({
+    required this.callId,
+    required this.userId,
+    required this.enabled,
+  });
+
+  factory CallCameraToggleSignal.fromJson(Map<String, dynamic> json) {
+    return CallCameraToggleSignal(
+      callId: int.tryParse(json['call_id'].toString()) ?? 0,
+      userId: int.tryParse(json['user_id'].toString()) ?? 0,
+      enabled: json['enabled'] as bool? ?? true,
     );
   }
 }

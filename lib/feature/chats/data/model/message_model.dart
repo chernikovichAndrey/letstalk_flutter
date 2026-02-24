@@ -12,7 +12,7 @@ class ReplyTo {
   ReplyTo({
     required this.messageId,
     required this.fromUserId,
-    this.fromName,
+    required this.fromName,
     required this.textPreview,
     required this.messageType,
     this.media,
@@ -22,13 +22,16 @@ class ReplyTo {
     return ReplyTo(
       messageId: int.tryParse(json['message_id'].toString()) ?? 0,
       fromUserId: int.tryParse(json['from_user_id'].toString()) ?? 0,
-      fromName: json['from_name'] != null && json['from_name'] is! String
+      fromName: json['from_name'] is List
           ? (json['from_name'] as List<dynamic>)
-              .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+              .whereType<Map<String, dynamic>>()
+              .map(UserModel.fromJson)
               .toList()
-          : null,
+          : json['from_name'] is String
+              ? [UserModel(id: 0, phone: '', fullName: json['from_name'] as String)]
+              : [],
       textPreview: json['text_preview'] as String? ?? '',
-      messageType: json['"msg_type'] as String? ?? 'text',
+      messageType: json['msg_type'] as String? ?? 'text',
       media: json['media'] != null ? Media.fromJson(json['media']) : null,
     );
   }

@@ -21,6 +21,13 @@ String getTypeText(BuildContext context, String type) {
   return type;
 }
 
+String getMessageTypeText(BuildContext context, String messageType) {
+  if (messageType == 'image') return context.s.messageTypeImage;
+  if (messageType == 'document') return context.s.messageTypeDocument;
+  if (messageType == 'video') return context.s.video;
+  return context.s.video;
+}
+
 String getStatusText(BuildContext context, String status) {
   if (status == 'missed') return context.s.missedCalls;
   if (status == 'ended') return context.s.endedCall;

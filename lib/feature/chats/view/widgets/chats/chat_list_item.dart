@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -92,15 +93,6 @@ class ChatListItem extends StatelessWidget {
     return '';
   }
 
-  String _messageTypeText(BuildContext context) {
-    if (chat.lastMessageType == 'image') {
-      return context.s.messageTypeImage;
-    }
-    if (chat.lastMessageType == 'document') {
-      return context.s.messageTypeDocument;
-    }
-    return context.s.video;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +151,7 @@ class ChatListItem extends StatelessWidget {
                                 size: 16,
                               ),
                               Text(
-                                _messageTypeText(context),
+                                getMessageTypeText(context, chat.lastMessageType ?? ''),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],

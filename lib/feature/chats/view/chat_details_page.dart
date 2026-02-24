@@ -17,6 +17,7 @@ import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_d
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_empty_messages.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/video_controller_cache.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/message_input.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
@@ -31,6 +32,7 @@ class ChatDetailsPage extends StatefulWidget {
 
 class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingObserver {
   final _scrollController = ScrollController();
+  final _videoCache = VideoControllerCache();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -56,6 +58,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
   @override
   void dispose() {
     _scrollController.dispose();
+    _videoCache.disposeAll();
     super.dispose();
   }
 
@@ -170,7 +173,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ChatDetailsBloc, ChatDetailsState>(
+    return VideoControllerCacheProvider(
+      cache: _videoCache,
+      scrollController: _scrollController,
+      child: BlocListener<ChatDetailsBloc, ChatDetailsState>(
       listenWhen: (previous, current) =>
           (previous.isDownloadSuccess != current.isDownloadSuccess &&
               current.isDownloadSuccess) ||
@@ -182,8 +188,8 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
           showSuccessToast(context.s.fileDownloaded);
         }
       },
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
         body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
           builder: (context, state) {
             if (state.status == ChatDetailsStatus.initial ||
@@ -259,7 +265,9 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
             );
           },
         ),
+        ),
       ),
     );
   }
 }
+

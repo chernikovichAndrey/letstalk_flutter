@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_video_caching/flutter_video_caching.dart';
-import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/video_controller_cache.dart';
 import 'package:video_player/video_player.dart';
 
 class MessageVideoAttachThumbnail extends StatefulWidget {
@@ -30,47 +29,98 @@ class _MessageVideoAttachThumbnailState
   VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _hasError = false;
+  bool _isVisible = false;
+  ScrollController? _scrollController;
+
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
   }
 
-  Future<void> _initializeVideo() async {
-    try {
-      final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl),
-        httpHeaders: {'Authorization': 'Bearer $token'},
-      );
-      // VideoCaching.precache(
-      //   widget.videoUrl,
-      //   headers: {'Authorization': 'Bearer $token'},
-      // );
-      await _controller!.initialize();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = VideoControllerCacheProvider.of(context);
+    if (_scrollController != provider.scrollController) {
+      _scrollController?.removeListener(_checkVisibility);
+      _scrollController = provider.scrollController;
+      _scrollController!.addListener(_checkVisibility);
+    }
+    if (!_initialized) {
+      _initialized = true;
+      _attachController();
+    }
+  }
 
+  Future<void> _attachController() async {
+    final provider = VideoControllerCacheProvider.of(context);
+    final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
+
+    // Use already-initialized controller immediately if available.
+    final cached = provider.cache.getSync(widget.videoUrl);
+    if (cached != null && cached.value.isInitialized) {
       if (mounted) {
         setState(() {
+          _controller = cached;
           _isInitialized = true;
         });
-        await _controller!.seekTo(Duration.zero);
-        _controller?.setLooping(true);
-        _controller?.setVolume(0);
-        _controller?.play();
+        _scheduleVisibilityCheck();
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-        });
-      }
+      return;
+    }
+
+    // Otherwise wait for initialization (first load or still initializing).
+    final controller =
+        await provider.cache.getOrCreate(widget.videoUrl, token ?? '');
+    if (!mounted) return;
+
+    if (controller != null) {
+      setState(() {
+        _controller = controller;
+        _isInitialized = true;
+      });
+      _scheduleVisibilityCheck();
+    } else {
+      setState(() => _hasError = true);
+    }
+  }
+
+  void _scheduleVisibilityCheck() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkVisibility());
+  }
+
+  void _checkVisibility() {
+    if (!mounted || _controller == null || !_controller!.value.isInitialized) {
+      return;
+    }
+
+    final renderObject = context.findRenderObject();
+    if (renderObject is! RenderBox || !renderObject.hasSize) return;
+
+    final screenHeight = MediaQuery.of(context).size.height;
+    final position = renderObject.localToGlobal(Offset.zero);
+    final widgetTop = position.dy;
+    final widgetBottom = position.dy + renderObject.size.height;
+
+    final isVisible = widgetTop < screenHeight && widgetBottom > 0;
+
+    if (isVisible == _isVisible) return;
+    _isVisible = isVisible;
+
+    if (isVisible) {
+      _controller!.play();
+    } else {
+      _controller!.pause();
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _scrollController?.removeListener(_checkVisibility);
+    // Pause but do NOT dispose — controller lives in the cache.
+    _controller?.pause();
     super.dispose();
   }
 
@@ -90,7 +140,7 @@ class _MessageVideoAttachThumbnailState
                       width: 200,
                       height: 200,
                       color: Colors.black,
-                      child: Icon(
+                      child: const Icon(
                         Icons.videocam_off,
                         color: Colors.white70,
                         size: 20,
@@ -98,7 +148,7 @@ class _MessageVideoAttachThumbnailState
                     )
                   : _isInitialized
                   ? Container(
-                      constraints: BoxConstraints(
+                      constraints: const BoxConstraints(
                         maxWidth: 200,
                         maxHeight: 400,
                       ),
@@ -157,7 +207,7 @@ class _MessageVideoAttachThumbnailState
                     ),
                   );
                 }
-                return SizedBox();
+                return const SizedBox();
               },
             ),
           ],

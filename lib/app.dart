@@ -21,6 +21,7 @@ import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_state.dart'
 
 import 'common/l10n/generated/l10n.dart';
 import 'common/mixin/handle_push_notification.dart';
+import 'feature/chats/domain/chats_bloc/chats_bloc.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -49,6 +50,7 @@ class _AppState extends State<App> with HandlePushNotification {
         BlocProvider<ConnectivityBloc>.value(value: getIt()),
         BlocProvider<NavigationBloc>.value(value: getIt()),
         BlocProvider<LocaleBloc>.value(value: getIt()..add(LoadSavedLocale())),
+        BlocProvider<ChatsBloc>.value(value: getIt()..add(ChatsLoad())),
       ],
       child: BlocBuilder<LocaleBloc, LocaleState>(
         builder: (context, localeState) {

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
-import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/extension/list_ext.dart';
+import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_action_button.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_widget.dart';
@@ -48,7 +52,7 @@ class SettingsPage extends StatelessWidget {
                             SizedBox(height: 40),
                             ProfileActionButton(
                               onTap: () =>
-                                  context.push(Routes.profileAvatarSheet),
+                                  context.push(Routes.profileAvatarSheet.path),
                               label: context.s.changePhoto,
                               labelColor: context.appColors.telegramBlue,
                               icon: Icons.add_a_photo_outlined,
@@ -56,8 +60,25 @@ class SettingsPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 12),
                             ProfileActionButton(
+                              onTap: () {
+                                final state = getIt<ChatsBloc>().state as ChatsLoaded;
+                                final favoriteChat = state.chats.firstWhereOrNull((chat) => chat.type == 'favorites');
+                                if (favoriteChat != null) {
+                                  context.push(
+                                    '${Routes.chats.path}/${Routes.chatDetails.path}',
+                                    extra: ChatDetailsArgs(chatId: favoriteChat.id),
+                                  );
+                                }
+                              },
+                              label: context.s.favorites,
+                              labelColor: context.color.onSurface,
+                              icon: Icons.bookmark,
+                              iconColor: context.color.onSurface,
+                            ),
+                            const SizedBox(height: 12),
+                            ProfileActionButton(
                               onTap: () =>
-                                  context.push(Routes.languageSelectSheet),
+                                  context.push(Routes.languageSelectSheet.path),
                               label: context.s.language,
                               labelColor: context.color.onSurface,
                               icon: Icons.language_outlined,

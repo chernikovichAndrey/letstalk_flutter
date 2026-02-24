@@ -22,11 +22,13 @@ class MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
   final bool isGroupChat;
+  final bool isFavoritesChat;
 
   const MessageBubble({
     super.key,
     required this.message,
     required this.isMe,
+    required this.isFavoritesChat,
     this.isGroupChat = false,
   });
 
@@ -49,6 +51,7 @@ class MessageBubble extends StatelessWidget {
         message,
         isMe,
         isGroupChat: isGroupChat,
+        isFavoritesChat: isFavoritesChat,
       ),
       onTap: () => {
         if (message.messageType != 'document' && message.messageType != 'text') {
@@ -148,6 +151,7 @@ class MessageBubble extends StatelessWidget {
                                 child: MessageBubbleInfo(
                                   message: message,
                                   isMe: isMe,
+                                  isFavoritesChat: isFavoritesChat,
                                 ),
                               ),
                             ),
@@ -157,7 +161,11 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ],
                 ),
-                MessageBubbleInfo(message: message, isMe: isMe),
+                MessageBubbleInfo(
+                  message: message,
+                  isMe: isMe,
+                  isFavoritesChat: isFavoritesChat,
+                ),
               ],
             )
           ],

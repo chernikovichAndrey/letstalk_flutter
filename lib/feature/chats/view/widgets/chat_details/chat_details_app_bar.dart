@@ -14,10 +14,12 @@ class ChatDetailsAppBar extends StatelessWidget {
   final String chatTitle;
   final String? avatarUrl;
   final int? memberId;
+  final bool isFavorites;
 
   const ChatDetailsAppBar({
     super.key,
     required this.chatTitle,
+    required this.isFavorites,
     this.memberId,
     this.avatarUrl,
   });
@@ -123,17 +125,22 @@ class ChatDetailsAppBar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          context.push(Routes.chatInfoSheet.path);
-                        },
-                        child: CAvatar(
-                          radius: 25,
-                          imageUrl: avatarUrl,
-                          name: chatTitle,
+                    Opacity(
+                      opacity: isFavorites ? 0 : 1,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          onTap: () {
+                            if (!isFavorites) {
+                              context.push(Routes.chatInfoSheet.path);
+                            }
+                          },
+                          child: CAvatar(
+                            radius: 25,
+                            imageUrl: avatarUrl,
+                            name: chatTitle,
+                          ),
                         ),
                       ),
                     ),

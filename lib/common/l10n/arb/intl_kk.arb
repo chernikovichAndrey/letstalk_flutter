@@ -166,6 +166,8 @@
   "messageTypeImage": "Сурет",
   "messageTypeDocument": "Құжат",
   "chatCreated": "Чат құрылды",
+  "favorites": "Таңдаулылар",
+  "favoritesEmptyHint": "Таңдаулы хабарламаларыңызды қосыңыз",
   "version": "Нұсқасы",
   "privacyPolicy": "Құпиялылық саясаты",
   "termsOfService": "Пайдалану шарттары",

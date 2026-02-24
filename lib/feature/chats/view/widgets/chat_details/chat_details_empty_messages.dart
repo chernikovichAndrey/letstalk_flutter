@@ -27,7 +27,7 @@ class ChatDetailsEmptyMessages extends StatelessWidget {
                   ? context.s.chatCreatedByYou
                   : context.s.chatInvited;
               return Text(
-                text,
+                state.chat?.type == 'favorites' ? context.s.favoritesEmptyHint : text,
                 textAlign: TextAlign.center,
                 style: context.text.bodyMedium,
               );

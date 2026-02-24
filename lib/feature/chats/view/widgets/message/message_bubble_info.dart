@@ -6,11 +6,13 @@ import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 class MessageBubbleInfo extends StatelessWidget {
   final Message message;
   final bool isMe;
+  final bool isFavoritesChat;
 
   const MessageBubbleInfo({
     super.key,
     required this.message,
     required this.isMe,
+    required this.isFavoritesChat,
   });
 
   @override
@@ -51,7 +53,7 @@ class MessageBubbleInfo extends StatelessWidget {
             fontSize: 9,
           ),
         ),
-        if (isMe) ...[
+        if (isMe && !isFavoritesChat) ...[
           const SizedBox(width: 4),
           Icon(
             message.read ? Icons.done_all : Icons.done,

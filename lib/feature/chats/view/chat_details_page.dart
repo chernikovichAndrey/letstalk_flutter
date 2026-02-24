@@ -137,6 +137,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
       message: message,
       isMe: isMe,
       isGroupChat: isGroupChat,
+      isFavoritesChat: state.chat?.type == 'favorites',
     );
 
     if (showDate && createdAt != null) {
@@ -156,6 +157,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
     final chat = state.chat;
     if (chat == null) return '';
     if (chat.type == 'group') return chat.title ?? '';
+    if (chat.type == 'favorites') return context.s.favorites;
     if (chat.memberInfo == null) return '';
     final member = _getChatMemberInfo(state);
     if (member == null) return '';
@@ -238,6 +240,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
                     avatarUrl: state.chat?.type == 'group'
                         ? state.chat?.avatar
                         : _getChatMemberInfo(state)?.avatar,
+                    isFavorites: state.chat?.type == 'favorites',
                   ),
                 ),
                 if (shouldShowAddBanner)

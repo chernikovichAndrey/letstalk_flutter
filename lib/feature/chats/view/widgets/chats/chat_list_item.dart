@@ -62,7 +62,10 @@ class ChatListItem extends StatelessWidget {
     return null;
   }
 
-  String? _getMemberName({bool phone = false}) {
+  String? _getMemberName({bool phone = false, BuildContext? context}) {
+    if (chat.type == 'favorites') {
+      return context?.s.favorites ?? 'Favorites';
+    }
     final member = _getChatMember();
     if (member == null) return null;
     if (member.fullName != null && member.fullName!.isNotEmpty) {
@@ -78,19 +81,33 @@ class ChatListItem extends StatelessWidget {
   }
 
   String _lastMessagePreview(BuildContext context) {
-    if (isTyping) {
-      return context.s.typing;
+    if (isTyping) return context.s.typing;
+    if (chat.lastMessageText != null) return chat.lastMessageText!;
+
+    if (chat.lastMessageId == 0) {
+      return switch (chat.type) {
+        'private' => context.s.chatCreated,
+        'favorites' => context.s.favoritesEmptyHint,
+        'group' => context.s.groupCreated,
+        _ => '',
+      };
     }
-    if (chat.lastMessageText != null) {
-      return chat.lastMessageText!;
-    }
-    if (chat.type == 'private' && chat.lastMessageId == 0) {
-      return context.s.chatCreated;
-    }
-    if (chat.type == 'group' && chat.lastMessageId == 0) {
-      return context.s.groupCreated;
-    }
+
     return '';
+  }
+
+  String? _chatTitle(BuildContext context) {
+    if (chat.type == 'group') {
+      return chat.title;
+    }
+    if (chat.type == 'private') {
+      return _getMemberName(phone: true);
+    }
+    if (chat.type == 'favorites') {
+      return context.s.favorites;
+    }
+
+    return null;
   }
 
 
@@ -104,7 +121,7 @@ class ChatListItem extends StatelessWidget {
           children: [
             CAvatar(
               imageUrl: chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
-              name: chat.type == 'group' ? chat.title : _getMemberName(),
+              name: chat.type == 'group' ? chat.title : _getMemberName(context: context),
               radius: 28,
             ),
             const SizedBox(width: 12),
@@ -117,10 +134,7 @@ class ChatListItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          (chat.type == 'group'
-                                  ? chat.title
-                                  : _getMemberName(phone: true)) ??
-                              context.s.noTitle,
+                          _chatTitle(context) ?? context.s.noTitle,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

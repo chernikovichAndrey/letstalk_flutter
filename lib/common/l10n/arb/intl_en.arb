@@ -208,6 +208,8 @@
   "messageTypeImage": "Image",
   "messageTypeDocument": "Document",
   "chatCreated": "Chat created",
+  "favorites": "Favorites",
+  "favoritesEmptyHint": "Add your favorite messages",
   "version": "Version",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",

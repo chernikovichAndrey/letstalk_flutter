@@ -10,33 +10,48 @@ import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_bubble.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_menu.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message/video_controller_cache.dart';
 import 'package:path_provider/path_provider.dart';
 
 class MessageActionsOverlay extends StatefulWidget {
   final Message message;
   final bool isMe;
   final bool isGroupChat;
+  final bool isFavoritesChat;
 
   const MessageActionsOverlay({
     super.key,
     required this.message,
     required this.isMe,
+    required this.isFavoritesChat,
     this.isGroupChat = false,
   });
 
-  static void show(BuildContext context, Message message, bool isMe, {bool isGroupChat = false}) {
+  static void show(BuildContext context, Message message, bool isMe, {bool isGroupChat = false, bool isFavoritesChat = false}) {
+    final videoProvider = context.dependOnInheritedWidgetOfExactType<VideoControllerCacheProvider>();
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
-        pageBuilder: (context, _, __) => BlocProvider<ChatDetailsBloc>.value(
-          value: getIt(),
-          child: MessageActionsOverlay(
-            message: message,
-            isMe: isMe,
-            isGroupChat: isGroupChat,
-          ),
-        ),
-        transitionsBuilder: (context, animation, _, child) {
+        pageBuilder: (_, __, ___) {
+          Widget overlay = BlocProvider<ChatDetailsBloc>.value(
+            value: getIt(),
+            child: MessageActionsOverlay(
+              message: message,
+              isMe: isMe,
+              isGroupChat: isGroupChat,
+              isFavoritesChat: isFavoritesChat,
+            ),
+          );
+          if (videoProvider != null) {
+            overlay = VideoControllerCacheProvider(
+              cache: videoProvider.cache,
+              scrollController: videoProvider.scrollController,
+              child: overlay,
+            );
+          }
+          return overlay;
+        },
+        transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(opacity: animation, child: child);
         },
       ),
@@ -223,6 +238,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                                 message: widget.message,
                                 isMe: widget.isMe,
                                 isGroupChat: widget.isGroupChat,
+                                isFavoritesChat: widget.isFavoritesChat,
                               ),
                             ),
                             const SizedBox(height: 8),

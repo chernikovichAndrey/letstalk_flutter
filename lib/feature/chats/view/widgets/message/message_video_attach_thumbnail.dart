@@ -8,13 +8,11 @@ import 'package:lets_talk/feature/chats/view/widgets/message/video_controller_ca
 import 'package:video_player/video_player.dart';
 
 class MessageVideoAttachThumbnail extends StatefulWidget {
-  final String videoUrl;
   final int messageId;
   final Message message;
 
   const MessageVideoAttachThumbnail({
     super.key,
-    required this.videoUrl,
     required this.messageId,
     required this.message,
   });
@@ -39,6 +37,13 @@ class _MessageVideoAttachThumbnailState
     super.initState();
   }
 
+  String? get _videoUrl {
+    final url = widget.message.media?.videoUrl;
+    return (url != null && url.isNotEmpty) ? url : null;
+  }
+
+  bool get _isProcessing => widget.message.media?.status == 'processing';
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -50,16 +55,30 @@ class _MessageVideoAttachThumbnailState
     }
     if (!_initialized) {
       _initialized = true;
+      if (!_isProcessing && _videoUrl != null) {
+        _attachController();
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(MessageVideoAttachThumbnail oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final wasProcessing = oldWidget.message.media?.status == 'processing';
+    if (wasProcessing && !_isProcessing && _videoUrl != null && !_isInitialized) {
       _attachController();
     }
   }
 
   Future<void> _attachController() async {
+    final url = _videoUrl;
+    if (url == null) return;
+
     final provider = VideoControllerCacheProvider.of(context);
     final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
 
     // Use already-initialized controller immediately if available.
-    final cached = provider.cache.getSync(widget.videoUrl);
+    final cached = provider.cache.getSync(url);
     if (cached != null && cached.value.isInitialized) {
       if (mounted) {
         setState(() {
@@ -72,8 +91,7 @@ class _MessageVideoAttachThumbnailState
     }
 
     // Otherwise wait for initialization (first load or still initializing).
-    final controller =
-        await provider.cache.getOrCreate(widget.videoUrl, token ?? '');
+    final controller = await provider.cache.getOrCreate(url, token ?? '');
     if (!mounted) return;
 
     if (controller != null) {
@@ -135,7 +153,16 @@ class _MessageVideoAttachThumbnailState
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: _hasError
+              child: _isProcessing
+                  ? Container(
+                      width: 200,
+                      height: 200,
+                      color: Colors.black54,
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    )
+                  : _hasError
                   ? Container(
                       width: 200,
                       height: 200,

@@ -31,6 +31,7 @@ class Media {
   final String downloadUrl;
   final String? videoUrl;
   final UploadedBy? uploadedBy;
+  final String? status;
 
   Media({
     required this.id,
@@ -45,7 +46,40 @@ class Media {
     this.videoUrl,
     required this.downloadUrl,
     this.uploadedBy,
+    this.status,
   });
+
+  Media copyWith({
+    int? id,
+    String? type,
+    String? mimeType,
+    String? filename,
+    int? size,
+    int? duration,
+    int? width,
+    int? height,
+    String? thumbnailUrl,
+    String? downloadUrl,
+    String? videoUrl,
+    UploadedBy? uploadedBy,
+    String? status,
+  }) {
+    return Media(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      mimeType: mimeType ?? this.mimeType,
+      filename: filename ?? this.filename,
+      size: size ?? this.size,
+      duration: duration ?? this.duration,
+      width: width ?? this.width,
+      height: height ?? this.height,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      downloadUrl: downloadUrl ?? this.downloadUrl,
+      videoUrl: videoUrl ?? this.videoUrl,
+      uploadedBy: uploadedBy ?? this.uploadedBy,
+      status: status ?? this.status,
+    );
+  }
 
   factory Media.fromJson(Map<String, dynamic> json) {
     return Media(
@@ -63,6 +97,7 @@ class Media {
       uploadedBy: json['uploaded_by'] != null
           ? UploadedBy.fromJson(json['uploaded_by'] as Map<String, dynamic>)
           : null,
+      status: json['status'] as String? ?? '',
     );
   }
 }

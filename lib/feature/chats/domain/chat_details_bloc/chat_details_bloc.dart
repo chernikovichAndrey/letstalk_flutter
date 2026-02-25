@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:lets_talk/app/environment/environment.dart';
+
 import 'package:gal/gal.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
@@ -38,6 +40,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     'user_typing': _handleUserTypingMessage,
     'chat_avatar_updated': _handleChatAvatarUpdated,
     'message_deleted': _handleChatMessageDeleted,
+    'video_ready': _handleVideoReady,
   };
 
   ChatDetailsBloc(
@@ -70,6 +73,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     on<RemoveMemberFromChat>(_onRemoveMemberFromChat);
     on<UpdateChatAvatar>(_onUpdateChatAvatar);
     on<ChatDetailsUpdatedAvatar>(_onChatDetailsUpdatedAvatar);
+    on<ChatDetailsVideoReady>(_onVideoReady);
 
     _subscribeToWebSocket();
   }
@@ -140,6 +144,39 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     final chatId = decoded['chat_id'] as int;
     if (state.chat?.id == chatId) {
       add(ChatDetailsDeleteMessage(decoded['message_id'], isOtherDeleted: true));
+    }
+  }
+
+  void _handleVideoReady(Map<String, dynamic> decoded) {
+    final mediaId = int.tryParse(decoded['media_id'].toString()) ?? 0;
+    final filePath = decoded['file_path'] as String? ?? '';
+    add(ChatDetailsVideoReady(mediaId: mediaId, filePath: filePath));
+  }
+
+  void _onVideoReady(
+    ChatDetailsVideoReady event,
+    Emitter<ChatDetailsState> emit,
+  ) {
+    bool hasChanges = false;
+    final messages = state.messages.map((m) {
+      if (m.media?.id == event.mediaId) {
+        hasChanges = true;
+        final currentVideoUrl = m.media!.videoUrl;
+        final newVideoUrl = (currentVideoUrl == null || currentVideoUrl.isEmpty)
+            ? '${Env.baseUrl}/${event.filePath}'
+            : currentVideoUrl;
+        return m.copyWith(
+          media: m.media!.copyWith(status: 'ready', videoUrl: newVideoUrl),
+        );
+      }
+      return m;
+    }).toList();
+
+    if (hasChanges) {
+      if (state.chat?.id != null) {
+        _cacheService.updateMessages(state.chat!.id, messages);
+      }
+      emit(state.copyWith(messages: messages));
     }
   }
 

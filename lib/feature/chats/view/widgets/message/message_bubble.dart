@@ -109,14 +109,13 @@ class MessageBubble extends StatelessWidget {
                   if (message.messageType == 'image' &&
                       message.media?.thumbnailUrl != null)
                     MessageImageAttachThumbnail(
-                      thumbnailUrl: message.media!.thumbnailUrl!,
+                      media: message.media!,
                       messageId: message.id,
                       message: message,
                     ),
                   if (message.messageType == 'video' &&
-                      message.media!.videoUrl != null)
+                      message.media != null)
                     MessageVideoAttachThumbnail(
-                      videoUrl: message.media!.videoUrl!,
                       messageId: message.id,
                       message: message,
                     ),

@@ -132,6 +132,13 @@ class ChatDetailsReadMessage extends ChatDetailsEvent {
 
 class RefreshStateEvent extends ChatDetailsEvent {}
 
+class ChatDetailsVideoReady extends ChatDetailsEvent {
+  final int mediaId;
+  final String filePath;
+
+  ChatDetailsVideoReady({required this.mediaId, required this.filePath});
+}
+
 class AddMembersToChat extends ChatDetailsEvent {
   final int userId;
 

@@ -1,25 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dart';
 
 class MessageImageAttachThumbnail extends StatelessWidget {
-  final String thumbnailUrl;
+  final Media media;
   final int messageId;
   final Message message;
 
   const MessageImageAttachThumbnail({
     super.key,
-    required this.thumbnailUrl,
+    required this.media,
     required this.messageId,
     required this.message,
   });
 
+  static const double _maxWidth = 200;
+  static const double _maxHeight = 300;
+
+  Size _calculateSize() {
+    final w = media.width;
+    final h = media.height;
+    if (w == null || h == null || w == 0 || h == 0) {
+      return const Size(_maxWidth, _maxWidth);
+    }
+    final aspectRatio = w / h;
+    double width = w.toDouble();
+    double height = h.toDouble();
+    if (width > _maxWidth) {
+      width = _maxWidth;
+      height = width / aspectRatio;
+    }
+    if (height > _maxHeight) {
+      height = _maxHeight;
+      width = height * aspectRatio;
+    }
+    return Size(width, height);
+  }
+
   @override
   Widget build(BuildContext context) {
     final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
+    final size = _calculateSize();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -30,11 +55,11 @@ class MessageImageAttachThumbnail extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                thumbnailUrl,
+                media.thumbnailUrl!,
                 headers: {'Authorization': 'Bearer $token'},
-                width: 200,
-                height: 200,
-                fit: BoxFit.contain,
+                width: size.width,
+                height: size.height,
+                fit: BoxFit.fitHeight,
                 errorBuilder: (context, error, stackTrace) =>
                     const Icon(Icons.image, color: Colors.white70, size: 20),
               ),
@@ -44,10 +69,10 @@ class MessageImageAttachThumbnail extends StatelessWidget {
                 if (state.downloadingMessageId == messageId) {
                   final progress = state.downloadProgress ?? 0.0;
                   final progressPercent = (progress * 100).toInt();
-                  
+
                   return Container(
-                    width: 200,
-                    height: 200,
+                    width: size.width,
+                    height: size.height,
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(8),

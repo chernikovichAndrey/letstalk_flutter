@@ -133,24 +133,31 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
       }
     }
 
-    final bubble = MessageBubble(
+    final itemKey = ValueKey(message.tempMessageId ?? message.id);
+
+    if (showDate && createdAt != null) {
+      return Column(
+        key: itemKey,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DateSeparator(date: _formatDate(createdAt)),
+          MessageBubble(
+            message: message,
+            isMe: isMe,
+            isGroupChat: isGroupChat,
+            isFavoritesChat: state.chat?.type == 'favorites',
+          ),
+        ],
+      );
+    }
+
+    return MessageBubble(
+      key: itemKey,
       message: message,
       isMe: isMe,
       isGroupChat: isGroupChat,
       isFavoritesChat: state.chat?.type == 'favorites',
     );
-
-    if (showDate && createdAt != null) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          DateSeparator(date: _formatDate(createdAt)),
-          bubble,
-        ],
-      );
-    }
-
-    return bubble;
   }
 
   String _getChatTitle(ChatDetailsState state) {

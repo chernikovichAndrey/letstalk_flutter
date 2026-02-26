@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/toasts.dart';
+import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_action_button.dart';
 
 class ChatInfoActionsGroup extends StatelessWidget {
@@ -18,6 +21,9 @@ class ChatInfoActionsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chatId = getIt<ChatDetailsBloc>().state.chat!.id;
+
+
     return Row(
       mainAxisAlignment: isGroupChat
           ? MainAxisAlignment.center
@@ -54,25 +60,39 @@ class ChatInfoActionsGroup extends StatelessWidget {
               );
             },
           ),
-        ChatInfoActionButton(
-          context: context,
-          icon: Icons.notifications,
-          label: context.s.sound,
-          onTap: () {
-            //TODO
-            showWarningToast(context.s.notWorkingNow);
-          },
+        BlocBuilder<ChatsBloc, ChatsState>(
+          builder: (context, state) {
+            if (state is ChatsLoaded) {
+              final isMuted = state.chats.firstWhereOrNull((chat) => chat.id == chatId)?.muted ?? false;
+              return ChatInfoActionButton(
+                context: context,
+                icon: isMuted
+                    ? Icons.notifications_off
+                    : Icons.notifications,
+                label: context.s.sound,
+                onTap: () {
+                  getIt<ChatsBloc>().add(
+                    MuteChat(
+                      chatId: chatId,
+                      muted: !isMuted,
+                    ),
+                  );
+                },
+              );
+            }
+            return const SizedBox();
+          }
         ),
-        if (isGroupChat) SizedBox(width: 12),
-        ChatInfoActionButton(
-          context: context,
-          icon: Icons.more_horiz,
-          label: context.s.more,
-          onTap: () {
-            //TODO
-            showWarningToast(context.s.notWorkingNow);
-          },
-        ),
+        // if (isGroupChat) SizedBox(width: 12),
+        // ChatInfoActionButton(
+        //   context: context,
+        //   icon: Icons.more_horiz,
+        //   label: context.s.more,
+        //   onTap: () {
+        //     //TODO
+        //     showWarningToast(context.s.notWorkingNow);
+        //   },
+        // ),
       ],
     );
   }

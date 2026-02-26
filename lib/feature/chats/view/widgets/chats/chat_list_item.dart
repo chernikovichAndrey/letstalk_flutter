@@ -194,7 +194,7 @@ class ChatListItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: context.appColors.messageMeBubble,
+                            color: chat.muted ? context.appColors.hintText : context.appColors.messageMeBubble,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           constraints: const BoxConstraints(minWidth: 20),

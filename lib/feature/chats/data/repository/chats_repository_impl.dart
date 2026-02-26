@@ -108,4 +108,12 @@ class ChatsRepositoryImpl implements ChatsRepository {
 
     return response.data['avatar'] as String;
   }
+
+  @override
+  Future<void> muteChat({required int chatId, required bool muted}) async {
+    await _apiService.post(
+      ApiConstants.chatMute(chatId),
+      data: {'muted': muted},
+    );
+  }
 }

@@ -81,3 +81,10 @@ class CreateChatGroup extends ChatsEvent {
 
   CreateChatGroup(this.userIds, this.title, this.avatar);
 }
+
+class MuteChat extends ChatsEvent {
+  final int chatId;
+  final bool muted;
+
+  MuteChat({required this.chatId, required this.muted});
+}

@@ -21,4 +21,5 @@ abstract class ChatsRepository {
     required int chatId,
     required File file,
   });
+  Future<void> muteChat({required int chatId, required bool muted});
 }

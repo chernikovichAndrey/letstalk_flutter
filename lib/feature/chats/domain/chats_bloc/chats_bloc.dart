@@ -53,6 +53,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<ChatsToggleChatSelection>(_onToggleChatSelection);
     on<CreateChatGroup>(_onCreateChatGroup);
     on<RemoveChat>(_onRemoveChat);
+    on<MuteChat>(_onMuteChat);
 
     _subscribeToWebSocket();
     _subscribeToProfile();
@@ -347,6 +348,27 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       chatId: event.chatId,
       userId: _currentUser!.id,
     );
+  }
+
+  Future<void> _onMuteChat(MuteChat event, Emitter<ChatsState> emit) async {
+    final currentState = state;
+    if (currentState is ChatsLoaded) {
+      final updatedChats = currentState.chats.map((chat) {
+        if (chat.id == event.chatId) return chat.copyWith(muted: event.muted);
+        return chat;
+      }).toList();
+      emit(ChatsLoaded(
+        updatedChats,
+        typingUsers: currentState.typingUsers,
+        isSelectionMode: currentState.isSelectionMode,
+        selectedChatIds: currentState.selectedChatIds,
+      ));
+    }
+    try {
+      await _chatsRepository.muteChat(chatId: event.chatId, muted: event.muted);
+    } catch (e) {
+      _logger.e('Failed to mute chat: $e');
+    }
   }
 
   void _subscribeToProfile() {

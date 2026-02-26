@@ -12,6 +12,7 @@ class Chat {
   final int membersCount;
   final String? role;
   final List<MemberInfo>? memberInfo;
+  final bool muted;
 
   Chat({
     required this.id,
@@ -27,9 +28,11 @@ class Chat {
     required this.membersCount,
     this.role,
     this.memberInfo,
+    this.muted = false,
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
+    print('1111111 ${json}');
     return Chat(
       id: int.tryParse(json['id'].toString()) ?? 0,
       type: json['type'] as String? ?? '',
@@ -46,6 +49,7 @@ class Chat {
       memberInfo: (json['member_info'] as List<dynamic>?)
           ?.map((e) => MemberInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      muted: json['is_muted'] as bool? ?? false,
     );
   }
 
@@ -56,6 +60,7 @@ class Chat {
     String? lastMessageType,
     String? lastMessageAt,
     String? avatar,
+    bool? muted,
   }) {
     return Chat(
       id: id,
@@ -71,6 +76,7 @@ class Chat {
       lastMessageType: lastMessageType ?? this.lastMessageType,
       role: role,
       memberInfo: memberInfo,
+      muted: muted ?? this.muted,
     );
   }
 }

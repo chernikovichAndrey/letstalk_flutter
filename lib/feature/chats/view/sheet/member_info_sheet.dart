@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/arg/member_info_args.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_actions_group.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_avatar.dart';

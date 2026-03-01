@@ -16,6 +16,7 @@ class CTextField extends StatelessWidget {
   final int? minLines;
   final bool autofocus;
   final List<TextInputFormatter>? inputFormatters;
+  final EdgeInsetsGeometry? contentPadding;
 
   const CTextField({
     super.key,
@@ -32,6 +33,7 @@ class CTextField extends StatelessWidget {
     this.minLines,
     this.autofocus = false,
     this.inputFormatters,
+    this.contentPadding,
   });
 
   @override
@@ -60,10 +62,13 @@ class CTextField extends StatelessWidget {
             labelText: labelText,
             errorText: errorText,
             prefixIcon: prefixIcon,
+            prefixIconConstraints: prefixIcon != null
+                ? const BoxConstraints(minWidth: 36, minHeight: 36)
+                : null,
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: appColors.inputFill,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,

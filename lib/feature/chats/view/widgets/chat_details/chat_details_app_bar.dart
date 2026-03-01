@@ -6,8 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
-import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 
 class ChatDetailsAppBar extends StatelessWidget {
@@ -28,127 +26,113 @@ class ChatDetailsAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final baseColor = appColors.glassForeground;
+    final isDark = context.theme.brightness == Brightness.dark;
+    final bgColor = isDark
+        ? const Color(0xFF1C1C1E).withValues(alpha: 0.92)
+        : Colors.white.withValues(alpha: 0.92);
 
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-        child: Stack(
-          children: [
-            const Positioned.fill(
-              child: GlassAppBarBackground(),
-            ),
-            // Content
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GlassButton(
-                      icon: Icons.arrow_back,
-                      onTap: context.pop,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: IntrinsicWidth(
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              onTap: () {
-                                context.push(Routes.chatInfoSheet.path);
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(25),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      color: appColors.glassButtonBackground,
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                    child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
-                                      builder: (context, state) {
-                                        return Center(
-                                          child: Text.rich(
-                                            TextSpan(
-                                              children: [
-                                                WidgetSpan(
-                                                  child: Text(
-                                                    chatTitle,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      color: baseColor,
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                                if (state.typingUserIds.isNotEmpty)
-                                                  TextSpan(
-                                                    text: '\n${context.s.typing}',
-                                                    style: TextStyle(
-                                                      color: Colors.blue,
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                if (state.chat?.type == 'group' && state.typingUserIds.isEmpty)
-                                                  TextSpan(
-                                                    text: '\n${context.s.participantsCount(state.chat?.memberInfo?.length ?? 1)}',
-                                                    style: TextStyle(
-                                                      color: baseColor,
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.w400,
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                            textAlign: TextAlign.center,
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          color: bgColor,
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: context.pop,
+                    icon: Icon(Icons.arrow_back_ios, color: context.appColors.telegramBlue),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: IntrinsicWidth(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            onTap: () {
+                              context.push(Routes.chatInfoSheet.path);
+                            },
+                            child: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+                              builder: (context, state) {
+                                return Center(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        WidgetSpan(
+                                          child: Text(
+                                            chatTitle,
+                                            maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: baseColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
-                                        );
-                                      },
+                                        ),
+                                        if (state.typingUserIds.isNotEmpty)
+                                          TextSpan(
+                                            text: '\n${context.s.typing}',
+                                            style: const TextStyle(
+                                              color: Colors.blue,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        if (state.chat?.type == 'group' &&
+                                            state.typingUserIds.isEmpty)
+                                          TextSpan(
+                                            text: '\n${context.s.participantsCount(state.chat?.memberInfo?.length ?? 1)}',
+                                            style: TextStyle(
+                                              color: baseColor,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                      ],
                                     ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Opacity(
-                      opacity: isFavorites ? 0 : 1,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          onTap: () {
-                            if (!isFavorites) {
-                              context.push(Routes.chatInfoSheet.path);
-                            }
-                          },
-                          child: CAvatar(
-                            radius: 25,
-                            imageUrl: avatarUrl,
-                            name: chatTitle,
-                          ),
+                  ),
+                  const SizedBox(width: 8),
+                  Opacity(
+                    opacity: isFavorites ? 0 : 1,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          if (!isFavorites) {
+                            context.push(Routes.chatInfoSheet.path);
+                          }
+                        },
+                        child: CAvatar(
+                          radius: 20,
+                          imageUrl: avatarUrl,
+                          name: chatTitle,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

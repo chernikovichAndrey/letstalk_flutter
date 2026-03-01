@@ -26,31 +26,45 @@ class PureMessageInput extends StatelessWidget {
       children: [
         if (leftAction != null) ...[leftAction!, const SizedBox(width: 8)],
         Expanded(
-          child: TextField(
-            focusNode: inputFocus,
-            controller: controller,
-            minLines: 1,
-            maxLines: 5,
-            decoration: InputDecoration(
-              hintText: hintText ?? context.s.messageInputHint,
-              filled: true,
-              fillColor: context.appColors.inputSecondaryFill,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide.none,
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              TextField(
+                focusNode: inputFocus,
+                controller: controller,
+                style: context.text.bodyMedium?.copyWith(
+                  letterSpacing: 0,
+                  height: 1,
+                ),
+                minLines: 1,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  hintText: hintText ?? context.s.messageInputHint,
+                  hintStyle: context.text.bodyMedium?.copyWith(
+                    letterSpacing: 0,
+                  ),
+                  filled: true,
+                  fillColor: context.appColors.inputSecondaryFill,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
+                  isDense: true,
+                  contentPadding: EdgeInsets.only(
+                    left: 16,
+                    right: showSendButton ? 44 : 16,
+                    top: 12,
+                    bottom: 12,
+                  ),
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              suffixIcon: showSendButton
-                  ? IconButton(
-                      onPressed: onSendMessage,
-                      icon: Icon(Icons.send),
-                      color: context.appColors.telegramBlue,
-                    )
-                  : null,
-            ),
+              if (showSendButton)
+                IconButton(
+                  onPressed: onSendMessage,
+                  icon: const Icon(Icons.send),
+                  color: context.appColors.telegramBlue,
+                ),
+            ],
           ),
         ),
       ],

@@ -10,6 +10,7 @@ class GlassButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? iconColor;
   final double size;
+  final double? iconSize;
   final bool isEnabled;
 
   const GlassButton({
@@ -20,6 +21,7 @@ class GlassButton extends StatelessWidget {
     this.backgroundColor,
     this.iconColor,
     this.size = 50,
+    this.iconSize,
     this.isEnabled = true,
   }) : assert(
          icon != null || label != null,
@@ -69,7 +71,7 @@ class GlassButton extends StatelessWidget {
                         ),
                       )
                     : Center(
-                        child: Icon(icon!, color: baseColor, size: size * 0.48),
+                        child: Icon(icon!, color: baseColor, size: iconSize ?? size * 0.48),
                       ),
               ),
             ),

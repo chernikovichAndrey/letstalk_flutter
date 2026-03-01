@@ -147,6 +147,8 @@ class _MessageInputState extends State<MessageInput> {
                     showSendButton: canSend,
                     onSendMessage: () => _onSendMessage(state, isEditing),
                     leftAction: GlassButton(
+                      size: 45,
+                      iconSize: 30,
                       icon: isEditing ? Icons.close : Icons.attach_file,
                       onTap: () async {
                         if (isEditing) {

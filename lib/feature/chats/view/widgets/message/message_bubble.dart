@@ -140,7 +140,13 @@ class MessageBubble extends StatelessWidget {
                               : context.appColors.messageOtherText,
                         ),
                         children: [
-                          TextSpan(text: message.text ?? ''),
+                          TextSpan(
+                            text: message.text ?? '',
+                            style: context.text.bodyMedium?.copyWith(
+                              letterSpacing: 0,
+                              height: 1,
+                            ),
+                          ),
                           WidgetSpan(
                             alignment: PlaceholderAlignment.bottom,
                             child: Opacity(

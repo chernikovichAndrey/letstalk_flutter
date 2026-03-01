@@ -199,5 +199,12 @@
         "type": "int"
       }
     }
-  }
+  },
+  "weekdayMon": "пн",
+  "weekdayTue": "вт",
+  "weekdayWed": "ср",
+  "weekdayThu": "чт",
+  "weekdayFri": "пт",
+  "weekdaySat": "сб",
+  "weekdaySun": "вс"
 }

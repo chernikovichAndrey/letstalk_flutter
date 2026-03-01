@@ -1,26 +1,66 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/service/callkit_service.dart';
 import 'package:lets_talk/common/service/websocket_service.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 import 'package:lets_talk/feature/call/view/widgets/incoming_call_banner.dart';
+import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/shell/domain/navigation_bloc/navigation_bloc.dart';
 
-class ShellHolder extends StatelessWidget {
+class ShellHolder extends StatefulWidget {
   const ShellHolder({required this.child, super.key});
 
   final Widget child;
 
   @override
+  State<ShellHolder> createState() => _ShellHolderState();
+}
+
+class _ShellHolderState extends State<ShellHolder> {
+  StreamSubscription<Map<String, dynamic>>? _acceptSub;
+  StreamSubscription<Map<String, dynamic>>? _declineSub;
+
+  @override
+  void initState() {
+    super.initState();
+    final callKitService = getIt<CallKitService>();
+    _acceptSub = callKitService.onAccept.listen((data) {
+      getIt<CallBloc>().add(CallIncomingFromPush(data));
+    });
+    _declineSub = callKitService.onDecline.listen((data) {
+      final callId = int.tryParse(data['call_id']?.toString() ?? '');
+      if (callId != null) {
+        getIt<CallBloc>().add(CallRejected(callId: callId));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _acceptSub?.cancel();
+    _declineSub?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
         listeners: [
+          BlocListener<ProfileBloc, ProfileState>(
+            listenWhen: (prev, curr) =>
+            prev.status != ProfileStatus.loaded && curr.status == ProfileStatus.loaded,
+            listener: (context, state) {
+              getIt<ChatsBloc>().add(ChatsLoad());
+            },
+          ),
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
@@ -29,7 +69,7 @@ class ShellHolder extends StatelessWidget {
                 }
                 getIt<ProfileBloc>().add(ProfileLoadEvent());
                 getIt<NavigationBloc>().add(NavigationInitEvent());
-                context.go(Routes.contacts.path);
+                context.go(Routes.chats.path);
               } else if (state is AuthUnauthenticated) {
                 context.go(Routes.login.path);
               }
@@ -88,7 +128,7 @@ class ShellHolder extends StatelessWidget {
             },
           ),
         ],
-      child: child,
+      child: widget.child,
     );
   }
 }

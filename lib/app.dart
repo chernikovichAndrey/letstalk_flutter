@@ -50,7 +50,7 @@ class _AppState extends State<App> with HandlePushNotification {
         BlocProvider<ConnectivityBloc>.value(value: getIt()),
         BlocProvider<NavigationBloc>.value(value: getIt()),
         BlocProvider<LocaleBloc>.value(value: getIt()..add(LoadSavedLocale())),
-        BlocProvider<ChatsBloc>.value(value: getIt()..add(ChatsLoad())),
+        BlocProvider<ChatsBloc>.value(value: getIt()),
       ],
       child: BlocBuilder<LocaleBloc, LocaleState>(
         builder: (context, localeState) {

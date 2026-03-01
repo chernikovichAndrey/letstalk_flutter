@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 
 class ContactsAppBar extends StatelessWidget {
@@ -28,7 +27,7 @@ class ContactsAppBar extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16.0,
-                  vertical: 8.0,
+                  vertical: 0,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,17 +52,18 @@ class ContactsAppBar extends StatelessWidget {
                                   state.isSelectionMode) {
                                 return Row(
                                   children: [
-                                    GlassButton(
-                                      icon: Icons.close,
-                                      onTap: () => context.read<ContactsBloc>().add(
+                                    IconButton(
+                                      icon: const Icon(Icons.close),
+                                      color: appColors.glassForeground,
+                                      onPressed: () => context.read<ContactsBloc>().add(
                                         ContactsToggleSelectionMode(),
                                       ),
                                     ),
-                                    SizedBox(width: 4),
                                     if (state.selectedContactIds.isNotEmpty)
-                                      GlassButton(
-                                        icon: Icons.delete,
-                                        onTap: () => context
+                                      IconButton(
+                                        icon: const Icon(Icons.delete),
+                                        color: appColors.glassForeground,
+                                        onPressed: () => context
                                             .read<ContactsBloc>()
                                             .add(ContactsDeleteSelected()),
                                       ),
@@ -72,46 +72,35 @@ class ContactsAppBar extends StatelessWidget {
                               } else if (state is ContactsActionInProgress) {
                                 onTap = null;
                               }
-                              return GlassButton(icon: icon, onTap: onTap ?? () {});
+                              return IconButton(
+                                icon: Icon(icon),
+                                color: appColors.glassForeground,
+                                onPressed: onTap,
+                              );
                             },
                           )
                         ],
                       ),
                     ),
                     Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: appColors.glassButtonBackground,
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Center(
-                              child: Text(
-                                context.s.contacts,
-                                style: TextStyle(
-                                  color: baseColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
+                      child: Text(
+                        context.s.contacts,
+                        style: TextStyle(
+                          color: baseColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          GlassButton(
-                            icon: Icons.add,
-                            onTap: () async {
+                          IconButton(
+                            icon: const Icon(Icons.add),
+                            color: appColors.glassForeground,
+                            onPressed: () async {
                               await context.push(Routes.createContact.path);
                               if (context.mounted) {
                                 context.read<ContactsBloc>().add(ContactsRefresh());

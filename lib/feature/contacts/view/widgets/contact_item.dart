@@ -62,27 +62,38 @@ class ContactItem extends StatelessWidget {
     );
     final isRegistered = contact.registeredUserId != null;
 
-    return Opacity(
-      opacity: isRegistered ? 1.0 : 0.5,
-      child: CListTile(
-        leading: CAvatar(
-          imageUrl: contact.imageUrl != null && contact.imageUrl!.isNotEmpty
-              ? contact.imageUrl
-              : null,
-          name: contact.fullName,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Opacity(
+          opacity: isRegistered ? 1.0 : 0.5,
+          child: CListTile(
+            leading: CAvatar(
+              imageUrl: contact.imageUrl != null && contact.imageUrl!.isNotEmpty
+                  ? contact.imageUrl
+                  : null,
+              name: contact.fullName,
+            ),
+            title: contact.fullName,
+            subtitle: contact.phone.isNotEmpty ? contact.phone : null,
+            trailing: state.isSelectionMode
+                ? Icon(
+                    isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: isSelected
+                        ? context.color.primary
+                        : context.color.onSurface.withValues(alpha: 0.3),
+                  )
+                : null,
+            onTap: () => _onTapContact(context),
+          ),
         ),
-        title: contact.fullName,
-        subtitle: contact.phone.isNotEmpty ? contact.phone : null,
-        trailing: state.isSelectionMode
-            ? Icon(
-                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: isSelected
-                    ? context.color.primary
-                    : context.color.onSurface.withValues(alpha: 0.3),
-              )
-            : null,
-        onTap: () => _onTapContact(context),
-      ),
+        Divider(
+          height: 0.5,
+          thickness: 0.5,
+          indent: 84,
+          color: context.color.onSurface.withValues(alpha: 0.1),
+        ),
+      ],
     );
   }
 }

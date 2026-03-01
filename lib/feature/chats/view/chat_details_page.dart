@@ -219,58 +219,59 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
             final shouldShowAddBanner = isGroupChat && 
                 state.members.length == 1;
 
-            return Stack(
+            return Column(
               children: [
-                if (state.messages.isEmpty)
-                  const ChatDetailsEmptyMessages()
-                else
-                  ListView.builder(
-                    reverse: true,
-                    controller: _scrollController,
-                    padding: EdgeInsets.only(
-                      top: context.padding.top + 60 + (shouldShowAddBanner ? 60 : 0),
-                      bottom: context.padding.bottom + 80,
-                    ),
-                    itemCount: state.hasReachedMax
-                        ? state.messages.length
-                        : state.messages.length + 1,
-                    itemBuilder: (context, index) =>
-                        _renderItem(context, index, state),
-                  ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: ChatDetailsAppBar(
-                    chatTitle: _getChatTitle(state),
-                    memberId: member?.userId,
-                    avatarUrl: state.chat?.type == 'group'
-                        ? state.chat?.avatar
-                        : _getChatMemberInfo(state)?.avatar,
-                    isFavorites: state.chat?.type == 'favorites',
+                Expanded(
+                  child: Stack(
+                    children: [
+                      if (state.messages.isEmpty)
+                        const ChatDetailsEmptyMessages()
+                      else
+                        ListView.builder(
+                          reverse: true,
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(
+                            top: context.padding.top + 60 + (shouldShowAddBanner ? 60 : 0),
+                            bottom: 8,
+                          ),
+                          itemCount: state.hasReachedMax
+                              ? state.messages.length
+                              : state.messages.length + 1,
+                          itemBuilder: (context, index) =>
+                              _renderItem(context, index, state),
+                        ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: ChatDetailsAppBar(
+                          chatTitle: _getChatTitle(state),
+                          memberId: member?.userId,
+                          avatarUrl: state.chat?.type == 'group'
+                              ? state.chat?.avatar
+                              : _getChatMemberInfo(state)?.avatar,
+                          isFavorites: state.chat?.type == 'favorites',
+                        ),
+                      ),
+                      if (shouldShowAddBanner)
+                        Positioned(
+                          top: context.padding.top + 66,
+                          left: 0,
+                          right: 0,
+                          child: AddParticipantsBanner(
+                            onTap: () {
+                              context.push(Routes.addContactToGroupSheet);
+                            },
+                            onClose: () {
+                              // TODO: Add logic to hide banner
+                              showWarningToast(context.s.notWorkingNow);
+                            },
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                if (shouldShowAddBanner)
-                  Positioned(
-                    top: context.padding.top + 66,
-                    left: 0,
-                    right: 0,
-                    child: AddParticipantsBanner(
-                      onTap: () {
-                        context.push(Routes.addContactToGroupSheet);
-                      },
-                      onClose: () {
-                        // TODO: Add logic to hide banner
-                        showWarningToast(context.s.notWorkingNow);
-                      },
-                    ),
-                  ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: MessageInput(controller: _scrollController),
-                )
+                MessageInput(controller: _scrollController),
               ],
             );
           },

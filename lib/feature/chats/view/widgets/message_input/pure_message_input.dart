@@ -53,8 +53,8 @@ class PureMessageInput extends StatelessWidget {
                   contentPadding: EdgeInsets.only(
                     left: 16,
                     right: showSendButton ? 44 : 16,
-                    top: 12,
-                    bottom: 12,
+                    top: 14,
+                    bottom: 14,
                   ),
                 ),
               ),

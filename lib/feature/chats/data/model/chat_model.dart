@@ -32,7 +32,6 @@ class Chat {
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
-    print('1111111 ${json}');
     return Chat(
       id: int.tryParse(json['id'].toString()) ?? 0,
       type: json['type'] as String? ?? '',
@@ -49,7 +48,7 @@ class Chat {
       memberInfo: (json['member_info'] as List<dynamic>?)
           ?.map((e) => MemberInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      muted: json['is_muted'] as bool? ?? false,
+      muted: (json['mute'] as Map<String, dynamic>?)?['is_muted'] as bool? ?? false,
     );
   }
 
@@ -61,6 +60,7 @@ class Chat {
     String? lastMessageAt,
     String? avatar,
     bool? muted,
+    String? mutedUntil,
   }) {
     return Chat(
       id: id,

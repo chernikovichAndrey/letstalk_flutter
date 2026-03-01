@@ -217,6 +217,7 @@ class ChatListItem extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             constraints: const BoxConstraints(minWidth: 20),
+                            height: 20,
                             child: Center(
                               child: Text(
                                 chat.unreadCount.toString(),

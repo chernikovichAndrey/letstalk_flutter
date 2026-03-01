@@ -145,6 +145,9 @@ class MessageBubble extends StatelessWidget {
                             style: context.text.bodyMedium?.copyWith(
                               letterSpacing: 0,
                               height: 1,
+                              color: isMe
+                                  ? Colors.white
+                                  : context.appColors.messageOtherText,
                             ),
                           ),
                           WidgetSpan(

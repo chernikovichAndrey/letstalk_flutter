@@ -7,17 +7,19 @@ import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_skeleton.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_slivers.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chats_app_bar.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ChatsPage extends StatelessWidget {
   const ChatsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = context.padding.top + 66;
+    final topPadding = context.padding.top + 42;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -25,7 +27,8 @@ class ChatsPage extends StatelessWidget {
         children: [
           BlocBuilder<ChatsBloc, ChatsState>(
             builder: (context, state) {
-              if (state is ChatsLoading) {
+              final profileStatus = getIt<ProfileBloc>().state.status;
+              if (state is ChatsLoading || profileStatus == ProfileStatus.loading) {
                 return Padding(
                   padding: EdgeInsets.only(top: topPadding),
                   child: const ChatListSkeleton(),

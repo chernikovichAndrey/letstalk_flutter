@@ -25,22 +25,32 @@ class ChatListItem extends StatelessWidget {
     this.onSelect,
   });
 
-  String _formatTime(String? dateTimeStr) {
+  String _formatTime(String? dateTimeStr, BuildContext context) {
     if (dateTimeStr == null) return '';
     try {
       final dateTime = DateTime.parse('${dateTimeStr}Z').toLocal();
       final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final msgDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+      final diffDays = today.difference(msgDay).inDays;
 
-      if (dateTime.year == now.year &&
-          dateTime.month == now.month &&
-          dateTime.day == now.day) {
-        // Today: HH:mm
+      if (diffDays == 0) {
         return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+      } else if (diffDays < 7) {
+        final s = context.s;
+        return switch (dateTime.weekday) {
+          DateTime.monday => s.weekdayMon,
+          DateTime.tuesday => s.weekdayTue,
+          DateTime.wednesday => s.weekdayWed,
+          DateTime.thursday => s.weekdayThu,
+          DateTime.friday => s.weekdayFri,
+          DateTime.saturday => s.weekdaySat,
+          DateTime.sunday => s.weekdaySun,
+          _ => '',
+        };
       } else if (dateTime.year != now.year) {
-        // Other year: dd.MM.yy
         return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${(dateTime.year % 100).toString().padLeft(2, '0')}';
       } else {
-        // Other days: dd.MM
         return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}';
       }
     } catch (e) {
@@ -113,106 +123,116 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
       onTap: isSelectionMode ? () => onSelect?.call(!isSelected) : onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: IntrinsicHeight(
+          child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CAvatar(
-              imageUrl: chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
-              name: chat.type == 'group' ? chat.title : _getMemberName(context: context),
-              radius: 28,
+            Align(
+              alignment: Alignment.center,
+              child: CAvatar(
+                imageUrl: chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
+                name: chat.type == 'group' ? chat.title : _getMemberName(context: context),
+                radius: 28,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _chatTitle(context) ?? context.s.noTitle,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _formatTime(chat.lastMessageAt),
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (chat.lastMessageType != null && chat.lastMessageType != 'text')
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.attach_file,
-                                color: Colors.grey[600],
-                                size: 16,
-                              ),
-                              Text(
-                                getMessageTypeText(context, chat.lastMessageType ?? ''),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      else
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Expanded(
                           child: Text(
-                            _lastMessagePreview(context),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
+                            _chatTitle(context) ?? context.s.noTitle,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
-                            maxLines: 2,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      if (chat.unreadCount > 0)
-                        Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: chat.muted ? context.appColors.hintText : context.appColors.messageMeBubble,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: const BoxConstraints(minWidth: 20),
-                          child: Center(
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatTime(chat.lastMessageAt, context),
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 36,
+                      child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (chat.lastMessageType != null && chat.lastMessageType != 'text')
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.attach_file,
+                                  color: Colors.grey[600],
+                                  size: 16,
+                                ),
+                                Text(
+                                  getMessageTypeText(context, chat.lastMessageType ?? ''),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Expanded(
                             child: Text(
-                              chat.unreadCount.toString(),
+                              _lastMessagePreview(context),
                               style: TextStyle(
-                                color: context.appColors.messageMeText,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        if (chat.unreadCount > 0)
+                          Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: chat.muted ? context.appColors.hintText : context.appColors.messageMeBubble,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            constraints: const BoxConstraints(minWidth: 20),
+                            child: Center(
+                              child: Text(
+                                chat.unreadCount.toString(),
+                                style: TextStyle(
+                                  color: context.appColors.messageMeText,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
+                    ),
+                  ],
+                ),
             ),
             if (isSelectionMode) ...[
               const SizedBox(width: 12),
@@ -225,7 +245,16 @@ class ChatListItem extends StatelessWidget {
             ],
           ],
         ),
+        ),
       ),
+        ),
+        Divider(
+          height: 0.5,
+          thickness: 0.5,
+          indent: 84,
+          color: context.color.onSurface.withValues(alpha: 0.1),
+        ),
+      ],
     );
   }
 }

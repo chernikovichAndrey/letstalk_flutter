@@ -46,10 +46,23 @@ class CallHistoryList extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final call = calls[index];
-                return CallHistoryListItem(
-                  call: call,
-                  isSelectionMode: isSelectionMode,
-                  isSelected: selectedCallIds.contains(call.id),
+                final isLast = index == calls.length - 1;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CallHistoryListItem(
+                      call: call,
+                      isSelectionMode: isSelectionMode,
+                      isSelected: selectedCallIds.contains(call.id),
+                    ),
+                    if (!isLast)
+                      Divider(
+                        height: 0.5,
+                        thickness: 0.5,
+                        indent: 84,
+                        color: context.color.onSurface.withValues(alpha: 0.1),
+                      ),
+                  ],
                 );
               },
               childCount: calls.length,

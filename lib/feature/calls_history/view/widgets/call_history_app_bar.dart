@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
 
 class CallHistoryAppBar extends StatelessWidget {
@@ -28,16 +27,16 @@ class CallHistoryAppBar extends StatelessWidget {
             SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
                 child: Row(
                   children: [
                     BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
                       builder: (context, state) {
                         if (state is CallsHistoryLoaded &&
                             state.calls.isEmpty) {
-                          return GlassButton(
-                            icon: Icons.edit,
-                            onTap: () {},
+                          return IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {},
                           );
                         }
 
@@ -46,17 +45,17 @@ class CallHistoryAppBar extends StatelessWidget {
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              GlassButton(
-                                icon: Icons.close,
-                                onTap: () => context
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => context
                                     .read<CallsHistoryBloc>()
                                     .add(CallsHistoryToggleSelectionMode()),
                               ),
                               if (state.selectedCallIds.isNotEmpty) ...[
                                 const SizedBox(width: 12),
-                                GlassButton(
-                                  icon: Icons.delete,
-                                  onTap: () => context
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () => context
                                       .read<CallsHistoryBloc>()
                                       .add(CallsHistoryDeleteSelected()),
                                 ),
@@ -65,9 +64,9 @@ class CallHistoryAppBar extends StatelessWidget {
                           );
                         }
 
-                        return GlassButton(
-                          icon: Icons.edit,
-                          onTap: () {
+                        return IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
                             context
                                 .read<CallsHistoryBloc>()
                                 .add(CallsHistoryToggleSelectionMode());
@@ -80,10 +79,6 @@ class CallHistoryAppBar extends StatelessWidget {
                       child: Container(
                         height: 50,
                         padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: appColors.glassButtonBackground,
-                          borderRadius: BorderRadius.circular(25),
-                        ),
                         child: TabBar(
                           splashFactory: NoSplash.splashFactory,
                           overlayColor: WidgetStateProperty.all(Colors.transparent),
@@ -93,7 +88,7 @@ class CallHistoryAppBar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
+                                color: context.appColors.glassButtonBackground,
                                 blurRadius: 2,
                                 offset: const Offset(0, 1),
                               ),
@@ -122,9 +117,9 @@ class CallHistoryAppBar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    GlassButton(
-                      icon: Icons.call,
-                      onTap: () => context.push(Routes.callContacts.path),
+                    IconButton(
+                      icon: const Icon(Icons.call),
+                      onPressed: () => context.push(Routes.callContacts.path),
                     ),
                   ],
                 ),

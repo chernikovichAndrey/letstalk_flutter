@@ -14,7 +14,7 @@ class CallsHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = context.padding.top + 66;
+    final topPadding = context.padding.top + 42;
 
     return DefaultTabController(
       length: 2,

@@ -197,9 +197,10 @@ class ChatListItem extends StatelessWidget {
                           Expanded(
                             child: Text(
                               _lastMessagePreview(context),
-                              style: TextStyle(
+                              style: context.text.bodyMedium?.copyWith(
                                 fontSize: 14,
                                 color: Colors.grey[600],
+                                height: 1
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,

@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.dexterous.flutterlocalnotifications</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -30,31 +34,10 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera access is needed for video calls</string>
-	<key>NSContactsUsageDescription</key>
-	<string>We need access to your contacts to help you connect with friends</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access is needed for audio calls</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We need access to save photos to your gallery</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photo library to share photos</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>com.dexterous.flutterlocalnotifications</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-		<string>processing</string>
-		<string>fetch</string>
-		<string>voip</string>
-	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>127.0.0.1</key>
@@ -65,9 +48,28 @@
 				<false/>
 			</dict>
 		</dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed for video calls</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We need access to your contacts to help you connect with friends</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed for audio calls</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need access to save photos to your gallery</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to share photos</string>
+	<key>NSVoIPUsageDescription</key>
+	<string>VoIP is used to receive incoming calls</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+		<string>processing</string>
+		<string>fetch</string>
+		<string>voip</string>
+	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

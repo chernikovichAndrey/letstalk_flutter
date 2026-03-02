@@ -74,3 +74,9 @@ class CallCameraToggleReceived extends CallEvent {
 
   CallCameraToggleReceived({required this.signal});
 }
+
+class CallIncomingFromPush extends CallEvent {
+  final Map<String, dynamic> data;
+
+  CallIncomingFromPush(this.data);
+}

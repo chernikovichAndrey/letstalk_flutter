@@ -1,19 +1,45 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
+import 'package:flutter_callkit_incoming/entities/ios_params.dart';
+import 'package:flutter_callkit_incoming/entities/notification_params.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/common/service/local_notification_service.dart';
+import 'package:lets_talk/feature/call/domain/model/signaling_event.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 
-// Top-level function for background message handling
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  Logger().i('Background message received: ${message.messageId}');
+  if (message.data['type'] == 'incoming_call') {
+    final callerInfo = CallerInfo.fromJson(jsonDecode(message.data['caller_info']));
+    final params = CallKitParams(
+      id: message.data['call_id'],
+      nameCaller: message.data['caller_name'] ?? 'Unknown',
+      appName: 'Lets Talk',
+      type: message.data['call_type'] == 'video' ? 1 : 0,
+      avatar: callerInfo.avatar,
+      missedCallNotification: NotificationParams(
+        showNotification: false,
+      ),
+
+      extra: Map<String, dynamic>.from(message.data),
+      ios: const IOSParams(iconName: null),
+    );
+    await FlutterCallkitIncoming.showCallkitIncoming(params);
+  } else if (message.data['type'] == 'call_ended') {
+    await FlutterCallkitIncoming.endAllCalls();
+  } else {
+    Logger().i('Background message received: ${message.messageId}');
+  }
 }
 
 @singleton

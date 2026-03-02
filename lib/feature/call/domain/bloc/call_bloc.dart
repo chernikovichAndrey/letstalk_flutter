@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lets_talk/common/service/callkit_service.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/common/service/ringtone_service.dart';
 import 'package:lets_talk/feature/call/domain/repository/call_repository.dart';
@@ -15,6 +17,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   final CallRepository _callRepository;
   final WebRTCService _webRTCService;
   final RingtoneService _ringtoneService;
+  final CallKitService _callKitService;
   StreamSubscription? _signalingSubscription;
 
   // Track current call details internally for callbacks
@@ -28,6 +31,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     this._callRepository,
     this._webRTCService,
     this._ringtoneService,
+    this._callKitService,
   ) : super(CallInitial()) {
     on<ResetCallBloc>(_onResetCallBloc);
     on<CallInitiated>(_onCallInitiated);
@@ -39,6 +43,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     on<CallSignalingReceived>(_onCallSignalingReceived);
     on<CallCameraToggleRequested>(_onCallCameraToggleRequested);
     on<CallCameraToggleReceived>(_onCallCameraToggleReceived);
+    on<CallIncomingFromPush>(_onCallIncomingFromPush);
   }
 
   @postConstruct
@@ -260,6 +265,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         await _webRTCService.addIceCandidate(candidate);
         break;
       case CallEndedSignal() || CallRejectedSignal() || CallFailedSignal():
+        _callKitService.endAllCalls();
         await _cleanup();
         emit(CallEnded());
 
@@ -305,5 +311,55 @@ class CallBloc extends Bloc<CallEvent, CallState> {
 
   void _onResetCallBloc(ResetCallBloc event, Emitter<CallState> emit) {
     emit(CallInitial());
+  }
+
+  Future<void> _onCallIncomingFromPush(
+    CallIncomingFromPush event,
+    Emitter<CallState> emit,
+  ) async {
+    try {
+      final data = event.data;
+
+      final rawIceServers = data['ice_servers'];
+      final iceServers = rawIceServers is List
+          ? rawIceServers
+              .map((e) => IceServer.fromJson(
+                    e is Map<String, dynamic> ? e : Map<String, dynamic>.from(e as Map),
+                  ))
+              .toList()
+          : <IceServer>[];
+
+      if (iceServers.isNotEmpty) {
+        _webRTCService.setIceServers(iceServers.map((e) => e.toJson()).toList());
+      }
+
+      await _webRTCService.initialize();
+      await _ringtoneService.playIncomingCall();
+
+      final callId = int.tryParse(data['call_id']?.toString() ?? '') ?? 0;
+      final callerId = int.tryParse(data['caller_id']?.toString() ?? '') ?? 0;
+      final offer = data['offer'] as String? ?? '';
+      final callType = data['call_type'] as String? ?? 'audio';
+
+      final callerInfo = CallerInfo.fromJson(jsonDecode(data['caller_info']));
+      _currentCallId = callId;
+      _currentTargetUserId = callerId;
+      emit(CallIncoming(
+        callId: callId,
+        callerId: callerId,
+        offer: offer,
+        callType: callType,
+        callerInfo: callerInfo,
+      ));
+
+      add(CallAccepted(
+        callId: callId,
+        callerId: callerId,
+        offer: offer,
+        isVideo: callType == 'video',
+      ));
+    } catch (e) {
+      emit(CallFailure(e.toString()));
+    }
   }
 }

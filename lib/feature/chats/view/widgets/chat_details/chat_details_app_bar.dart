@@ -26,20 +26,15 @@ class ChatDetailsAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final baseColor = appColors.glassForeground;
-    final isDark = context.theme.brightness == Brightness.dark;
-    final bgColor = isDark
-        ? Colors.black.withValues(alpha: 0.62)
-        : Colors.white.withValues(alpha: 0.72);
-
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
-          color: bgColor,
+          color: appColors.glassBackground,
           child: SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

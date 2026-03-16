@@ -41,7 +41,7 @@ extension RoutesExt on Routes {
       Routes.settings => const SettingsPage(),
       Routes.editProfileDetails => const EditProfileDetailsPage(),
       Routes.call => const CallPage(),
-      Routes.chatDetails => const ChatDetailsPageScope(),
+      Routes.chatDetails => const ChatDetailsPageScope(chatId: 0),
       Routes.dialog => const CAlertDialog(),
       Routes.createContact => const CreateContactPageScope(),
       Routes.callContacts => const CallContactsSheet(),

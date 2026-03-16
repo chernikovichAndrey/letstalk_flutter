@@ -77,14 +77,14 @@ class CallHistoryAppBar extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Container(
-                        height: 50,
+                        height: 40,
                         padding: const EdgeInsets.all(2),
                         child: TabBar(
                           splashFactory: NoSplash.splashFactory,
                           overlayColor: WidgetStateProperty.all(Colors.transparent),
                           dividerColor: Colors.transparent,
                           indicator: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
+                            color: context.appColors.glassButtonBackground,
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(

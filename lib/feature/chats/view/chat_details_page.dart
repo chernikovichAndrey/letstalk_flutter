@@ -30,7 +30,8 @@ class ChatDetailsPage extends StatefulWidget {
   State<ChatDetailsPage> createState() => _ChatDetailsPageState();
 }
 
-class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingObserver {
+class _ChatDetailsPageState extends State<ChatDetailsPage>
+    with WidgetsBindingObserver {
   final _scrollController = ScrollController();
   final _videoCache = VideoControllerCache();
 
@@ -168,8 +169,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
     if (chat.memberInfo == null) return '';
     final member = _getChatMemberInfo(state);
     if (member == null) return '';
-    if (member.fullName != null && member.fullName!.isNotEmpty) return member.fullName!;
-    if (member.firstName != null && member.firstName!.isNotEmpty) return member.firstName!;
+    if (member.fullName != null && member.fullName!.isNotEmpty)
+      return member.fullName!;
+    if (member.firstName != null && member.firstName!.isNotEmpty)
+      return member.firstName!;
     if (member.phone != null && member.phone!.isNotEmpty) return member.phone!;
     return '';
   }
@@ -186,99 +189,115 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> with WidgetsBindingOb
       cache: _videoCache,
       scrollController: _scrollController,
       child: BlocListener<ChatDetailsBloc, ChatDetailsState>(
-      listenWhen: (previous, current) =>
-          (previous.isDownloadSuccess != current.isDownloadSuccess &&
-              current.isDownloadSuccess) ||
-          (previous.status != current.status &&
-              current.status == ChatDetailsStatus.failure &&
-              current.errorMessage != null),
-      listener: (context, state) {
-        if (state.isDownloadSuccess) {
-          showSuccessToast(context.s.fileDownloaded);
-        }
-      },
+        listenWhen: (previous, current) =>
+            (previous.isDownloadSuccess != current.isDownloadSuccess &&
+                current.isDownloadSuccess) ||
+            (previous.status != current.status &&
+                current.status == ChatDetailsStatus.failure &&
+                current.errorMessage != null),
+        listener: (context, state) {
+          if (state.isDownloadSuccess) {
+            showSuccessToast(context.s.fileDownloaded);
+          }
+        },
         child: Scaffold(
           resizeToAvoidBottomInset: true,
-        body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
-          builder: (context, state) {
-            if (state.status == ChatDetailsStatus.initial ||
-                (state.status == ChatDetailsStatus.loading &&
-                    state.messages.isEmpty)) {
-              return const ChatDetailsSkeleton();
-            }
-            if (state.status == ChatDetailsStatus.failure &&
-                state.messages.isEmpty) {
-              return Center(child: Text(state.errorMessage ?? 'Error'));
-            }
+          body: BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
+            builder: (context, state) {
+              if (state.status == ChatDetailsStatus.initial ||
+                  (state.status == ChatDetailsStatus.loading &&
+                      state.messages.isEmpty)) {
+                return const ChatDetailsSkeleton();
+              }
+              if (state.status == ChatDetailsStatus.failure &&
+                  state.messages.isEmpty) {
+                return Center(child: Text(state.errorMessage ?? 'Error'));
+              }
 
-            final member = state.members.firstWhereOrNull(
-              (member) => member.userId != state.currentUser?.id,
-            );
+              final member = state.members.firstWhereOrNull(
+                (member) => member.userId != state.currentUser?.id,
+              );
 
-            final isGroupChat = state.chat?.type == 'group';
-            final shouldShowAddBanner = isGroupChat && 
-                state.members.length == 1;
+              final isGroupChat = state.chat?.type == 'group';
+              final shouldShowAddBanner =
+                  isGroupChat && state.members.length == 1;
 
-            return Column(
-              children: [
-                Expanded(
-                  child: Stack(
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      isDark
+                          ? 'assets/images/chat_bg_dark.png'
+                          : 'assets/images/chat_bg_light.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Column(
                     children: [
-                      if (state.messages.isEmpty)
-                        const ChatDetailsEmptyMessages()
-                      else
-                        ListView.builder(
-                          reverse: true,
-                          controller: _scrollController,
-                          padding: EdgeInsets.only(
-                            top: context.padding.top + 60 + (shouldShowAddBanner ? 60 : 0),
-                            bottom: 8,
-                          ),
-                          itemCount: state.hasReachedMax
-                              ? state.messages.length
-                              : state.messages.length + 1,
-                          itemBuilder: (context, index) =>
-                              _renderItem(context, index, state),
-                        ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: ChatDetailsAppBar(
-                          chatTitle: _getChatTitle(state),
-                          memberId: member?.userId,
-                          avatarUrl: state.chat?.type == 'group'
-                              ? state.chat?.avatar
-                              : _getChatMemberInfo(state)?.avatar,
-                          isFavorites: state.chat?.type == 'favorites',
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            if (state.messages.isEmpty)
+                              const ChatDetailsEmptyMessages()
+                            else
+                              ListView.builder(
+                                reverse: true,
+                                controller: _scrollController,
+                                padding: EdgeInsets.only(
+                                  top:
+                                      context.padding.top +
+                                      60 +
+                                      (shouldShowAddBanner ? 60 : 0),
+                                  bottom: 8,
+                                ),
+                                itemCount: state.hasReachedMax
+                                    ? state.messages.length
+                                    : state.messages.length + 1,
+                                itemBuilder: (context, index) =>
+                                    _renderItem(context, index, state),
+                              ),
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: ChatDetailsAppBar(
+                                chatTitle: _getChatTitle(state),
+                                memberId: member?.userId,
+                                avatarUrl: state.chat?.type == 'group'
+                                    ? state.chat?.avatar
+                                    : _getChatMemberInfo(state)?.avatar,
+                                isFavorites: state.chat?.type == 'favorites',
+                              ),
+                            ),
+                            if (shouldShowAddBanner)
+                              Positioned(
+                                top: context.padding.top + 66,
+                                left: 0,
+                                right: 0,
+                                child: AddParticipantsBanner(
+                                  onTap: () {
+                                    context.push(Routes.addContactToGroupSheet);
+                                  },
+                                  onClose: () {
+                                    // TODO: Add logic to hide banner
+                                    showWarningToast(context.s.notWorkingNow);
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      if (shouldShowAddBanner)
-                        Positioned(
-                          top: context.padding.top + 66,
-                          left: 0,
-                          right: 0,
-                          child: AddParticipantsBanner(
-                            onTap: () {
-                              context.push(Routes.addContactToGroupSheet);
-                            },
-                            onClose: () {
-                              // TODO: Add logic to hide banner
-                              showWarningToast(context.s.notWorkingNow);
-                            },
-                          ),
-                        ),
+                      MessageInput(controller: _scrollController),
                     ],
                   ),
-                ),
-                MessageInput(controller: _scrollController),
-              ],
-            );
-          },
-        ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 }
-

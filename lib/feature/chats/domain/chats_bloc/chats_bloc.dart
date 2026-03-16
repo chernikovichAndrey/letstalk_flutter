@@ -35,6 +35,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     'chat_avatar_updated': _handleChatAvatarUpdated,
     'message_deleted': _handleChatMessageDeleted,
     'message_forwarded': _handleChatMessageForwarded,
+    'message_edit_success': _handleMessageEdit,
   };
 
   ChatsBloc(
@@ -137,6 +138,19 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         lastMessageText: msg.text,
         lastMessageAt: msg.createdAt,
         unreadCount: unreadCount,
+      ),
+    );
+  }
+
+  void _handleMessageEdit(Map<String, dynamic> decoded) {
+    final msg = Message.fromJson(decoded['message']);
+    add(
+      ChatUpdated(
+        chatId: msg.chatId,
+        lastMessageType: msg.messageType,
+        lastMessageId: msg.id,
+        lastMessageText: msg.text,
+        lastMessageAt: msg.createdAt,
       ),
     );
   }

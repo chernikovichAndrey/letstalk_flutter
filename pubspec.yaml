@@ -1,7 +1,7 @@
 name: lets_talk
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+8
+version: 1.0.0+10
 
 environment:
   sdk: ^3.9.2
@@ -74,6 +74,7 @@ flutter:
     - .env
     - assets/sounds/
     - assets/images/animals/
+    - assets/images/
     - assets/html/
 
 flutter_intl:

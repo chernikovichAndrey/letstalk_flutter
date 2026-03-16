@@ -123,7 +123,7 @@ class _MessageInputState extends State<MessageInput> {
 
         return ClipRRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
               color: appColors.glassBackground,
               padding: EdgeInsets.only(

@@ -40,7 +40,7 @@ class MessageBubbleInfo extends StatelessWidget {
           Text(
             context.s.edited,
             style: context.text.labelSmall?.copyWith(
-              color: timeColor,
+              color: checkReadColor,
               fontSize: 9,
             ),
           ),
@@ -49,7 +49,7 @@ class MessageBubbleInfo extends StatelessWidget {
         Text(
           time,
           style: context.text.labelSmall?.copyWith(
-            color: timeColor,
+            color: checkReadColor,
             fontSize: 9,
           ),
         ),

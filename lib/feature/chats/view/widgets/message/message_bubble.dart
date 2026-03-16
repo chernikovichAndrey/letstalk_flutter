@@ -36,6 +36,7 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
 
+    final isDark = context.theme.brightness == Brightness.dark;
     Color backgroundColor = isMe
         ? appColors.messageMeBubble
         : appColors.messageOtherBubble;
@@ -145,9 +146,9 @@ class MessageBubble extends StatelessWidget {
                             style: context.text.bodyMedium?.copyWith(
                               letterSpacing: 0,
                               height: 1,
-                              color: isMe
+                              color: isDark
                                   ? Colors.white
-                                  : context.appColors.messageOtherText,
+                                  : Colors.black,
                             ),
                           ),
                           WidgetSpan(

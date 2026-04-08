@@ -246,7 +246,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               isMe: widget.isMe,
                               onCopy: _isCopyVisible ? _onCopyMessage : null,
                               onReply: _onReply,
-                              onEdit: _onEditMessage,
+                              onEdit: _canEdit(widget.message) ? _onEditMessage : null,
                               onForward: _onForwardMessage,
                               onDelete: _onDeleteMessage,
                               onDownload: _isDownloadVisible

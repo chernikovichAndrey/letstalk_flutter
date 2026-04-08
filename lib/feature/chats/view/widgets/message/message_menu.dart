@@ -7,7 +7,7 @@ class MessageMenu extends StatelessWidget {
   final VoidCallback? onCopy;
   final VoidCallback onReply;
   final VoidCallback onDelete;
-  final VoidCallback onEdit;
+  final VoidCallback? onEdit;
   final VoidCallback onForward;
   final VoidCallback? onDownload;
 
@@ -67,17 +67,19 @@ class MessageMenu extends StatelessWidget {
               ),
             ],
             if (isMe) ...[
-              MessageMenuItem(
-                title: context.s.edit,
-                icon: Icons.edit_note_outlined,
-                onTap: onEdit,
-              ),
-              Divider(
-                height: 1,
-                indent: 12,
-                endIndent: 12,
-                color: dividerColor,
-              ),
+              if (onEdit != null) ...[
+                MessageMenuItem(
+                  title: context.s.edit,
+                  icon: Icons.edit_note_outlined,
+                  onTap: onEdit!,
+                ),
+                Divider(
+                  height: 1,
+                  indent: 12,
+                  endIndent: 12,
+                  color: dividerColor,
+                ),
+              ]
             ],
             MessageMenuItem(
               title: context.s.forward,

@@ -28,6 +28,8 @@ class WebSocketService with WidgetsBindingObserver {
   bool _intentionalDisconnect = false;
 
   Timer? _reconnectTimer;
+  final List<dynamic> _pendingMessages = [];
+  static const int _maxPendingMessages = 100;
 
   Stream<dynamic> get stream => _controller.stream;
 
@@ -116,6 +118,7 @@ class WebSocketService with WidgetsBindingObserver {
       if (bloc.state is AuthAuthenticated) {
         authenticate((bloc.state as AuthAuthenticated).token!);
       }
+      _flushPendingMessages();
     } catch (e) {
       _logger.e('WebSocket connection error: $e');
       _scheduleReconnect();
@@ -154,14 +157,24 @@ class WebSocketService with WidgetsBindingObserver {
   }
 
   void send(dynamic data) async {
-    if (_channel != null) {
-      try {
-        await _channel!.ready;
-      } on SocketException catch (e) {
-        _logger.e('SocketException: $e');
-      } on WebSocketChannelException catch (e) {
-        _logger.e('WebSocketChannelException: $e');
-      }
+    if (_channel == null) {
+      _logger.w('WebSocket not connected, queuing message for retry');
+      _queueMessage(data);
+      connect();
+      return;
+    }
+
+    try {
+      await _channel!.ready;
+    } catch (e) {
+      _logger.e('WebSocket not ready: $e');
+      _queueMessage(data);
+      _resetConnection();
+      _scheduleReconnect();
+      return;
+    }
+
+    try {
       if (data is Map || data is List) {
         final jsonStr = jsonEncode(data);
         _channel!.sink.add(jsonStr);
@@ -170,8 +183,34 @@ class WebSocketService with WidgetsBindingObserver {
         _channel!.sink.add(data);
         _logger.d('WebSocket sent: $data');
       }
-    } else {
-      _logger.w('WebSocket not connected, cannot send data');
+    } catch (e) {
+      _logger.e('WebSocket send error: $e');
+      _queueMessage(data);
+      _resetConnection();
+      _scheduleReconnect();
+    }
+  }
+
+  void _queueMessage(dynamic data) {
+    if (_pendingMessages.length >= _maxPendingMessages) {
+      _pendingMessages.removeAt(0);
+    }
+    _pendingMessages.add(data);
+  }
+
+  void _resetConnection() {
+    _socketSubscription?.cancel();
+    _socketSubscription = null;
+    _channel = null;
+  }
+
+  void _flushPendingMessages() {
+    if (_pendingMessages.isEmpty) return;
+    _logger.i('Resending ${_pendingMessages.length} pending messages');
+    final messages = List.from(_pendingMessages);
+    _pendingMessages.clear();
+    for (final msg in messages) {
+      send(msg);
     }
   }
 

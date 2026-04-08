@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -11,6 +12,7 @@ import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:lets_talk/feature/shell/connectivity/domain/bloc/connectivity_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -19,17 +21,30 @@ class WebSocketService with WidgetsBindingObserver {
   WebSocketService(this._connectivityBloc);
 
   WebSocketChannel? _channel;
-  final StreamController<dynamic> _controller = StreamController<dynamic>.broadcast();
+  final StreamController<dynamic> _controller =
+      StreamController<dynamic>.broadcast();
   StreamSubscription? _socketSubscription;
   final Logger _logger = Logger();
 
   final ConnectivityBloc _connectivityBloc;
   StreamSubscription? _connectivitySubscription;
   bool _intentionalDisconnect = false;
+  bool _connecting = false;
 
   Timer? _reconnectTimer;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectDelaySec = 30;
+
   final List<dynamic> _pendingMessages = [];
   static const int _maxPendingMessages = 100;
+
+  /// dart:io WebSocket sends protocol-level ping frames at this interval;
+  /// if pong is not received the connection is automatically closed.
+  static const Duration _pingInterval = Duration(seconds: 25);
+  static const Duration _connectTimeout = Duration(seconds: 10);
+  static const Duration _staleBackgroundThreshold = Duration(seconds: 30);
+
+  DateTime? _backgroundedAt;
 
   Stream<dynamic> get stream => _controller.stream;
 
@@ -39,9 +54,8 @@ class WebSocketService with WidgetsBindingObserver {
 
     _connectivitySubscription = _connectivityBloc.stream.listen((state) {
       if (state is ConnectivitySuccess) {
-        final hasConnection = state.results.any((result) =>
-        result != ConnectivityResult.none
-        );
+        final hasConnection =
+            state.results.any((result) => result != ConnectivityResult.none);
 
         if (hasConnection && _channel == null && !_intentionalDisconnect) {
           _logger.i('Network restored, reconnecting WebSocket...');
@@ -53,8 +67,23 @@ class WebSocketService with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.paused) {
+      _backgroundedAt = DateTime.now();
+    } else if (state == AppLifecycleState.resumed) {
       _logger.i('App resumed from background');
+      final wasInBackground = _backgroundedAt != null
+          ? DateTime.now().difference(_backgroundedAt!)
+          : Duration.zero;
+      _backgroundedAt = null;
+
+      // After extended background the OS likely killed the TCP socket
+      if (wasInBackground > _staleBackgroundThreshold && _channel != null) {
+        _logger.i(
+          'Force reconnect after ${wasInBackground.inSeconds}s in background',
+        );
+        _handleDisconnect();
+      }
+
       if (_channel == null && !_intentionalDisconnect) {
         _logger.i('Reconnecting WebSocket on app resume...');
         connect();
@@ -63,75 +92,110 @@ class WebSocketService with WidgetsBindingObserver {
   }
 
   Stream<Map<String, dynamic>> get signalingStream {
-    return stream.transform<Map<String, dynamic>>(
-      StreamTransformer.fromHandlers(
-        handleData: (data, sink) {
-          try {
-            final Map<String, dynamic> map;
-            if (data is String) {
-              map = jsonDecode(data);
-            } else if (data is Map) {
-              map = Map<String, dynamic>.from(data);
-            } else {
-              return;
-            }
-            _logger.d('WebSocket received: $map');
-            sink.add(map);
-          } catch (e) {
-            _logger.e('Error parsing signaling message: $e');
-          }
-        },
-      ),
-    ).asBroadcastStream();
+    return stream
+        .transform<Map<String, dynamic>>(
+          StreamTransformer.fromHandlers(
+            handleData: (data, sink) {
+              try {
+                final Map<String, dynamic> map;
+                if (data is String) {
+                  map = jsonDecode(data);
+                } else if (data is Map) {
+                  map = Map<String, dynamic>.from(data);
+                } else {
+                  return;
+                }
+                _logger.d('WebSocket received: $map');
+                sink.add(map);
+              } catch (e) {
+                _logger.e('Error parsing signaling message: $e');
+              }
+            },
+          ),
+        )
+        .asBroadcastStream();
   }
 
-  void connect({Iterable<String>? protocols}) {
+  Future<void> connect({Iterable<String>? protocols}) async {
     _reconnectTimer?.cancel();
     _intentionalDisconnect = false;
-    if (_channel != null) return;
+    if (_channel != null || _connecting) return;
+    _connecting = true;
 
     try {
-      _channel = WebSocketChannel.connect(
-        Uri.parse(Env.wsUrl),
+      final ws = await WebSocket.connect(
+        Env.wsUrl,
         protocols: protocols,
-      );
+      ).timeout(_connectTimeout);
+      ws.pingInterval = _pingInterval;
+
+      _channel = IOWebSocketChannel(ws);
 
       _socketSubscription = _channel!.stream.listen(
-            (data) {
+        (data) {
           _controller.add(data);
         },
         onError: (error) {
           _logger.e('WebSocket stream error: $error');
           _controller.addError(error);
-          _scheduleReconnect();
+          _handleDisconnect();
         },
         onDone: () {
           _logger.i('WebSocket stream closed');
-          _channel = null;
-          _socketSubscription = null;
-          _scheduleReconnect();
+          _handleDisconnect();
         },
       );
 
+      // Safety net: detect sink closure even if stream onDone doesn't fire
+      _channel!.sink.done.then((_) {
+        if (_channel != null) {
+          _logger.i('WebSocket sink done, cleaning up');
+          _handleDisconnect();
+        }
+      });
+
+      _reconnectAttempts = 0;
       _logger.i('WebSocket connected to ${Env.wsUrl}');
+
       final bloc = getIt<AuthBloc>();
       if (bloc.state is AuthAuthenticated) {
         authenticate((bloc.state as AuthAuthenticated).token!);
       }
-      _flushPendingMessages();
     } catch (e) {
       _logger.e('WebSocket connection error: $e');
+      _channel = null;
       _scheduleReconnect();
+    } finally {
+      _connecting = false;
     }
+  }
+
+  void _handleDisconnect() {
+    if (_channel == null) return;
+    final ch = _channel;
+    _channel = null;
+    _socketSubscription?.cancel();
+    _socketSubscription = null;
+    try {
+      ch?.sink.close();
+    } catch (_) {}
+    _scheduleReconnect();
   }
 
   void _scheduleReconnect() {
     if (_intentionalDisconnect) return;
     if (_reconnectTimer?.isActive ?? false) return;
 
-    _logger.i('Scheduling WebSocket reconnect in 1 seconds...');
-    _reconnectTimer = Timer(const Duration(seconds: 1), () {
-      _logger.i('Executing scheduled reconnect...');
+    final delaySec = min(
+      pow(2, _reconnectAttempts).toInt(),
+      _maxReconnectDelaySec,
+    );
+    _reconnectAttempts++;
+
+    _logger.i(
+      'Scheduling reconnect in ${delaySec}s (attempt $_reconnectAttempts)',
+    );
+    _reconnectTimer = Timer(Duration(seconds: delaySec), () {
       connect();
     });
   }
@@ -144,33 +208,24 @@ class WebSocketService with WidgetsBindingObserver {
     _reconnectTimer?.cancel();
 
     if (_channel != null) {
+      final ch = _channel;
+      _channel = null;
       await _socketSubscription?.cancel();
       _socketSubscription = null;
 
-      await _channel!.sink.close(
+      await ch!.sink.close(
         closeCode ?? status.goingAway,
         closeReason,
       );
-      _channel = null;
       _logger.i('WebSocket disconnected');
     }
   }
 
-  void send(dynamic data) async {
+  void send(dynamic data) {
     if (_channel == null) {
-      _logger.w('WebSocket not connected, queuing message for retry');
+      _logger.w('WebSocket not connected, queuing message');
       _queueMessage(data);
       connect();
-      return;
-    }
-
-    try {
-      await _channel!.ready;
-    } catch (e) {
-      _logger.e('WebSocket not ready: $e');
-      _queueMessage(data);
-      _resetConnection();
-      _scheduleReconnect();
       return;
     }
 
@@ -186,8 +241,7 @@ class WebSocketService with WidgetsBindingObserver {
     } catch (e) {
       _logger.e('WebSocket send error: $e');
       _queueMessage(data);
-      _resetConnection();
-      _scheduleReconnect();
+      _handleDisconnect();
     }
   }
 
@@ -196,12 +250,6 @@ class WebSocketService with WidgetsBindingObserver {
       _pendingMessages.removeAt(0);
     }
     _pendingMessages.add(data);
-  }
-
-  void _resetConnection() {
-    _socketSubscription?.cancel();
-    _socketSubscription = null;
-    _channel = null;
   }
 
   void _flushPendingMessages() {
@@ -270,6 +318,7 @@ class WebSocketService with WidgetsBindingObserver {
       'type': 'auth',
       'token': token,
     });
+    _flushPendingMessages();
   }
 
   void readMessage(int chatId, int messageId) {

@@ -85,11 +85,13 @@ class _MessageInputState extends State<MessageInput> {
           ChatDetailsSendMessage(text, file: file),
         );
       }
-      widget.controller.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      if (widget.controller.hasClients) {
+        widget.controller.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
       _controller.clear();
 
       if (_isTyping) {

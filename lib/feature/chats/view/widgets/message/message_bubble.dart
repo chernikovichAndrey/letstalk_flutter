@@ -156,7 +156,7 @@ class MessageBubble extends StatelessWidget {
                             child: Opacity(
                               opacity: 0,
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 6),
+                                padding: const EdgeInsets.only(left: 8, top: 2),
                                 child: MessageBubbleInfo(
                                   message: message,
                                   isMe: isMe,

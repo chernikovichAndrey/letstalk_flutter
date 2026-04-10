@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/arg/member_info_args.dart';
 import 'package:lets_talk/app/router/arg/media_viewer_args.dart';
@@ -156,7 +158,9 @@ class MessageBubble extends StatelessWidget {
                             child: Opacity(
                               opacity: 0,
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 8, top: 2),
+                                padding: Platform.isIOS
+                                    ? const EdgeInsets.only(left: 8, top: 2,)
+                                    : const EdgeInsets.only(left: 5,),
                                 child: MessageBubbleInfo(
                                   message: message,
                                   isMe: isMe,

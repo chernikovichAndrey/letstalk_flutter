@@ -13,6 +13,7 @@ class ApiConstants {
   static const String updateFcmToken = '/device/update-fcm-token';
   static const String updateVoipToken = '/device/update-voip-token';
   static const String turnCredentials = '/turn/credentials';
+  static String callOffer(int callId) => '/calls/$callId/offer';
   static String chatAvatar(int chatId) => '/chats/$chatId/avatar';
   static String chatMute(int chatId) => '/chats/$chatId/mute';
 }

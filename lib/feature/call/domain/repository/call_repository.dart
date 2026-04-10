@@ -1,3 +1,4 @@
+import 'package:lets_talk/feature/call/data/model/call_offer_response.dart';
 import 'package:lets_talk/feature/call/data/model/ice_servers_response.dart';
 
 abstract class CallRepository {
@@ -19,4 +20,5 @@ abstract class CallRepository {
   Future<void> sendReject({required int callId});
   Future<void> sendCameraToggle({required int callId, required bool enabled});
   Future<IceServersResponse> getIceServers();
+  Future<CallOfferResponse> getCallOffer(int callId);
 }

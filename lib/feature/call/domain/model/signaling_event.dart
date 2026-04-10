@@ -207,10 +207,16 @@ class CallEndedSignal extends SignalingEvent {
 }
 
 class CallRejectedSignal extends SignalingEvent {
-  const CallRejectedSignal();
+  final int callId;
+
+  const CallRejectedSignal({
+    required this.callId,
+  });
 
   factory CallRejectedSignal.fromJson(Map<String, dynamic> json) {
-    return const CallRejectedSignal();
+    return CallRejectedSignal(
+      callId: int.tryParse(json['call_id'].toString()) ?? 0,
+    );
   }
 }
 

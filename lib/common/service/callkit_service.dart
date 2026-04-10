@@ -31,6 +31,16 @@ class CallKitService {
 
   StreamSubscription? _eventSubscription;
 
+  /// Cached accept data for cold-start scenario where the event fires
+  /// before any listener subscribes to the broadcast stream.
+  Map<String, dynamic>? _pendingAcceptData;
+
+  Map<String, dynamic>? consumePendingAccept() {
+    final data = _pendingAcceptData;
+    _pendingAcceptData = null;
+    return data;
+  }
+
   Stream<Map<String, dynamic>> get onAccept => _acceptController.stream;
   Stream<Map<String, dynamic>> get onDecline => _declineController.stream;
   Stream<Map<String, dynamic>> get onInit => _initCallController.stream;
@@ -45,6 +55,27 @@ class CallKitService {
     if (Platform.isIOS) {
       final token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
       _sendTokenToServer(token);
+    }
+
+    // Android cold-start: the accept event is lost because the EventChannel
+    // sink is null when BroadcastReceiver fires. However the plugin persists
+    // accepted calls in SharedPreferences — read them here as a fallback.
+    if (Platform.isAndroid) {
+      final activeCalls = await FlutterCallkitIncoming.activeCalls();
+      _logger.d('Active calls on init: $activeCalls');
+      if (activeCalls is List && activeCalls.isNotEmpty) {
+        for (final call in activeCalls) {
+          if (call is Map) {
+            final callMap = Map<String, dynamic>.from(call);
+            if (callMap['isAccepted'] == true && _pendingAcceptData == null) {
+              final extra = _extractExtra(callMap);
+              _pendingAcceptData = extra;
+              _logger.i('Recovered accepted call from activeCalls: ${callMap['id']}');
+              break;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -90,6 +121,7 @@ class CallKitService {
       case Event.actionCallAccept:
         callKitCallId = body['id'];
         final extra = _extractExtra(body);
+        _pendingAcceptData = extra;
         _acceptController.add(extra);
       case Event.actionCallDecline:
         final extra = _extractExtra(body);

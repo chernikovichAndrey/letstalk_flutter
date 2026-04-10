@@ -74,30 +74,6 @@ class WebRTCService {
     try {
       _logger.d('Creating PeerConnection');
 
-      final defaultIceServers = [
-        {'urls': 'stun:stun.relay.metered.ca:80'},
-        {
-          'urls': 'turn:global.relay.metered.ca:80',
-          'username': '4abfeabd2ed84d7afda25bba',
-          'credential': 'xzfonFAO6csyuqXb',
-        },
-        {
-          'urls': 'turn:global.relay.metered.ca:80?transport=tcp',
-          'username': '4abfeabd2ed84d7afda25bba',
-          'credential': 'xzfonFAO6csyuqXb',
-        },
-        {
-          'urls': 'turn:global.relay.metered.ca:443',
-          'username': '4abfeabd2ed84d7afda25bba',
-          'credential': 'xzfonFAO6csyuqXb',
-        },
-        {
-          'urls': 'turns:global.relay.metered.ca:443?transport=tcp',
-          'username': '4abfeabd2ed84d7afda25bba',
-          'credential': 'xzfonFAO6csyuqXb',
-        },
-      ];
-
       final config = {
         'iceServers': _iceServers,
         'sdpSemantics': 'unified-plan',

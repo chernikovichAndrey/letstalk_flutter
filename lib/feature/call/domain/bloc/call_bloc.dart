@@ -134,6 +134,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       CallOfferedReceived event,
       Emitter<CallState> emit,
       ) async {
+    if (state is! CallOutgoing) return;
     final currentState = state as CallOutgoing;
     _currentCallId = event.signal.callId;
     emit(currentState.copyWith(
@@ -264,7 +265,14 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         );
         await _webRTCService.addIceCandidate(candidate);
         break;
-      case CallEndedSignal() || CallRejectedSignal() || CallFailedSignal():
+      case CallRejectedSignal():
+        if (_currentCallId == signal.callId) {
+          _callKitService.endAllCalls();
+          await _cleanup();
+          emit(CallEnded());
+        }
+        break;
+      case CallEndedSignal() || CallFailedSignal():
         _callKitService.endAllCalls();
         await _cleanup();
         emit(CallEnded());
@@ -320,28 +328,29 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     try {
       final data = event.data;
 
-      final rawIceServers = data['ice_servers'];
-      final iceServers = rawIceServers is List
-          ? rawIceServers
-              .map((e) => IceServer.fromJson(
-                    e is Map<String, dynamic> ? e : Map<String, dynamic>.from(e as Map),
-                  ))
-              .toList()
-          : <IceServer>[];
+      final callId = int.tryParse(data['call_id']?.toString() ?? '') ?? 0;
+      final callerId = int.tryParse(data['caller_id']?.toString() ?? '') ?? 0;
+      final callType = data['call_type'] as String? ?? 'audio';
 
-      if (iceServers.isNotEmpty) {
+      final offerResponse = await _callRepository.getCallOffer(callId);
+
+      final iceServers = offerResponse.iceServers;
+      if (iceServers != null && iceServers.isNotEmpty) {
         _webRTCService.setIceServers(iceServers.map((e) => e.toJson()).toList());
       }
 
       await _webRTCService.initialize();
-      await _ringtoneService.playIncomingCall();
 
-      final callId = int.tryParse(data['call_id']?.toString() ?? '') ?? 0;
-      final callerId = int.tryParse(data['caller_id']?.toString() ?? '') ?? 0;
-      final offer = data['offer'] as String? ?? '';
-      final callType = data['call_type'] as String? ?? 'audio';
+      final offer = offerResponse.offer;
 
-      final callerInfo = CallerInfo.fromJson(jsonDecode(data['caller_info']));
+      CallerInfo? callerInfo;
+      final rawCallerInfo = data['caller_info'];
+      if (rawCallerInfo is String) {
+        callerInfo = CallerInfo.fromJson(jsonDecode(rawCallerInfo));
+      } else if (rawCallerInfo is Map) {
+        callerInfo = CallerInfo.fromJson(Map<String, dynamic>.from(rawCallerInfo));
+      }
+
       _currentCallId = callId;
       _currentTargetUserId = callerId;
       emit(CallIncoming(

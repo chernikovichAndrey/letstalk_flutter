@@ -206,5 +206,7 @@
   "weekdayThu": "бс",
   "weekdayFri": "жм",
   "weekdaySat": "сн",
-  "weekdaySun": "жк"
+  "weekdaySun": "жк",
+  "welcomeTitle": "Достармен оңай және қарапайым байланысыңыз",
+  "welcomeStart": "Бастау"
 }

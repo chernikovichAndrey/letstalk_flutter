@@ -10,6 +10,7 @@ import 'package:lets_talk/feature/chats/view/sheet/chat_avatar_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/chat_contact_sheet.dart';
 import 'package:lets_talk/common/widget/c_alert_dialog.dart';
 import 'package:lets_talk/feature/auth/view/login_page.dart';
+import 'package:lets_talk/feature/auth/view/welcome_page.dart';
 import 'package:lets_talk/feature/call/view/call_page.dart';
 import 'package:lets_talk/feature/calls_history/view/calls_history_page_scope.dart';
 import 'package:lets_talk/feature/chats/view/chats_page_scope.dart';
@@ -34,6 +35,7 @@ extension RoutesExt on Routes {
   Widget get widget {
     return switch (this) {
       Routes.splash => const SplashPage(),
+      Routes.welcome => const WelcomePage(),
       Routes.login => const LoginPage(),
       Routes.contacts => const ContactsPageScope(),
       Routes.callsHistory => const CallsHistoryPageScope(),

@@ -28,6 +28,9 @@ class AppRouter {
           // Splash route
           buildRoute(Routes.splash),
 
+          // Welcome route (outside shell)
+          buildRoute(Routes.welcome),
+
           // Login route (outside shell)
           buildRoute(Routes.login),
 

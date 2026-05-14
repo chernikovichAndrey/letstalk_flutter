@@ -248,5 +248,7 @@
   "weekdayThu": "Thu",
   "weekdayFri": "Fri",
   "weekdaySat": "Sat",
-  "weekdaySun": "Sun"
+  "weekdaySun": "Sun",
+  "welcomeTitle": "Connect with friends easily and simply",
+  "welcomeStart": "Start"
 }

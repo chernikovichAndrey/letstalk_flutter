@@ -206,5 +206,7 @@
   "weekdayThu": "чт",
   "weekdayFri": "пт",
   "weekdaySat": "сб",
-  "weekdaySun": "вс"
+  "weekdaySun": "вс",
+  "welcomeTitle": "Общайтесь с друзьями легко и просто",
+  "welcomeStart": "Начать"
 }

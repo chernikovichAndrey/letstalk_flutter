@@ -74,7 +74,6 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
     final isDark = context.theme.brightness == Brightness.dark;
     final titleColor =
         isDark ? AppColors.messageLight : AppColors.backgroundDark;
-    final iconColor = isDark ? AppColors.messageLight : AppColors.backgroundDark;
 
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (prev, curr) => prev is! AuthCodeSent && curr is AuthCodeSent,

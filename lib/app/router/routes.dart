@@ -6,7 +6,6 @@ enum Routes {
   authPhone(path: _Paths.authPhone, type: RouteType.page),
   authCode(path: _Paths.authCode, type: RouteType.page),
   authProfile(path: _Paths.authProfile, type: RouteType.page),
-  login(path: _Paths.login, type: RouteType.page),
   contacts(path: _Paths.contacts, type: RouteType.page),
   callsHistory(path: _Paths.callsHistory, type: RouteType.page),
   chats(path: _Paths.chats, type: RouteType.page),
@@ -59,7 +58,6 @@ abstract class _Paths {
   static const String splash = '/splash';
   static const String welcome = '/welcome';
   static const String dialog = '/alert';
-  static const String login = '/login';
   static const String authPhone = '/auth_phone';
   static const String authCode = '/auth_code';
   static const String authProfile = '/auth_profile';

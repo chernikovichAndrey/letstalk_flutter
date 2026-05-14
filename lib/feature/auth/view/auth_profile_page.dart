@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
@@ -8,6 +7,9 @@ import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_button.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:lets_talk/feature/auth/view/widgets/auth_back_button.dart';
+import 'package:lets_talk/feature/auth/view/widgets/avatar_placeholder.dart';
+import 'package:lets_talk/feature/auth/view/widgets/name_input_card.dart';
 
 class AuthProfilePage extends StatefulWidget {
   const AuthProfilePage({super.key});
@@ -81,7 +83,16 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
                   height: 44,
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: _BackButton(color: iconColor),
+                    child: AuthBackButton(
+                    color: iconColor,
+                    onTap: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go(Routes.authPhone.path);
+                      }
+                    },
+                  ),
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -94,14 +105,14 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
                 ),
                 const SizedBox(height: 56),
                 Center(
-                  child: _AvatarPlaceholder(
+                  child: AvatarPlaceholder(
                     backgroundColor: fieldBg,
                     iconColor:
                         isDark ? AppColors.grayLight : AppColors.grayDark,
                   ),
                 ),
                 const SizedBox(height: 28),
-                _NameInputCard(
+                NameInputCard(
                   firstNameController: _firstNameController,
                   lastNameController: _lastNameController,
                   backgroundColor: fieldBg,
@@ -115,193 +126,6 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BackButton extends StatelessWidget {
-  const _BackButton({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: Material(
-        color: Colors.transparent,
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.go(Routes.authPhone.path);
-            }
-          },
-          child: Icon(Icons.arrow_back_ios_new, color: color, size: 22),
-        ),
-      ),
-    );
-  }
-}
-
-class _AvatarPlaceholder extends StatelessWidget {
-  const _AvatarPlaceholder({
-    required this.backgroundColor,
-    required this.iconColor,
-  });
-
-  final Color backgroundColor;
-  final Color iconColor;
-
-  static const double _size = 96;
-  static const double _userIconSize = 40;
-  static const double _badgeSize = 32;
-  static const double _cameraIconSize = 16;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: _size,
-      height: _size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: _size,
-            height: _size,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: SvgPicture.asset(
-              'assets/icons/user.svg',
-              width: _userIconSize,
-              height: _userIconSize,
-              colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Container(
-              width: _badgeSize,
-              height: _badgeSize,
-              decoration: const BoxDecoration(
-                color: AppColors.brand,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/camera.svg',
-                width: _cameraIconSize,
-                height: _cameraIconSize,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.backgroundLight,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NameInputCard extends StatelessWidget {
-  const _NameInputCard({
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.backgroundColor,
-    required this.dividerColor,
-    required this.textColor,
-  });
-
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final Color backgroundColor;
-  final Color dividerColor;
-  final Color textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          _NameField(
-            controller: firstNameController,
-            hintText: context.s.authProfileFirstNameHint,
-            textColor: textColor,
-            autofocus: true,
-            textInputAction: TextInputAction.next,
-            padding: const EdgeInsets.only(top: 16, bottom: 12),
-          ),
-          Container(
-            height: 1,
-            color: dividerColor,
-          ),
-          _NameField(
-            controller: lastNameController,
-            hintText: context.s.authProfileLastNameHint,
-            textColor: textColor,
-            textInputAction: TextInputAction.done,
-            padding: const EdgeInsets.only(top: 12, bottom: 16),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NameField extends StatelessWidget {
-  const _NameField({
-    required this.controller,
-    required this.hintText,
-    required this.textColor,
-    required this.padding,
-    this.autofocus = false,
-    this.textInputAction = TextInputAction.next,
-  });
-
-  final TextEditingController controller;
-  final String hintText;
-  final Color textColor;
-  final EdgeInsets padding;
-  final bool autofocus;
-  final TextInputAction textInputAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: TextField(
-        controller: controller,
-        autofocus: autofocus,
-        textInputAction: textInputAction,
-        cursorColor: AppColors.brand,
-        cursorWidth: 2,
-        style: AppTypography.textMdRegular.copyWith(color: textColor),
-        decoration: InputDecoration(
-          isCollapsed: true,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          hintText: hintText,
-          hintStyle: AppTypography.textMdRegular.copyWith(
-            color: AppColors.grayLight,
           ),
         ),
       ),

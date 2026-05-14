@@ -12,7 +12,6 @@ import 'package:lets_talk/common/widget/c_alert_dialog.dart';
 import 'package:lets_talk/feature/auth/view/auth_code_page.dart';
 import 'package:lets_talk/feature/auth/view/auth_phone_page.dart';
 import 'package:lets_talk/feature/auth/view/auth_profile_page.dart';
-import 'package:lets_talk/feature/auth/view/login_page.dart';
 import 'package:lets_talk/feature/auth/view/welcome_page.dart';
 import 'package:lets_talk/feature/call/view/call_page.dart';
 import 'package:lets_talk/feature/calls_history/view/calls_history_page_scope.dart';
@@ -42,7 +41,6 @@ extension RoutesExt on Routes {
       Routes.authPhone => const AuthPhonePage(),
       Routes.authCode => const AuthCodePage(),
       Routes.authProfile => const AuthProfilePage(),
-      Routes.login => const LoginPage(),
       Routes.contacts => const ContactsPageScope(),
       Routes.callsHistory => const CallsHistoryPageScope(),
       Routes.chats => const ChatsPageScope(),

@@ -40,9 +40,6 @@ class AppRouter {
           // Auth profile setup route (outside shell)
           buildRoute(Routes.authProfile),
 
-          // Login route (outside shell)
-          buildRoute(Routes.login),
-
           // Shell for main tabs
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) {

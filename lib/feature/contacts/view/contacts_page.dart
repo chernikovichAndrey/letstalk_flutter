@@ -41,7 +41,7 @@ class ContactsPage extends StatelessWidget {
                   ),
                 );
               }
-              if (state is ContactsLoading || state is ContactsActionInProgress) {
+              if (state is ContactsLoading || state is ContactsActionInProgress || state is ContactsInitial) {
                 return Padding(
                   padding: EdgeInsets.only(top: topPadding),
                   child: const ContactsSceleton(),

@@ -18,6 +18,8 @@ class CRefreshableScrollView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+
     return CustomScrollView(
       controller: controller,
       physics: physics ?? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -29,6 +31,9 @@ class CRefreshableScrollView extends StatelessWidget {
           ),
         ),
         ...slivers,
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+        ),
       ],
     );
   }

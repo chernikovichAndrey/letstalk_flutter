@@ -81,7 +81,11 @@ class _CallPageState extends State<CallPage> {
         builder: (context, state) {
           bool isVideo = false;
 
-          if (state is CallOutgoing) {
+          if (state is CallInitial) {
+            _avatar = null;
+            _fullName = null;
+            _isRemoteVideoEnabled = false;
+          } else if (state is CallOutgoing) {
             isVideo = state.isVideo;
             _avatar = state.avatar;
             _fullName = state.fullName;
@@ -148,8 +152,7 @@ class _CallPageState extends State<CallPage> {
                         : CallUserAvatar(),
                   ),
                 ),
-              ] else ...[
-                // Audio Call UI - Avatar
+              ] else if (state is! CallInitial) ...[
                 CallAvatar(
                   avatar: _avatar,
                   fullName: _fullName,

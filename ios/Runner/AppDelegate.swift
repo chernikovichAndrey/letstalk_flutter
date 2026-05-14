@@ -41,7 +41,9 @@ import flutter_callkit_incoming
                     for type: PKPushType, completion: @escaping () -> Void) {
       guard type == .voIP else { return }
     let d = payload.dictionaryPayload
-    let uuid = UUID().uuidString
+    let callIdStr = d["call_id"] as? String ?? ""
+    let callIdInt = Int(callIdStr) ?? 0
+    let uuid = String(format: "00000000-0000-0000-0000-%012d", callIdInt)
     let callerName = d["caller_name"] as? String ?? "Unknown"
     let callerPhone = d["caller_phone"] as? String ?? ""
     let callType = (d["call_type"] as? String) == "video" ? 1 : 0

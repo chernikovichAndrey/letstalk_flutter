@@ -19,7 +19,7 @@ import 'package:uuid/uuid.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  if (message.data['type'] == 'incoming_call') {
+  if (message.data['type'] == 'incoming_call' && !Platform.isIOS) {
     final callerInfo = CallerInfo.fromJson(jsonDecode(message.data['caller_info']));
     final params = CallKitParams(
       id: message.data['call_id'],
@@ -192,12 +192,14 @@ class PushNotificationService {
     }
   }
 
-  void _handleForegroundMessage(RemoteMessage message) {
+  void _handleForegroundMessage(RemoteMessage message) async {
     _logger.i('Handling foreground message');
     _logger.d('Message data: ${message.data}');
-    
+
     final data = message.data;
     final chatIdStr = data['chat_id'] ?? data['id'];
+
+    _handleCallEvents(message);
     
     _logger.d('Extracted chat_id string: $chatIdStr');
     
@@ -252,6 +254,31 @@ class PushNotificationService {
       _logger.i('FCM token sent to server successfully');
     } catch (e, stackTrace) {
       _logger.e('Failed to send FCM token to server', error: e, stackTrace: stackTrace);
+    }
+  }
+
+  void _handleCallEvents(RemoteMessage message) async {
+    final data = message.data;
+    if (data['type'] == 'incoming_call' && Platform.isAndroid) {
+      final callerInfo = CallerInfo.fromJson(jsonDecode(message.data['caller_info']));
+      final params = CallKitParams(
+        id: message.data['call_id'],
+        nameCaller: message.data['caller_name'] ?? 'Unknown',
+        appName: 'Lets Talk',
+        type: message.data['call_type'] == 'video' ? 1 : 0,
+        avatar: callerInfo.avatar,
+        missedCallNotification: NotificationParams(
+          showNotification: false,
+        ),
+
+        extra: Map<String, dynamic>.from(message.data),
+        ios: const IOSParams(iconName: null),
+      );
+      await FlutterCallkitIncoming.showCallkitIncoming(params);
+      return;
+    }
+    if (message.data['type'] == 'call_ended') {
+      await FlutterCallkitIncoming.endAllCalls();
     }
   }
 

@@ -92,6 +92,7 @@ class CallKitService {
   Future<void> endCall(String uuid) async {
     try {
       await FlutterCallkitIncoming.endCall(uuid);
+      _pendingAcceptData = null;
     } catch (e, st) {
       _logger.e('Failed to end call $uuid', error: e, stackTrace: st);
     }
@@ -101,6 +102,7 @@ class CallKitService {
     try {
       await FlutterCallkitIncoming.endAllCalls();
       callKitCallId = null;
+      _pendingAcceptData = null;
     } catch (e, st) {
       _logger.e('Failed to end all calls', error: e, stackTrace: st);
     }
@@ -124,12 +126,15 @@ class CallKitService {
         _pendingAcceptData = extra;
         _acceptController.add(extra);
       case Event.actionCallDecline:
+        _pendingAcceptData = null;
         final extra = _extractExtra(body);
         _declineController.add(extra);
       case Event.actionCallTimeout:
+        _pendingAcceptData = null;
         final extra = _extractExtra(body);
         _declineController.add(extra);
       case Event.actionCallEnded:
+        _pendingAcceptData = null;
         final extra = _extractExtra(body);
         _declineController.add(extra);
 

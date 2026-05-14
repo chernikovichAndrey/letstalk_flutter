@@ -38,6 +38,9 @@ class _ShellHolderState extends State<ShellHolder> with WidgetsBindingObserver {
   /// Cached call-accept data from cold start; processed after auth settles.
   Map<String, dynamic>? _pendingCallAcceptData;
 
+  /// Last accepted call ID to prevent duplicate handling (e.g. iOS CallKit event replay).
+  int? _lastAcceptedCallId;
+
   @override
   void initState() {
     super.initState();
@@ -75,7 +78,13 @@ class _ShellHolderState extends State<ShellHolder> with WidgetsBindingObserver {
   }
 
   void _handleCallAccept(Map<String, dynamic> data) {
+    final callId = int.tryParse(data['call_id']?.toString() ?? '');
+    if (callId != null && callId == _lastAcceptedCallId) {
+      return;
+    }
+    _lastAcceptedCallId = callId;
     _pendingDeclineTimer?.cancel();
+    _callKitService.consumePendingAccept();
     getIt<CallBloc>().add(CallIncomingFromPush(data));
     if (mounted) {
       context.push(Routes.call.path);

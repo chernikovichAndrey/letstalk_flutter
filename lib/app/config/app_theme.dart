@@ -8,7 +8,7 @@ import 'package:lets_talk/common/constants/ui_constants.dart';
 class AppTheme {
   static ThemeData get light {
     return ThemeData(
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: GoogleFonts.roboto().fontFamily,
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
@@ -62,7 +62,7 @@ class AppTheme {
 
   static ThemeData get dark {
     return ThemeData(
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: GoogleFonts.roboto().fontFamily,
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.fromSeed(
@@ -115,7 +115,7 @@ class AppTheme {
   }
 
   static TextTheme get _textTheme {
-    return GoogleFonts.interTextTheme(
+    return GoogleFonts.robotoTextTheme(
       const TextTheme(
         displayLarge: TextStyle(
           fontSize: 57,

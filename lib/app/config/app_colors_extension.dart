@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
+  final Color backgroundColor;
   final Color secondaryBackground;
   final Color telegramBlue;
   final Color destructive;
@@ -25,6 +26,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color skeletonShimmerColor;
 
   const AppColorsExtension({
+    required this.backgroundColor,
     required this.secondaryBackground,
     required this.telegramBlue,
     required this.destructive,
@@ -51,6 +53,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
   @override
   AppColorsExtension copyWith({
+    Color? backgroundColor,
     Color? secondaryBackground,
     Color? telegramBlue,
     Color? destructive,
@@ -75,6 +78,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? skeletonShimmerColor,
   }) {
     return AppColorsExtension(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
       secondaryBackground: secondaryBackground ?? this.secondaryBackground,
       telegramBlue: telegramBlue ?? this.telegramBlue,
       destructive: destructive ?? this.destructive,
@@ -104,6 +108,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   AppColorsExtension lerp(ThemeExtension<AppColorsExtension>? other, double t) {
     if (other is! AppColorsExtension) return this;
     return AppColorsExtension(
+      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t)!,
       secondaryBackground: Color.lerp(secondaryBackground, other.secondaryBackground, t)!,
       telegramBlue: Color.lerp(telegramBlue, other.telegramBlue, t)!,
       destructive: Color.lerp(destructive, other.destructive, t)!,

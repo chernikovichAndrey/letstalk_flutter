@@ -23,6 +23,7 @@ class AppTheme {
       textTheme: _textTheme,
       extensions: [
         AppColorsExtension(
+          backgroundColor: const Color(0xFFFAFAFA),
           secondaryBackground: Colors.black.withValues(alpha: 0.05),
           telegramBlue: const Color(0xFF0088CC),
           destructive: AppColors.error,
@@ -77,6 +78,7 @@ class AppTheme {
       textTheme: _textTheme,
       extensions: [
         AppColorsExtension(
+          backgroundColor: const Color(0xFF191919),
           secondaryBackground: AppColors.white.withValues(alpha: 0.1),
           telegramBlue: const Color(0xFF0088CC),
           destructive: AppColors.error,

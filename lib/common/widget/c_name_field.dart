@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 
-class NameField extends StatelessWidget {
-  const NameField({
+class CNameField extends StatelessWidget {
+  const CNameField({
     required this.controller,
     required this.hintText,
     required this.textColor,
+    required this.hintColor,
     required this.padding,
     this.autofocus = false,
     this.textInputAction = TextInputAction.next,
@@ -16,6 +17,7 @@ class NameField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final Color textColor;
+  final Color hintColor;
   final EdgeInsets padding;
   final bool autofocus;
   final TextInputAction textInputAction;
@@ -37,9 +39,7 @@ class NameField extends StatelessWidget {
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           hintText: hintText,
-          hintStyle: AppTypography.textMdRegular.copyWith(
-            color: AppColors.grayLight,
-          ),
+          hintStyle: AppTypography.textMdRegular.copyWith(color: hintColor),
         ),
       ),
     );

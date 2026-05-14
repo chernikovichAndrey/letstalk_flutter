@@ -38,6 +38,8 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "newContact": "New Contact",
+  "createContactTitle": "Create Contact",
+  "save": "Save",
   "firstName": "First Name",
   "lastName": "Last Name",
   "incomingCall": "Incoming Call",

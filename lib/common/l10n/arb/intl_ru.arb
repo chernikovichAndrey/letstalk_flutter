@@ -31,6 +31,8 @@
   "today": "Сегодня",
   "yesterday": "Вчера",
   "newContact": "Новый контакт",
+  "createContactTitle": "Создать контакт",
+  "save": "Сохранить",
   "firstName": "Имя",
   "lastName": "Фамилия",
   "incomingCall": "Входящий звонок",

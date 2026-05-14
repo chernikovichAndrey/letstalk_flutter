@@ -31,6 +31,8 @@
   "today": "Бүгін",
   "yesterday": "Кеше",
   "newContact": "Жаңа контакт",
+  "createContactTitle": "Контакт жасау",
+  "save": "Сақтау",
   "firstName": "Аты",
   "lastName": "Тегі",
   "incomingCall": "Кіріс қоңырау",

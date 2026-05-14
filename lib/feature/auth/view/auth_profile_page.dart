@@ -6,10 +6,10 @@ import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_button.dart';
+import 'package:lets_talk/common/widget/c_name_input_card.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/auth/view/widgets/auth_back_button.dart';
 import 'package:lets_talk/feature/auth/view/widgets/avatar_placeholder.dart';
-import 'package:lets_talk/feature/auth/view/widgets/name_input_card.dart';
 
 class AuthProfilePage extends StatefulWidget {
   const AuthProfilePage({super.key});
@@ -61,11 +61,6 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
     final iconColor =
         isDark ? AppColors.messageLight : AppColors.backgroundDark;
     final fieldBg = isDark ? AppColors.messageDark : AppColors.messageLight;
-    final dividerColor = isDark
-        ? AppColors.grayDark
-        : AppColors.messageDark.withValues(alpha: 0.1);
-    final textColor =
-        isDark ? AppColors.messageLight : AppColors.backgroundDark;
 
     final isFirstNameValid = _firstNameController.text.trim().isNotEmpty;
 
@@ -112,12 +107,12 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                NameInputCard(
+                CNameInputCard(
                   firstNameController: _firstNameController,
                   lastNameController: _lastNameController,
-                  backgroundColor: fieldBg,
-                  dividerColor: dividerColor,
-                  textColor: textColor,
+                  firstNameHint: context.s.authProfileFirstNameHint,
+                  lastNameHint: context.s.authProfileLastNameHint,
+                  autofocus: true,
                 ),
                 const Spacer(),
                 CButton.primary(

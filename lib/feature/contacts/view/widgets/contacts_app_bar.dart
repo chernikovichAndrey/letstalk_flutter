@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 
@@ -91,11 +92,8 @@ class ContactsAppBar extends StatelessWidget {
                   Center(
                     child: Text(
                       context.s.contacts,
-                      style: TextStyle(
+                      style: AppTypography.headingXsMedium.copyWith(
                         color: baseColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        height: 1.2,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),

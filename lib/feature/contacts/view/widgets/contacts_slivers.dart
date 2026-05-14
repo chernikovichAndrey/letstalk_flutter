@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_search_bar.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -50,7 +51,7 @@ class ContactsSlivers extends StatelessWidget {
               child: Center(
                 child: Text(
                   context.s.noContacts,
-                  style: context.text.titleMedium?.copyWith(
+                  style: AppTypography.textMdMedium.copyWith(
                     color: context.color.onSurface.withValues(alpha: 0.6),
                   ),
                 ),

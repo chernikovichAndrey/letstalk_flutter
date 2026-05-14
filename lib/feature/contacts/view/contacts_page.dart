@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
@@ -31,7 +32,10 @@ class ContactsPage extends StatelessWidget {
                       children: [
                         const CircularProgressIndicator.adaptive(),
                         const SizedBox(height: 16),
-                        Text('${(state.progress * 100).toInt()}%'),
+                        Text(
+                          '${(state.progress * 100).toInt()}%',
+                          style: AppTypography.textMdMedium,
+                        ),
                       ],
                     ),
                   ),

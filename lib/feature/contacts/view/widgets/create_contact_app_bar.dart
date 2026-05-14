@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
@@ -21,7 +22,7 @@ class CreateContactAppBar extends StatelessWidget implements PreferredSizeWidget
       ),
       title: Text(
         context.s.newContact,
-        style: context.text.titleMedium?.copyWith(
+        style: AppTypography.headingXsMedium.copyWith(
           fontWeight: FontWeight.bold,
           color: context.appColors.glassForeground,
         ),

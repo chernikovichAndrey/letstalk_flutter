@@ -1,5 +1,6 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
@@ -165,14 +166,14 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
                 ) : null,
                 title: Text(
                   code?.name ?? '',
-                  style: context.text.bodyLarge,
+                  style: AppTypography.textMdRegular,
                 ),
                 trailing: const Icon(Icons.chevron_right, size: 20),
               );
             },
-            textStyle: context.text.bodyLarge,
-            dialogTextStyle: context.text.bodyLarge,
-            searchStyle: context.text.bodyLarge,
+            textStyle: AppTypography.textMdRegular,
+            dialogTextStyle: AppTypography.textMdRegular,
+            searchStyle: AppTypography.textMdRegular,
             barrierColor: Colors.black.withValues(alpha: 0.5),
             dialogBackgroundColor: context.theme.scaffoldBackgroundColor,
           ),
@@ -189,7 +190,7 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
                 if (_countryCode != null)
                   Text(
                     _countryCode!.dialCode ?? '',
-                    style: context.text.bodyLarge,
+                    style: AppTypography.textMdRegular,
                   ),
                 const SizedBox(width: 12),
                 Container(
@@ -202,13 +203,13 @@ class _CreateContactPhoneInputState extends State<CreateContactPhoneInput> {
                   child: TextField(
                     controller: widget.phoneController,
                     keyboardType: TextInputType.phone,
-                    style: context.text.bodyLarge,
+                    style: AppTypography.textMdRegular,
                     inputFormatters: _phoneMaskFormatter != null
                         ? [_phoneMaskFormatter!]
                         : [],
                     decoration: InputDecoration(
                       hintText: _getPhoneHint(),
-                      hintStyle: context.text.bodyLarge?.copyWith(
+                      hintStyle: AppTypography.textMdRegular.copyWith(
                         color: context.appColors.hintText,
                       ),
                       border: InputBorder.none,

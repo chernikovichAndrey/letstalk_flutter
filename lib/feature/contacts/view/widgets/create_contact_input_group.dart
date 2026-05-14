@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class CreatePhoneInputGroup extends StatelessWidget {
@@ -22,10 +23,10 @@ class CreatePhoneInputGroup extends StatelessWidget {
         children: [
           TextField(
             controller: firstNameController,
-            style: context.text.bodyLarge,
+            style: AppTypography.textMdRegular,
             decoration: InputDecoration(
               hintText: context.s.firstName,
-              hintStyle: context.text.bodyLarge?.copyWith(
+              hintStyle: AppTypography.textMdRegular.copyWith(
                 color: context.appColors.hintText,
               ),
               contentPadding: const EdgeInsets.symmetric(
@@ -43,10 +44,10 @@ class CreatePhoneInputGroup extends StatelessWidget {
           ),
           TextField(
             controller: lastNameController,
-            style: context.text.bodyLarge,
+            style: AppTypography.textMdRegular,
             decoration: InputDecoration(
               hintText: context.s.lastName,
-              hintStyle: context.text.bodyLarge?.copyWith(
+              hintStyle: AppTypography.textMdRegular.copyWith(
                 color: context.appColors.hintText,
               ),
               contentPadding: const EdgeInsets.symmetric(

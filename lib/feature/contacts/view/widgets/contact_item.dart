@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
@@ -105,11 +106,8 @@ class ContactItem extends StatelessWidget {
                           children: [
                             Text(
                               contact.fullName,
-                              style: TextStyle(
+                              style: AppTypography.textMdMedium.copyWith(
                                 color: titleColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                height: 1.25,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -118,11 +116,9 @@ class ContactItem extends StatelessWidget {
                             if (contact.phone.isNotEmpty)
                               Text(
                                 contact.phone,
-                                style: TextStyle(
-                                  color: subtitleColor,
-                                  fontSize: 13,
+                                style: AppTypography.textSmMedium.copyWith(
                                   fontWeight: FontWeight.w400,
-                                  height: 1.25,
+                                  color: subtitleColor,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

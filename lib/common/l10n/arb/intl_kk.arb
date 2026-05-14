@@ -230,5 +230,8 @@
       }
     }
   },
-  "authCodeConfirm": "Нөмірді растау"
+  "authCodeConfirm": "Нөмірді растау",
+  "authProfileTitle": "Профиліңізді толтырыңыз",
+  "authProfileFirstNameHint": "Аты",
+  "authProfileLastNameHint": "Тегі"
 }

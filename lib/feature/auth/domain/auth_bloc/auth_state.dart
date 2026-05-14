@@ -19,6 +19,12 @@ final class AuthCodeSent extends AuthState {
   });
 }
 
+final class AuthProfileSetupRequired extends AuthState {
+  final String token;
+
+  AuthProfileSetupRequired({required this.token});
+}
+
 final class AuthAuthenticated extends AuthState {
   final String? token;
   AuthAuthenticated({this.token});

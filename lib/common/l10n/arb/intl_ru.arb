@@ -230,5 +230,8 @@
       }
     }
   },
-  "authCodeConfirm": "Подтвердить номер"
+  "authCodeConfirm": "Подтвердить номер",
+  "authProfileTitle": "Заполните ваш профиль",
+  "authProfileFirstNameHint": "Имя",
+  "authProfileLastNameHint": "Фамилия"
 }

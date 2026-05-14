@@ -15,6 +15,13 @@ class AuthVerifyCode extends AuthEvent {
   AuthVerifyCode({required this.code});
 }
 
+class AuthCompleteProfileSetup extends AuthEvent {
+  final String firstName;
+  final String? lastName;
+
+  AuthCompleteProfileSetup({required this.firstName, this.lastName});
+}
+
 class AuthCheckStatus extends AuthEvent {}
 
 class AuthLogout extends AuthEvent {}

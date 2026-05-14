@@ -272,5 +272,8 @@
       }
     }
   },
-  "authCodeConfirm": "Confirm number"
+  "authCodeConfirm": "Confirm number",
+  "authProfileTitle": "Fill in your profile",
+  "authProfileFirstNameHint": "First name",
+  "authProfileLastNameHint": "Last name"
 }

@@ -75,6 +75,7 @@ flutter:
     - assets/sounds/
     - assets/images/animals/
     - assets/images/
+    - assets/icons/
     - assets/html/
 
 flutter_intl:

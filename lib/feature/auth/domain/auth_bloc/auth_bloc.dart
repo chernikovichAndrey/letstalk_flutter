@@ -51,7 +51,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (currentState is AuthCodeSent) {
         try {
           final token = await authRepository.verifyCode(currentState.phone, event.code);
-          emit(AuthAuthenticated(token: token));
+          emit(AuthProfileSetupRequired(token: token));
+        } catch (e) {
+          emit(AuthError(e.toString()));
+          emit(currentState);
+        }
+      }
+    });
+
+    on<AuthCompleteProfileSetup>((event, emit) async {
+      final currentState = state;
+      if (currentState is AuthProfileSetupRequired) {
+        try {
+          await authRepository.updateProfile(
+            firstName: event.firstName,
+            lastName: event.lastName,
+          );
+          emit(AuthAuthenticated(token: currentState.token));
           await _onSendToken();
         } catch (e) {
           emit(AuthError(e.toString()));

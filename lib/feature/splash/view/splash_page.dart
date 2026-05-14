@@ -6,22 +6,13 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.brand,
       body: Center(
-        child: _SplashLogo(),
+        child: Image.asset(
+          'assets/images/splash_icon_small.png',
+        ),
       ),
-    );
-  }
-}
-
-class _SplashLogo extends StatelessWidget {
-  const _SplashLogo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/splash_icon.png',
     );
   }
 }

@@ -195,6 +195,8 @@ class _ShellHolderState extends State<ShellHolder> with WidgetsBindingObserver {
                   _handleCallAccept(data);
                 });
               }
+            } else if (state is AuthProfileSetupRequired) {
+              context.go(Routes.authProfile.path);
             } else if (state is AuthUnauthenticated) {
               _pendingCallAcceptData = null;
               context.go(Routes.welcome.path);

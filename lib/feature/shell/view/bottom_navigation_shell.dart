@@ -1,7 +1,8 @@
+import 'dart:ui';
 import 'package:app_badge_plus/app_badge_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -40,60 +41,124 @@ class _BottomNavigationShellState extends State<BottomNavigationShell> with Widg
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark 
+        ? const Color.fromRGBO(30, 30, 30, 0.8) 
+        : const Color.fromRGBO(250, 250, 250, 0.8);
+    final borderColor = isDark 
+        ? Colors.white10 
+        : const Color(0xFFF1F1F1);
+
     return BlocConsumer<NavigationBloc, NavigationState>(
       listener: (context, state) {
         AppBadgePlus.updateBadge(state.unreadChatsCount);
       },
       builder: (context, state) {
         return Scaffold(
+          extendBody: true,
           body: widget.navigationShell,
-          bottomNavigationBar: Theme(
-            data: Theme.of(context).copyWith(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-            ),
-            child: BottomNavigationBar(
-              currentIndex: widget.navigationShell.currentIndex,
-              onTap: (int idx) => _onItemTapped(idx, context),
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: const Color(0xFF50A7EA),
-              unselectedItemColor: Colors.grey,
-              selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
-              unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
-              items: [
-                BottomNavigationBarItem(
-                  icon: const Icon(CupertinoIcons.person_circle),
-                  activeIcon: const Icon(CupertinoIcons.person_circle_fill),
-                  label: context.s.contacts,
-                ),
-                BottomNavigationBarItem(
-                  icon: IconWithBudge(
-                    icon: const Icon(CupertinoIcons.phone),
-                    count: state.missedCallsCount,
+          bottomNavigationBar: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12.5, sigmaY: 12.5),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  border: Border(
+                    top: BorderSide(color: borderColor, width: 1.0),
                   ),
-                  activeIcon: IconWithBudge(
-                    icon: const Icon(CupertinoIcons.phone_fill),
-                    count: state.missedCallsCount,
-                  ),
-                  label: context.s.calls,
                 ),
-                BottomNavigationBarItem(
-                  icon: IconWithBudge(
-                    icon: const Icon(CupertinoIcons.chat_bubble_2),
-                    count: state.unreadChatsCount,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
                   ),
-                  activeIcon: IconWithBudge(
-                    icon: const Icon(CupertinoIcons.chat_bubble_2_fill),
-                    count: state.unreadChatsCount,
+                  child: BottomNavigationBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    currentIndex: widget.navigationShell.currentIndex,
+                    onTap: (int idx) => _onItemTapped(idx, context),
+                    type: BottomNavigationBarType.fixed,
+                    selectedItemColor: const Color(0xFFC96A3A),
+                    unselectedItemColor: const Color(0xFFBEBEBE),
+                    selectedLabelStyle: const TextStyle(
+                      fontSize: 12, 
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontSize: 12, 
+                      fontWeight: FontWeight.w400,
+                      height: 1.3,
+                    ),
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: SvgPicture.asset(
+                          'assets/icons/nav_contact_unselected.svg', 
+                          width: 24, 
+                          height: 24,
+                        ),
+                        activeIcon: SvgPicture.asset(
+                          'assets/icons/nav_contact_selected.svg', 
+                          width: 24, 
+                          height: 24,
+                        ),
+                        label: context.s.contacts,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: IconWithBudge(
+                          icon: SvgPicture.asset(
+                            'assets/icons/nav_call_unselected.svg', 
+                            width: 24, 
+                            height: 24,
+                          ),
+                          count: state.missedCallsCount,
+                        ),
+                        activeIcon: IconWithBudge(
+                          icon: SvgPicture.asset(
+                            'assets/icons/nav_call_selected.svg', 
+                            width: 24, 
+                            height: 24,
+                          ),
+                          count: state.missedCallsCount,
+                        ),
+                        label: context.s.calls,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: IconWithBudge(
+                          icon: SvgPicture.asset(
+                            'assets/icons/nav_chat_unselected.svg', 
+                            width: 24, 
+                            height: 24,
+                          ),
+                          count: state.unreadChatsCount,
+                        ),
+                        activeIcon: IconWithBudge(
+                          icon: SvgPicture.asset(
+                            'assets/icons/nav_chat_selected.svg', 
+                            width: 24, 
+                            height: 24,
+                          ),
+                          count: state.unreadChatsCount,
+                        ),
+                        label: context.s.chats,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: SvgPicture.asset(
+                          'assets/icons/nav_settings_unselected.svg', 
+                          width: 24, 
+                          height: 24,
+                        ),
+                        activeIcon: SvgPicture.asset(
+                          'assets/icons/nav_settings_selected.svg', 
+                          width: 24, 
+                          height: 24,
+                        ),
+                        label: context.s.settings,
+                      ),
+                    ],
                   ),
-                  label: context.s.chats,
                 ),
-                BottomNavigationBarItem(
-                  icon: const Icon(CupertinoIcons.settings),
-                  activeIcon: const Icon(CupertinoIcons.settings_solid),
-                  label: context.s.settings,
-                ),
-              ],
+              ),
             ),
           ),
         );

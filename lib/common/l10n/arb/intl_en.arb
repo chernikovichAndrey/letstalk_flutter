@@ -253,5 +253,24 @@
   "welcomeStart": "Start",
   "authPhoneTitle": "Your phone number",
   "continueAction": "Continue",
-  "selectCountryCode": "Select country code"
+  "selectCountryCode": "Select country code",
+  "authCodeTitle": "Enter code",
+  "authCodeSubtitle": "We sent an SMS with a code\nto {phone}",
+  "@authCodeSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "authCodeResend": "Resend code",
+  "authCodeResendIn": "Resend code in {seconds} s",
+  "@authCodeResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeConfirm": "Confirm number"
 }

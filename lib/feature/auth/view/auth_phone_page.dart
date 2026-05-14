@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
@@ -75,54 +76,58 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
         isDark ? AppColors.messageLight : AppColors.backgroundDark;
     final iconColor = isDark ? AppColors.messageLight : AppColors.backgroundDark;
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 38),
-              Center(
-                child: Text(
-                  context.s.authPhoneTitle,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.headingSmMedium.copyWith(
-                    color: titleColor,
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (prev, curr) => prev is! AuthCodeSent && curr is AuthCodeSent,
+      listener: (context, state) => context.push(Routes.authCode.path),
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 38),
+                Center(
+                  child: Text(
+                    context.s.authPhoneTitle,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.headingSmMedium.copyWith(
+                      color: titleColor,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 26),
-              CPhoneInput(
-                controller: _phoneController,
-                countryCode: _countryCode,
-                initialCountryCode:
-                    View.of(context).platformDispatcher.locale.countryCode,
-                onCountryCodeChanged: (code) {
-                  setState(() {
-                    _countryCode = code;
-                    _isPhoneValid = _validatePhone();
-                  });
-                },
-                onInit: (code) {
-                  if (_countryCode == null && code != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _countryCode = code;
-                          _isPhoneValid = _validatePhone();
-                        });
-                      }
+                const SizedBox(height: 26),
+                CPhoneInput(
+                  controller: _phoneController,
+                  countryCode: _countryCode,
+                  initialCountryCode:
+                      View.of(context).platformDispatcher.locale.countryCode,
+                  onCountryCodeChanged: (code) {
+                    setState(() {
+                      _countryCode = code;
+                      _isPhoneValid = _validatePhone();
                     });
-                  }
-                },
-              ),
-              const Spacer(),
-              CButton.primary(
-                label: context.s.continueAction,
-                onPressed: _isPhoneValid ? _handleContinuePressed : null,
-              ),
-            ],
+                  },
+                  onInit: (code) {
+                    if (_countryCode == null && code != null) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _countryCode = code;
+                            _isPhoneValid = _validatePhone();
+                          });
+                        }
+                      });
+                    }
+                  },
+                ),
+                const Spacer(),
+                CButton.primary(
+                  label: context.s.continueAction,
+                  onPressed: _isPhoneValid ? _handleContinuePressed : null,
+                ),
+              ],
+            ),
           ),
         ),
       ),

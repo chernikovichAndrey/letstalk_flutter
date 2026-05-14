@@ -34,6 +34,9 @@ class AppRouter {
           // Auth phone route (outside shell)
           buildRoute(Routes.authPhone),
 
+          // Auth code verification route (outside shell)
+          buildRoute(Routes.authCode),
+
           // Login route (outside shell)
           buildRoute(Routes.login),
 

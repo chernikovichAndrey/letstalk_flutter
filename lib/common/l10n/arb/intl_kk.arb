@@ -211,5 +211,24 @@
   "welcomeStart": "Бастау",
   "authPhoneTitle": "Сіздің телефон нөміріңіз",
   "continueAction": "Жалғастыру",
-  "selectCountryCode": "Ел кодын таңдаңыз"
+  "selectCountryCode": "Ел кодын таңдаңыз",
+  "authCodeTitle": "Кодты енгізіңіз",
+  "authCodeSubtitle": "Біз {phone} нөміріне\nкодпен СМС жібердік",
+  "@authCodeSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "authCodeResend": "Кодты қайта жіберу",
+  "authCodeResendIn": "Кодты {seconds} с кейін қайта жіберу",
+  "@authCodeResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeConfirm": "Нөмірді растау"
 }

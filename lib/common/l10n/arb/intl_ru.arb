@@ -211,5 +211,24 @@
   "welcomeStart": "Начать",
   "authPhoneTitle": "Ваш номер телефона",
   "continueAction": "Продолжить",
-  "selectCountryCode": "Выберите код страны"
+  "selectCountryCode": "Выберите код страны",
+  "authCodeTitle": "Введите код",
+  "authCodeSubtitle": "Мы отправили СМС с кодом\nна номер {phone}",
+  "@authCodeSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "authCodeResend": "Отправить код еще раз",
+  "authCodeResendIn": "Отправить код еще раз через {seconds} с",
+  "@authCodeResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeConfirm": "Подтвердить номер"
 }

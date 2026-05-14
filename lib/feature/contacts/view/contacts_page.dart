@@ -14,7 +14,7 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = context.padding.top + 42;
+    final topPadding = context.padding.top + 56;
 
     return Scaffold(
       extendBodyBehindAppBar: true,

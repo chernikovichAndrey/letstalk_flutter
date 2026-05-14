@@ -12,8 +12,8 @@ class ContactsPageScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<ContactsBloc>()..add(ContactsSyncPhoneContacts()),
+    return BlocProvider<ContactsBloc>(
+      create: (_) => getIt<ContactsBloc>()..add(ContactsSyncPhoneContacts()),
       child: BlocListener<ContactsBloc, ContactsState>(
         listener: (context, state) {
           if (state is ContactsChatCreated) {

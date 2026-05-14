@@ -21,7 +21,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheckStatus>((event, emit) async {
        try {
          final token = await authRepository.getToken();
-         FlutterNativeSplash.remove();
          if (token != null) {
            emit(AuthAuthenticated(token: token));
            await _onSendToken();
@@ -30,6 +29,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
          }
        } catch (e) {
          emit(AuthUnauthenticated());
+       } finally {
+         FlutterNativeSplash.remove();
        }
     });
 

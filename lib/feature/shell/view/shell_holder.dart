@@ -75,6 +75,37 @@ class _ShellHolderState extends State<ShellHolder> with WidgetsBindingObserver {
         );
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthInitial) {
+        _handleAuthState(context, authState);
+      }
+    });
+  }
+
+  void _handleAuthState(BuildContext context, AuthState state) {
+    if (state is AuthAuthenticated) {
+      if (state.token != null) {
+        getIt<WebSocketService>().authenticate(state.token!);
+      }
+      getIt<ProfileBloc>().add(ProfileLoadEvent());
+      getIt<NavigationBloc>().add(NavigationInitEvent());
+      context.go(Routes.chats.path);
+
+      if (_pendingCallAcceptData != null) {
+        final data = _pendingCallAcceptData!;
+        _pendingCallAcceptData = null;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleCallAccept(data);
+        });
+      }
+    } else if (state is AuthProfileSetupRequired) {
+      context.go(Routes.authProfile.path);
+    } else if (state is AuthUnauthenticated) {
+      _pendingCallAcceptData = null;
+      context.go(Routes.welcome.path);
+    }
   }
 
   void _handleCallAccept(Map<String, dynamic> data) {
@@ -179,29 +210,7 @@ class _ShellHolderState extends State<ShellHolder> with WidgetsBindingObserver {
           },
         ),
         BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthAuthenticated) {
-              if (state.token != null) {
-                getIt<WebSocketService>().authenticate(state.token!);
-              }
-              getIt<ProfileBloc>().add(ProfileLoadEvent());
-              getIt<NavigationBloc>().add(NavigationInitEvent());
-              context.go(Routes.chats.path);
-
-              if (_pendingCallAcceptData != null) {
-                final data = _pendingCallAcceptData!;
-                _pendingCallAcceptData = null;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _handleCallAccept(data);
-                });
-              }
-            } else if (state is AuthProfileSetupRequired) {
-              context.go(Routes.authProfile.path);
-            } else if (state is AuthUnauthenticated) {
-              _pendingCallAcceptData = null;
-              context.go(Routes.welcome.path);
-            }
-          },
+          listener: _handleAuthState,
         ),
         BlocListener<CallBloc, CallState>(
           listenWhen: (previous, current) =>

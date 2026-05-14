@@ -8,6 +8,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_button.dart';
 import 'package:lets_talk/common/widget/c_phone_input.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
 class AuthPhonePage extends StatefulWidget {
   const AuthPhonePage({super.key});
@@ -19,7 +20,7 @@ class AuthPhonePage extends StatefulWidget {
 class _AuthPhonePageState extends State<AuthPhonePage> {
   final TextEditingController _phoneController = TextEditingController();
   CountryCode? _countryCode;
-  bool _hasInput = false;
+  bool _isPhoneValid = false;
 
   @override
   void initState() {
@@ -35,9 +36,25 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
   }
 
   void _handlePhoneChanged() {
-    final isFilled = _phoneController.text.trim().isNotEmpty;
-    if (isFilled != _hasInput) {
-      setState(() => _hasInput = isFilled);
+    final isValid = _validatePhone();
+    if (isValid != _isPhoneValid) {
+      setState(() => _isPhoneValid = isValid);
+    }
+  }
+
+  bool _validatePhone() {
+    final isoCode = _countryCode?.code;
+    final raw = _phoneController.text.replaceAll(RegExp(r'[^\d]'), '');
+    if (isoCode == null || raw.isEmpty) return false;
+
+    try {
+      final phoneNumber = PhoneNumber.parse(
+        raw,
+        callerCountry: IsoCode.fromJson(isoCode),
+      );
+      return phoneNumber.isValid();
+    } catch (_) {
+      return false;
     }
   }
 
@@ -82,13 +99,19 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
                 initialCountryCode:
                     View.of(context).platformDispatcher.locale.countryCode,
                 onCountryCodeChanged: (code) {
-                  setState(() => _countryCode = code);
+                  setState(() {
+                    _countryCode = code;
+                    _isPhoneValid = _validatePhone();
+                  });
                 },
                 onInit: (code) {
                   if (_countryCode == null && code != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (mounted) {
-                        setState(() => _countryCode = code);
+                        setState(() {
+                          _countryCode = code;
+                          _isPhoneValid = _validatePhone();
+                        });
                       }
                     });
                   }
@@ -97,7 +120,7 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
               const Spacer(),
               CButton.primary(
                 label: context.s.continueAction,
-                onPressed: _hasInput ? _handleContinuePressed : null,
+                onPressed: _isPhoneValid ? _handleContinuePressed : null,
               ),
             ],
           ),

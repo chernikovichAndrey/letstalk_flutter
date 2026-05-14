@@ -43,7 +43,7 @@ class WelcomePage extends StatelessWidget {
                   const SizedBox(height: 60),
                   CButton.primary(
                     label: context.s.welcomeStart,
-                    onPressed: () => context.go(Routes.login.path),
+                    onPressed: () => context.push(Routes.authPhone.path),
                   ),
                 ],
               ),

@@ -208,5 +208,7 @@
   "weekdaySat": "сб",
   "weekdaySun": "вс",
   "welcomeTitle": "Общайтесь с друзьями легко и просто",
-  "welcomeStart": "Начать"
+  "welcomeStart": "Начать",
+  "authPhoneTitle": "Ваш номер телефона",
+  "continueAction": "Продолжить"
 }

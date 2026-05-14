@@ -31,6 +31,9 @@ class AppRouter {
           // Welcome route (outside shell)
           buildRoute(Routes.welcome),
 
+          // Auth phone route (outside shell)
+          buildRoute(Routes.authPhone),
+
           // Login route (outside shell)
           buildRoute(Routes.login),
 

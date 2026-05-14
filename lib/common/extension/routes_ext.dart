@@ -9,6 +9,7 @@ import 'package:lets_talk/feature/chats/view/sheet/add_contact_to_group_sheet.da
 import 'package:lets_talk/feature/chats/view/sheet/chat_avatar_sheet.dart';
 import 'package:lets_talk/feature/chats/view/sheet/chat_contact_sheet.dart';
 import 'package:lets_talk/common/widget/c_alert_dialog.dart';
+import 'package:lets_talk/feature/auth/view/auth_phone_page.dart';
 import 'package:lets_talk/feature/auth/view/login_page.dart';
 import 'package:lets_talk/feature/auth/view/welcome_page.dart';
 import 'package:lets_talk/feature/call/view/call_page.dart';
@@ -36,6 +37,7 @@ extension RoutesExt on Routes {
     return switch (this) {
       Routes.splash => const SplashPage(),
       Routes.welcome => const WelcomePage(),
+      Routes.authPhone => const AuthPhonePage(),
       Routes.login => const LoginPage(),
       Routes.contacts => const ContactsPageScope(),
       Routes.callsHistory => const CallsHistoryPageScope(),

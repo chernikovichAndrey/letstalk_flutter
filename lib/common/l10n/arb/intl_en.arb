@@ -250,5 +250,7 @@
   "weekdaySat": "Sat",
   "weekdaySun": "Sun",
   "welcomeTitle": "Connect with friends easily and simply",
-  "welcomeStart": "Start"
+  "welcomeStart": "Start",
+  "authPhoneTitle": "Your phone number",
+  "continueAction": "Continue"
 }

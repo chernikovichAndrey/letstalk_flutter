@@ -208,5 +208,7 @@
   "weekdaySat": "сн",
   "weekdaySun": "жк",
   "welcomeTitle": "Достармен оңай және қарапайым байланысыңыз",
-  "welcomeStart": "Бастау"
+  "welcomeStart": "Бастау",
+  "authPhoneTitle": "Сіздің телефон нөміріңіз",
+  "continueAction": "Жалғастыру"
 }

@@ -210,5 +210,6 @@
   "welcomeTitle": "Общайтесь с друзьями легко и просто",
   "welcomeStart": "Начать",
   "authPhoneTitle": "Ваш номер телефона",
-  "continueAction": "Продолжить"
+  "continueAction": "Продолжить",
+  "selectCountryCode": "Выберите код страны"
 }

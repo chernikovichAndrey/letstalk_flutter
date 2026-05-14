@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/c_country_code_picker_sheet.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:phone_numbers_parser/metadata.dart'
     show metadataExamplesByIsoCode;
@@ -22,6 +23,7 @@ class CPhoneInput extends StatefulWidget {
     this.initialCountryCode,
     this.onInit,
     this.onChanged,
+    this.favorite = const ['RU', 'KZ'],
   });
 
   final TextEditingController controller;
@@ -30,6 +32,7 @@ class CPhoneInput extends StatefulWidget {
   final String? initialCountryCode;
   final ValueChanged<CountryCode?>? onInit;
   final ValueChanged<String>? onChanged;
+  final List<String> favorite;
 
   @override
   State<CPhoneInput> createState() => _CPhoneInputState();
@@ -37,11 +40,36 @@ class CPhoneInput extends StatefulWidget {
 
 class _CPhoneInputState extends State<CPhoneInput> {
   MaskTextInputFormatter? _phoneMaskFormatter;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
     _updatePhoneMask();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+
+    if (widget.countryCode != null) return;
+    final initial = widget.initialCountryCode;
+    if (initial == null) return;
+
+    CountryCode? found;
+    for (final json in codes) {
+      final c = CountryCode.fromJson(json);
+      if (c.code?.toUpperCase() == initial.toUpperCase() ||
+          c.dialCode == initial) {
+        found = c;
+        break;
+      }
+    }
+    if (found == null) return;
+    found.localize(context);
+    widget.onInit?.call(found);
   }
 
   @override
@@ -93,6 +121,18 @@ class _CPhoneInputState extends State<CPhoneInput> {
     }
   }
 
+  Future<void> _openCountryPicker() async {
+    final selected = await CCountryCodePickerSheet.show(
+      context,
+      initialSelection:
+          widget.countryCode?.code ?? widget.initialCountryCode,
+      favorite: widget.favorite,
+    );
+    if (selected != null) {
+      widget.onCountryCodeChanged(selected);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -107,9 +147,6 @@ class _CPhoneInputState extends State<CPhoneInput> {
 
     final valueStyle = AppTypography.textMdRegular.copyWith(color: valueColor);
     final hintStyle = AppTypography.textMdRegular.copyWith(color: hintColor);
-    final dialogTextStyle = AppTypography.textMdRegular.copyWith(
-      color: isDark ? AppColors.backgroundLight : AppColors.backgroundDark,
-    );
 
     return Container(
       height: 56,
@@ -120,23 +157,12 @@ class _CPhoneInputState extends State<CPhoneInput> {
       padding: const EdgeInsetsDirectional.only(start: 8, end: 24),
       child: Row(
         children: [
-          CountryCodePicker(
-            onChanged: widget.onCountryCodeChanged,
-            onInit: widget.onInit,
-            initialSelection:
-                widget.countryCode?.code ?? widget.initialCountryCode,
-            favorite: const ['RU', 'KZ'],
-            padding: EdgeInsets.zero,
-            barrierColor: Colors.black.withValues(alpha: 0.5),
-            dialogBackgroundColor: context.theme.scaffoldBackgroundColor,
-            dialogTextStyle: dialogTextStyle,
-            searchStyle: dialogTextStyle,
-            builder: (code) => _CountryPill(
-              code: code,
-              backgroundColor: pillBg,
-              arrowColor: arrowColor,
-              textStyle: valueStyle,
-            ),
+          _CountryPill(
+            code: widget.countryCode,
+            backgroundColor: pillBg,
+            arrowColor: arrowColor,
+            textStyle: valueStyle,
+            onTap: _openCountryPicker,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -175,40 +201,46 @@ class _CountryPill extends StatelessWidget {
     required this.backgroundColor,
     required this.arrowColor,
     required this.textStyle,
+    required this.onTap,
   });
 
   final CountryCode? code;
   final Color backgroundColor;
   final Color arrowColor;
   final TextStyle textStyle;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (code?.flagUri != null)
-            ClipOval(
-              child: Image.asset(
-                code!.flagUri!,
-                package: 'country_code_picker',
-                width: 20,
-                height: 20,
-                fit: BoxFit.cover,
-              ),
-            ),
-          const SizedBox(width: 4),
-          Text(code?.dialCode ?? '', style: textStyle),
-          const SizedBox(width: 4),
-          Icon(Icons.keyboard_arrow_down, size: 16, color: arrowColor),
-        ],
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(22),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (code?.flagUri != null)
+                ClipOval(
+                  child: Image.asset(
+                    code!.flagUri!,
+                    package: 'country_code_picker',
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              const SizedBox(width: 4),
+              Text(code?.dialCode ?? '', style: textStyle),
+              const SizedBox(width: 4),
+              Icon(Icons.keyboard_arrow_down, size: 16, color: arrowColor),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -210,5 +210,6 @@
   "welcomeTitle": "Достармен оңай және қарапайым байланысыңыз",
   "welcomeStart": "Бастау",
   "authPhoneTitle": "Сіздің телефон нөміріңіз",
-  "continueAction": "Жалғастыру"
+  "continueAction": "Жалғастыру",
+  "selectCountryCode": "Ел кодын таңдаңыз"
 }

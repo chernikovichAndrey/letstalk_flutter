@@ -65,18 +65,6 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                height: 44,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back_ios_new, color: iconColor),
-                    onPressed: () {
-                      if (context.canPop()) context.pop();
-                    },
-                  ),
-                ),
-              ),
               const SizedBox(height: 38),
               Center(
                 child: Text(

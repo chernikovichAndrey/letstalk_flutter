@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/router/arg/call_details_args.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
@@ -102,7 +103,7 @@ class _CallDetailsView extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     call.peer.name,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: AppTypography.headingXsMedium,
                   ),
                   const SizedBox(height: 24),
                   Card(

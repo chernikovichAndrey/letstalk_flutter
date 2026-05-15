@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lets_talk/app/router/arg/call_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
@@ -24,8 +25,6 @@ class CallHistoryListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return ListTile(
       leading: CAvatar(
         name: call.peer.name,
@@ -34,7 +33,7 @@ class CallHistoryListItem extends StatelessWidget {
       ),
       title: Text(
         call.peer.name.isEmpty ? call.peer.phone : call.peer.name,
-        style: theme.textTheme.bodyLarge,
+        style: AppTypography.textMdRegular,
       ),
       subtitle: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -50,7 +49,7 @@ class CallHistoryListItem extends StatelessWidget {
             call.direction == 'incoming' && call.durationFormatted != null
                 ? '${call.direction} (${call.durationFormatted})'
                 : call.direction,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: AppTypography.textXsRegular.copyWith(
               color: Colors.grey,
             ),
           ),
@@ -68,9 +67,8 @@ class CallHistoryListItem extends StatelessWidget {
               children: [
                 Text(
                   _formatDate(call.endedAt ?? call.startedAt),
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: AppTypography.textXsRegular.copyWith(
                     color: Colors.grey,
-                    fontSize: 12,
                   ),
                 ),
                 const SizedBox(width: 8),

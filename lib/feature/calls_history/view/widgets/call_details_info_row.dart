@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class CallDetailsInfoRow extends StatelessWidget {
@@ -20,16 +21,13 @@ class CallDetailsInfoRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: context.text.bodyMedium?.copyWith(
+            style: AppTypography.textMdMedium.copyWith(
               color: context.appColors.dateSeparatorText,
-              fontWeight: FontWeight.w500,
             ),
           ),
           Text(
             value,
-            style: context.text.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTypography.textMdSemiBold,
           ),
         ],
       ),

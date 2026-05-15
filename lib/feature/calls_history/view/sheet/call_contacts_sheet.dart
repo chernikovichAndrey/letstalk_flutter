@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/common/widget/select_call_type_dialog.dart';
@@ -39,8 +40,7 @@ class CallContactsSheet extends StatelessWidget {
             ),
             title: Text(
               context.s.newCall,
-              style: context.text.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: AppTypography.textMdSemiBold.copyWith(
                 color: context.appColors.glassForeground,
               ),
             ),

@@ -1,121 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/c_bottom_sheet.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_event.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_state.dart';
+import 'package:lets_talk/feature/settings/view/widgets/language_select_tile.dart';
 
 class LanguageSelectSheet extends StatelessWidget {
   const LanguageSelectSheet({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return CBottomSheet(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            context.s.selectLanguage,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: context.color.onSurface,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: BlocBuilder<LocaleBloc, LocaleState>(
-            builder: (context, state) {
-              return ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  _LanguageTile(
-                    title: context.s.languageEnglish,
-                    locale: const Locale('en'),
-                    isSelected: state.locale.languageCode == 'en',
-                    onTap: () {
-                      context.read<LocaleBloc>().add(LocaleChanged(const Locale('en')));
-                      context.pop();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  _LanguageTile(
-                    title: context.s.languageRussian,
-                    locale: const Locale('ru'),
-                    isSelected: state.locale.languageCode == 'ru',
-                    onTap: () {
-                      context.read<LocaleBloc>().add(LocaleChanged(const Locale('ru')));
-                      context.pop();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  _LanguageTile(
-                    title: context.s.languageKazakh,
-                    locale: const Locale('kk'),
-                    isSelected: state.locale.languageCode == 'kk',
-                    onTap: () {
-                      context.read<LocaleBloc>().add(LocaleChanged(const Locale('kk')));
-                      context.pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    );
+  String _languageLabel(BuildContext context, String code) {
+    switch (code) {
+      case 'en':
+        return context.s.languageEnglish;
+      case 'ru':
+        return context.s.languageRussian;
+      case 'kk':
+        return context.s.languageKazakh;
+      default:
+        return code;
+    }
   }
-}
 
-class _LanguageTile extends StatelessWidget {
-  final String title;
-  final Locale locale;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _LanguageTile({
-    required this.title,
-    required this.locale,
-    required this.isSelected,
-    required this.onTap,
-  });
+  void _select(BuildContext context, Locale locale) {
+    context.read<LocaleBloc>().add(LocaleChanged(locale));
+    context.pop();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+    final isDark = context.theme.brightness == Brightness.dark;
+    final titleColor = isDark ? AppColors.messageLight : AppColors.messageDark;
+
+    const locales = [Locale('en'), Locale('ru'), Locale('kk')];
+
+    return SafeArea(
+      top: false,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: context.appColors.secondaryBackground,
-          borderRadius: BorderRadius.circular(16),
-          border: isSelected
-              ? Border.all(color: context.appColors.telegramBlue, width: 2)
-              : null,
+          color: context.theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: context.color.onSurface,
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: context.pop,
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 24,
+                        color: titleColor,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      context.s.selectLanguage,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: titleColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                ],
               ),
             ),
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: context.appColors.telegramBlue,
-                size: 24,
-              ),
+            BlocBuilder<LocaleBloc, LocaleState>(
+              builder: (context, state) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var i = 0; i < locales.length; i++) ...[
+                        if (i > 0) const SizedBox(height: 8),
+                        LanguageSelectTile(
+                          title: _languageLabel(context, locales[i].languageCode),
+                          isSelected:
+                              state.locale.languageCode == locales[i].languageCode,
+                          onTap: () => _select(context, locales[i]),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

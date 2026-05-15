@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_app_bar.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/selected_contacts_input.dart';
+import 'package:lets_talk/feature/chats/view/widgets/add_contact_to_group/add_contact_to_group_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/add_contact_to_group/add_contact_to_group_list.dart';
+import 'package:lets_talk/feature/chats/view/widgets/add_contact_to_group/add_contact_to_group_search_field.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
-import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
-import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
 
 class AddContactToGroupSheet extends StatefulWidget {
   const AddContactToGroupSheet({super.key});
@@ -18,71 +17,80 @@ class AddContactToGroupSheet extends StatefulWidget {
 }
 
 class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
+  final Set<int> _selectedUserIds = {};
+  late final Set<int> _excludedMemberIds = _existingMemberIds();
+
   @override
-  void deactivate() {
-    getIt<ContactsBloc>().add(ContactsToggleSelectionMode());
-    super.deactivate();
+  void initState() {
+    super.initState();
+    final bloc = getIt<ContactsBloc>();
+    if (bloc.state is! ContactsLoaded) {
+      bloc.add(ContactsLoad());
+    } else {
+      bloc.add(ContactsSearch(''));
+    }
+  }
+
+  @override
+  void dispose() {
+    getIt<ContactsBloc>().add(ContactsSearch(''));
+    super.dispose();
+  }
+
+  void _toggleSelection(int userId) {
+    setState(() {
+      if (_selectedUserIds.contains(userId)) {
+        _selectedUserIds.remove(userId);
+      } else {
+        _selectedUserIds.add(userId);
+      }
+    });
+  }
+
+  void _onDone() {
+    if (_selectedUserIds.isEmpty) return;
+    for (final userId in _selectedUserIds) {
+      getIt<ChatDetailsBloc>().add(AddMembersToChat(userId));
+    }
+    context.pop();
+  }
+
+  Set<int> _existingMemberIds() {
+    final members = getIt<ChatDetailsBloc>().state.chat?.memberInfo;
+    if (members == null) return const {};
+    return members.map((m) => m.id).toSet();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: getIt<ContactsBloc>()..add(ContactsToggleSelectionMode()),
+      value: getIt<ContactsBloc>(),
       child: Container(
         height: context.mediaSize.height * 0.92,
         decoration: BoxDecoration(
-          color: context.theme.scaffoldBackgroundColor,
+          color: context.appColors.backgroundColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: CreateChatGroupAppBar(
-            nextLabel: context.s.ready,
-            onPressNext: () {
-              final contactsState = getIt<ContactsBloc>().state;
-              if (contactsState is! ContactsLoaded) return;
-
-              final userIds = contactsState.selectedContactIds.toList();
-              for (var userId in userIds) {
-                getIt<ChatDetailsBloc>().add(AddMembersToChat(userId));
-              }
-              context.pop();
-            },
-          ),
-          body: BlocBuilder<ContactsBloc, ContactsState>(
-            builder: (context, state) {
-              if (state is ContactsLoading ||
-                  state is ContactsActionInProgress) {
-                return const ContactsSceleton();
-              }
-              return CustomScrollView(
-                slivers: [
-                  if (state is ContactsLoaded)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: SelectedContactsInput(
-                          hintText: context.s.groupInviteHint,
-                          onSearchChanged: (query) {
-                            context.read<ContactsBloc>().add(
-                                  ContactsSearch(query),
-                                );
-                          },
-                          searchQuery: state.query,
-                        ),
-                      ),
-                    ),
-                  ContactsSlivers(
-                    state: state,
-                    isRegisteredOnly: true,
-                    showSearch: false,
-                  ),
-                ],
-              );
-            },
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              AddContactToGroupAppBar(
+                isDoneEnabled: _selectedUserIds.isNotEmpty,
+                onDone: _onDone,
+              ),
+              AddContactToGroupSearchField(
+                selectedUserIds: _selectedUserIds,
+                onRemove: _toggleSelection,
+              ),
+              Expanded(
+                child: AddContactToGroupList(
+                  selectedUserIds: _selectedUserIds,
+                  excludedUserIds: _excludedMemberIds,
+                  onTap: _toggleSelection,
+                ),
+              ),
+            ],
           ),
         ),
       ),

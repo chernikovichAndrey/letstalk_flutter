@@ -32,6 +32,7 @@ enum Routes {
   chatInfoSheet(path: _Paths.chatInfoSheet, type: RouteType.bottomSheet),
   memberInfoSheet(path: _Paths.memberInfoSheet, type: RouteType.bottomSheet),
   languageSelectSheet(path: _Paths.languageSelectSheet, type: RouteType.bottomSheet),
+  themeSelectSheet(path: _Paths.themeSelectSheet, type: RouteType.bottomSheet),
   photoEditor(path: _Paths.photoEditor, type: RouteType.page),
   privacyPolicy(path: _Paths.privacyPolicy, type: RouteType.page),
   termsOfService(path: _Paths.termsOfService, type: RouteType.page);
@@ -85,6 +86,7 @@ abstract class _Paths {
   static const String chatInfoSheet = '/call_info_sheet';
   static const String memberInfoSheet = '/member_info_sheet';
   static const String languageSelectSheet = '/language_select_sheet';
+  static const String themeSelectSheet = '/theme_select_sheet';
   static const String privacyPolicy = '/privacy_policy';
   static const String termsOfService = '/terms_of_service';
 }

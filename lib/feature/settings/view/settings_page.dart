@@ -10,6 +10,8 @@ import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_state.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_state.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_widget.dart';
 import 'package:lets_talk/feature/settings/view/widgets/settings_app_bar.dart';
 import 'package:lets_talk/feature/settings/view/widgets/settings_footer.dart';
@@ -30,9 +32,15 @@ class SettingsPage extends StatelessWidget {
     }
   }
 
-  String _themeLabel(BuildContext context) {
-    final isDark = context.theme.brightness == Brightness.dark;
-    return isDark ? context.s.themeDark : context.s.themeLight;
+  String _themeLabel(BuildContext context, ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return context.s.themeLight;
+      case ThemeMode.dark:
+        return context.s.themeDark;
+      case ThemeMode.system:
+        return context.s.themeSystem;
+    }
   }
 
   void _openFavorites(BuildContext context) {
@@ -85,30 +93,41 @@ class SettingsPage extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: BlocBuilder<LocaleBloc, LocaleState>(
                               builder: (context, localeState) {
-                                return SettingsMenuCard(
-                                  children: [
-                                    SettingsMenuItem(
-                                      icon: Icons.bookmark_border_rounded,
-                                      label: context.s.favorites,
-                                      onTap: () => _openFavorites(context),
-                                    ),
-                                    SettingsMenuItem(
-                                      icon: Icons.language_outlined,
-                                      label: context.s.language,
-                                      value: _localeLabel(
-                                        context,
-                                        localeState.locale,
-                                      ),
-                                      onTap: () => context
-                                          .push(Routes.languageSelectSheet.path),
-                                    ),
-                                    SettingsMenuItem(
-                                      icon: Icons.contrast_rounded,
-                                      label: context.s.theme,
-                                      value: _themeLabel(context),
-                                      showDivider: false,
-                                    ),
-                                  ],
+                                return BlocBuilder<ThemeBloc, ThemeState>(
+                                  builder: (context, themeState) {
+                                    return SettingsMenuCard(
+                                      children: [
+                                        SettingsMenuItem(
+                                          icon: Icons.bookmark_border_rounded,
+                                          label: context.s.favorites,
+                                          onTap: () => _openFavorites(context),
+                                        ),
+                                        SettingsMenuItem(
+                                          icon: Icons.language_outlined,
+                                          label: context.s.language,
+                                          value: _localeLabel(
+                                            context,
+                                            localeState.locale,
+                                          ),
+                                          onTap: () => context.push(
+                                            Routes.languageSelectSheet.path,
+                                          ),
+                                        ),
+                                        SettingsMenuItem(
+                                          icon: Icons.contrast_rounded,
+                                          label: context.s.theme,
+                                          value: _themeLabel(
+                                            context,
+                                            themeState.mode,
+                                          ),
+                                          onTap: () => context.push(
+                                            Routes.themeSelectSheet.path,
+                                          ),
+                                          showDivider: false,
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
                             ),

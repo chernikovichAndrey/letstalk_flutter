@@ -172,6 +172,7 @@
   "themeLight": "Светлая",
   "themeDark": "Тёмная",
   "themeSystem": "Системная",
+  "selectTheme": "Выбрать тему",
   "groupCreated": "Группа создана",
   "messageTypeImage": "Изображение",
   "messageTypeDocument": "Документ",

@@ -214,6 +214,7 @@
   "themeLight": "Light",
   "themeDark": "Dark",
   "themeSystem": "System",
+  "selectTheme": "Select theme",
   "groupCreated": "Group created",
   "messageTypeImage": "Image",
   "messageTypeDocument": "Document",

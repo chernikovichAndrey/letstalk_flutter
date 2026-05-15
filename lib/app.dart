@@ -19,6 +19,9 @@ import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_event.dart';
 import 'package:lets_talk/feature/settings/domain/locale_bloc/locale_state.dart';
+import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_event.dart';
+import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_state.dart';
 
 import 'common/l10n/generated/l10n.dart';
 import 'common/mixin/handle_push_notification.dart';
@@ -51,33 +54,38 @@ class _AppState extends State<App> with HandlePushNotification {
         BlocProvider<ConnectivityBloc>.value(value: getIt()),
         BlocProvider<NavigationBloc>.value(value: getIt()),
         BlocProvider<LocaleBloc>.value(value: getIt()..add(LoadSavedLocale())),
+        BlocProvider<ThemeBloc>.value(value: getIt()..add(LoadSavedTheme())),
         BlocProvider<ChatsBloc>.value(value: getIt()),
       ],
-      child: BlocBuilder<LocaleBloc, LocaleState>(
-        builder: (context, localeState) {
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            routerConfig: router.config,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: ThemeMode.system,
-            localizationsDelegates: [
-              S.delegate,
-              CountryLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: S.delegate.supportedLocales,
-            locale: localeState.locale,
-            scrollBehavior: const MaterialScrollBehavior().copyWith(
-              dragDevices: {
-                PointerDeviceKind.touch,
-                PointerDeviceKind.stylus,
-                PointerDeviceKind.trackpad,
-                PointerDeviceKind.mouse,
-              },
-            ),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, themeState) {
+          return BlocBuilder<LocaleBloc, LocaleState>(
+            builder: (context, localeState) {
+              return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                routerConfig: router.config,
+                theme: AppTheme.light,
+                darkTheme: AppTheme.dark,
+                themeMode: themeState.mode,
+                localizationsDelegates: [
+                  S.delegate,
+                  CountryLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: S.delegate.supportedLocales,
+                locale: localeState.locale,
+                scrollBehavior: const MaterialScrollBehavior().copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.stylus,
+                    PointerDeviceKind.trackpad,
+                    PointerDeviceKind.mouse,
+                  },
+                ),
+              );
+            },
           );
         },
       ),

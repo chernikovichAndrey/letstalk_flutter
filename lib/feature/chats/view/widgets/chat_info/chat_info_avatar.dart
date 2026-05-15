@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
@@ -13,59 +14,68 @@ class ChatInfoAvatar extends StatelessWidget {
   const ChatInfoAvatar({super.key, this.member, this.chat});
 
   String? _getMemberAvatar() {
-    if (member == null) return null;
-    if (member!.avatar != null && member!.avatar!.isNotEmpty) {
-      return member!.avatar;
-    }
+    final avatar = member?.avatar;
+    if (avatar != null && avatar.isNotEmpty) return avatar;
     return null;
   }
 
-  String? _getMemberName({bool phone = false}) {
-    if (member == null) return null;
-    if (member!.fullName != null && member!.fullName!.isNotEmpty) {
-      return member!.fullName;
+  String _getMemberName({bool phone = false}) {
+    if (member == null) return '';
+    final fullName = member!.fullName;
+    if (fullName != null && fullName.isNotEmpty) return fullName;
+    final firstName = member!.firstName;
+    if (firstName != null && firstName.isNotEmpty) return firstName;
+    if (phone) {
+      final phoneNumber = member!.phone;
+      if (phoneNumber != null && phoneNumber.isNotEmpty) return phoneNumber;
     }
-    if (member!.firstName != null && member!.firstName!.isNotEmpty) {
-      return member!.firstName;
-    }
-    if (phone && member!.phone != null && member!.phone!.isNotEmpty) {
-      return member!.phone;
-    }
-    return null;
+    return '';
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
     final isGroup = chat?.type == 'group';
+    final canEditAvatar = isGroup && chat?.role == 'admin';
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        splashColor: Colors.transparent,
-        onTap: () {
-          if (chat != null && chat?.type == 'group' && chat?.role == 'admin') {
-            context.push(Routes.chatAvatarSheet);
-          }
-        },
-        child: Column(
-          children: [
-            CAvatar(
-              imageUrl: isGroup ? chat?.avatar : _getMemberAvatar(),
-              name: isGroup ? chat?.title : _getMemberName(),
-              radius: 60,
-              isLoading: false,
-            ),
+    final titleColor =
+        isDark ? AppColors.backgroundLight : const Color(0xFF191919);
+    final subtitleColor =
+        isDark ? AppColors.grayLight : AppColors.grayDark;
+
+    final title = isGroup
+        ? (chat?.title ?? '')
+        : _getMemberName(phone: true);
+    final subtitle = isGroup
+        ? context.s.participantsCount(chat?.membersCount ?? 0)
+        : null;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: canEditAvatar ? () => context.push(Routes.chatAvatarSheet) : null,
+      child: Column(
+        children: [
+          CAvatar(
+            imageUrl: isGroup ? chat?.avatar : _getMemberAvatar(),
+            name: isGroup ? chat?.title : _getMemberName(),
+            radius: 50,
+            isLoading: false,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: AppTypography.headingXsMedium.copyWith(color: titleColor),
+            textAlign: TextAlign.center,
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
             Text(
-              isGroup ? chat?.title ?? '' : _getMemberName(phone: true) ?? '',
-              style: TextStyle(
-                color: context.appColors.glassForeground,
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-              ),
+              subtitle,
+              style: AppTypography.textSmRegular.copyWith(color: subtitleColor),
               textAlign: TextAlign.center,
-            )
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

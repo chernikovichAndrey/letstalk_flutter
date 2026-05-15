@@ -83,7 +83,7 @@ abstract class _Paths {
   static const String selectContactsFroGroup = '/select_contacts_fro_group';
   static const String createChatGroup = '/create_chat_group';
   static const String addContactToGroupSheet = '/add_contact_to_group_sheet';
-  static const String chatInfoSheet = '/call_info_sheet';
+  static const String chatInfoSheet = '/chat_info_sheet';
   static const String memberInfoSheet = '/member_info_sheet';
   static const String languageSelectSheet = '/language_select_sheet';
   static const String themeSelectSheet = '/theme_select_sheet';

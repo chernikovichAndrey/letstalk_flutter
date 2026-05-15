@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
@@ -14,46 +15,38 @@ class ChatInfoUserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
+    final cardColor = isDark ? AppColors.messageDark : AppColors.white;
+    final hasPhone =
+        member?.phone != null && member!.phone!.isNotEmpty;
 
     return BlocProvider.value(
       value: getIt<ContactsBloc>(),
       child: BlocBuilder<ContactsBloc, ContactsState>(
         builder: (context, state) {
           final hasInFriends = state is ContactsLoaded
-              ? state.contacts.any((contact) => contact.registeredUserId == member?.id,)
+              ? state.contacts
+                  .any((contact) => contact.registeredUserId == member?.id)
               : false;
+
           return Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: context.appColors.secondaryBackground,
-                  borderRadius: BorderRadius.circular(16),
+              if (hasPhone)
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ChatInfoRow(
+                    label: context.s.mobile,
+                    value: member?.phone,
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    if (member?.phone != null && member!.phone!.isNotEmpty) ...[
-                      ChatInfoRow(label: context.s.mobile, value: member?.phone!),
-                      Divider(
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                        color: context.appColors.divider,
-                      ),
-                    ],
-                    ChatInfoRow(
-                      label: context.s.username,
-                      value:
-                      member?.fullName ??
-                          member?.firstName ??
-                          member?.phone ??
-                          '',
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-              if (!hasInFriends)
+              if (!hasInFriends && member != null) ...[
+                const SizedBox(height: 16),
                 ChatInfoAddContact(member: member),
+              ],
             ],
           );
         },

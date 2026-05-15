@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/router/arg/member_info_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
@@ -60,13 +62,8 @@ class _MemberItemState extends State<MemberItem>
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (details.delta.dx < 0) {
-      final delta = details.delta.dx / _deleteButtonWidth;
-      _controller.value = (_controller.value - delta).clamp(0.0, 1.0);
-    } else if (details.delta.dx > 0 && _controller.value > 0) {
-      final delta = details.delta.dx / _deleteButtonWidth;
-      _controller.value = (_controller.value - delta).clamp(0.0, 1.0);
-    }
+    final delta = details.delta.dx / _deleteButtonWidth;
+    _controller.value = (_controller.value - delta).clamp(0.0, 1.0);
   }
 
   void _handleDragEnd(DragEndDetails details) {
@@ -80,147 +77,134 @@ class _MemberItemState extends State<MemberItem>
   void _handleTap() {
     if (_controller.value > 0) {
       _controller.reverse();
-    } else {
-      if (!widget.isMyself) {
-        context.push(
-          Routes.memberInfoSheet,
-          args: MemberInfoArgs(memberInfo: widget.member),
-        );
-      }
+      return;
+    }
+    if (!widget.isMyself) {
+      context.push(
+        Routes.memberInfoSheet,
+        args: MemberInfoArgs(memberInfo: widget.member),
+      );
     }
   }
 
-  String _getRoleLabel(String role, BuildContext context) {
-    switch (role) {
-      case 'owner':
-      case 'admin':
-        return context.s.owner;
-      case 'member':
-      default:
-        return '';
-    }
+  String _getRoleLabel(String role) {
+    if (role == 'owner' || role == 'admin') return context.s.owner;
+    return '';
   }
 
-  String _getMemberName(BuildContext context, MemberInfo memberInfo) {
-    if (memberInfo.fullName != null && memberInfo.fullName!.isNotEmpty) {
-      return memberInfo.fullName!;
-    }
-    if (memberInfo.firstName != null && memberInfo.firstName!.isNotEmpty) {
-      return memberInfo.firstName!;
-    }
-    if (memberInfo.phone != null && memberInfo.phone!.isNotEmpty) {
-      return memberInfo.phone!;
-    }
+  String _getMemberName() {
+    final m = widget.member;
+    if (m.fullName != null && m.fullName!.isNotEmpty) return m.fullName!;
+    if (m.firstName != null && m.firstName!.isNotEmpty) return m.firstName!;
+    if (m.phone != null && m.phone!.isNotEmpty) return m.phone!;
     return context.s.unknown;
   }
 
-  String? _getMemberAvatar(MemberInfo memberInfo) {
-    if (memberInfo.avatar != null && memberInfo.avatar!.isNotEmpty) {
-      return memberInfo.avatar;
-    }
+  String? _getMemberAvatar() {
+    final avatar = widget.member.avatar;
+    if (avatar != null && avatar.isNotEmpty) return avatar;
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.chatMember == null) return SizedBox();
-    final roleLabel = _getRoleLabel(widget.chatMember!.role, context);
+    if (widget.chatMember == null) return const SizedBox.shrink();
+
+    final isDark = context.theme.brightness == Brightness.dark;
+    final cardColor = isDark ? AppColors.messageDark : AppColors.white;
+    final nameColor =
+        isDark ? AppColors.messageLight : AppColors.messageDark;
+    final phoneColor = isDark ? AppColors.grayLight : AppColors.grayDark;
+    final roleColor = AppColors.grayLight;
+
+    final roleLabel = _getRoleLabel(widget.chatMember!.role);
     final canDelete = widget.currentUserRole == 'admin' && !widget.isMyself;
 
-    return GestureDetector(
-      onHorizontalDragUpdate: canDelete ? _handleDragUpdate : null,
-      onHorizontalDragEnd: canDelete ? _handleDragEnd : null,
-      onTap: _handleTap,
-      child: Column(
-        children: [
-          ClipRect(
-            child: Stack(
-              children: [
-                ChatInfoDeleteMemberButton(
-                  onDelete: () => _onDelete(widget.chatMember!.userId),
-                  deleteButtonWidth: _deleteButtonWidth,
-                ),
-                // Member item content
-                AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: _animation.value,
-                      child: Container(
-                        color: CupertinoDynamicColor.resolve(
-                          CupertinoDynamicColor.withBrightness(
-                            color: const Color(0xfff2f2f2),
-                            darkColor: const Color(0xFF292929),
-                          ),
-                          context,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          child: Row(
-                            children: [
-                              CAvatar(
-                                imageUrl: _getMemberAvatar(widget.member),
-                                name: _getMemberName(context, widget.member),
-                                radius: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      _getMemberName(context, widget.member),
-                                      style: TextStyle(
-                                        color: context.appColors.glassForeground,
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    if (widget.isMyself)
-                                      Text(
-                                        context.s.you,
-                                        style: const TextStyle(
-                                          color: CupertinoColors.systemBlue,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                  ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: GestureDetector(
+        onHorizontalDragUpdate: canDelete ? _handleDragUpdate : null,
+        onHorizontalDragEnd: canDelete ? _handleDragEnd : null,
+        onTap: _handleTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: Stack(
+            children: [
+              ChatInfoDeleteMemberButton(
+                onDelete: () => _onDelete(widget.chatMember!.userId),
+                deleteButtonWidth: _deleteButtonWidth,
+              ),
+              AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: _animation.value,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: isDark
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: const Color(0xFF9A9A9A)
+                                      .withValues(alpha: 0.1),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 7.5,
                                 ),
-                              ),
-                              if (roleLabel.isNotEmpty)
-                                Text(
-                                  roleLabel,
-                                  style: TextStyle(
-                                    color: context.appColors.glassForeground
-                                        .withOpacity(0.5),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
+                              ],
                       ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                      child: Row(
+                        children: [
+                          CAvatar(
+                            imageUrl: _getMemberAvatar(),
+                            name: _getMemberName(),
+                            radius: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  widget.isMyself
+                                      ? context.s.you
+                                      : _getMemberName(),
+                                  style: AppTypography.textMdMedium
+                                      .copyWith(color: nameColor),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  widget.member.phone ?? '',
+                                  style: AppTypography.textSmRegular
+                                      .copyWith(color: phoneColor),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (roleLabel.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              roleLabel,
+                              style: AppTypography.textXsRegular
+                                  .copyWith(color: roleColor),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          if (widget.showDivider)
-            Container(
-              height: 0.5,
-              color: context.appColors.glassForeground.withOpacity(0.1),
-              margin: const EdgeInsets.only(left: 64),
-            ),
-        ],
+        ),
       ),
     );
   }

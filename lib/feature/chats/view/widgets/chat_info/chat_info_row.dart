@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class ChatInfoRow extends StatelessWidget {
@@ -9,32 +11,27 @@ class ChatInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: context.text.bodySmall?.copyWith(
-                color: context.appColors.hintText,
-              ),
-              textAlign: TextAlign.left,
-            ),
-            SizedBox(height: 4),
-            Text(
-              value ?? '',
-              style: context.text.bodyLarge,
-              textAlign: TextAlign.left,
-            ),
-          ],
-        ),
+    final isDark = context.theme.brightness == Brightness.dark;
+    final labelColor = isDark ? AppColors.grayLight : AppColors.grayDark;
+    final valueColor =
+        isDark ? AppColors.messageLight : AppColors.messageDark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: AppTypography.textSmRegular.copyWith(color: labelColor),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value ?? '',
+            style: AppTypography.textMdRegular.copyWith(color: valueColor),
+          ),
+        ],
       ),
     );
   }

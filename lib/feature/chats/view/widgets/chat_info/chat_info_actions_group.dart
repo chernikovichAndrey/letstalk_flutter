@@ -10,89 +10,75 @@ import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_info/chat_info_action_button.dart';
 
 class ChatInfoActionsGroup extends StatelessWidget {
-  final MemberInfo member;
+  final MemberInfo? member;
   final bool isGroupChat;
 
   const ChatInfoActionsGroup({
     super.key,
-    required this.member,
+    this.member,
     this.isGroupChat = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final chatId = getIt<ChatDetailsBloc>().state.chat!.id;
-
+    final chatId = getIt<ChatDetailsBloc>().state.chat?.id;
 
     return Row(
-      mainAxisAlignment: isGroupChat
-          ? MainAxisAlignment.center
-          : MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (!isGroupChat)
+        if (!isGroupChat && member != null) ...[
           ChatInfoActionButton(
-            context: context,
-            icon: Icons.phone,
+            iconAsset: 'assets/icons/phone.svg',
             label: context.s.call,
             onTap: () {
               getIt<CallBloc>().add(
                 CallInitiated(
-                  targetUserId: member.id,
-                  avatar: member.avatar,
-                  fullName: member.fullName,
+                  targetUserId: member!.id,
+                  avatar: member!.avatar,
+                  fullName: member!.fullName,
                 ),
               );
             },
           ),
-        if (!isGroupChat)
+          const SizedBox(width: 12),
           ChatInfoActionButton(
-            context: context,
-            icon: Icons.videocam,
+            iconAsset: 'assets/icons/videocamera.svg',
             label: context.s.videoCallAction,
             onTap: () {
               getIt<CallBloc>().add(
                 CallInitiated(
-                  targetUserId: member.id,
-                  avatar: member.avatar,
-                  fullName: member.fullName,
+                  targetUserId: member!.id,
+                  avatar: member!.avatar,
+                  fullName: member!.fullName,
                   isVideo: true,
                 ),
               );
             },
           ),
+          const SizedBox(width: 12),
+        ],
         BlocBuilder<ChatsBloc, ChatsState>(
           builder: (context, state) {
-            if (state is ChatsLoaded) {
-              final isMuted = state.chats.firstWhereOrNull((chat) => chat.id == chatId)?.muted ?? false;
-              return ChatInfoActionButton(
-                context: context,
-                icon: isMuted
-                    ? Icons.notifications_off
-                    : Icons.notifications,
-                label: context.s.sound,
-                onTap: () {
-                  getIt<ChatsBloc>().add(
-                    MuteChat(
-                      chatId: chatId,
-                      muted: !isMuted,
-                    ),
-                  );
-                },
-              );
+            if (state is! ChatsLoaded || chatId == null) {
+              return const SizedBox.shrink();
             }
-            return const SizedBox();
-          }
+            final isMuted = state.chats
+                    .firstWhereOrNull((chat) => chat.id == chatId)
+                    ?.muted ??
+                false;
+            return ChatInfoActionButton(
+              iconAsset: isMuted
+                  ? 'assets/icons/bell_off.svg'
+                  : 'assets/icons/bell.svg',
+              label: context.s.sound,
+              onTap: () {
+                getIt<ChatsBloc>().add(
+                  MuteChat(chatId: chatId, muted: !isMuted),
+                );
+              },
+            );
+          },
         ),
-        // if (isGroupChat) SizedBox(width: 12),
-        // ChatInfoActionButton(
-        //   context: context,
-        //   icon: Icons.more_horiz,
-        //   label: context.s.more,
-        //   onTap: () {
-        //     //TODO
-        //     showWarningToast(context.s.notWorkingNow);
-        //   },
-        // ),
       ],
     );
   }

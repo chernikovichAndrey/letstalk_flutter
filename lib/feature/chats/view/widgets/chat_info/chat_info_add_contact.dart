@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -15,6 +17,9 @@ class ChatInfoAddContact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
+    final cardColor = isDark ? AppColors.messageDark : AppColors.white;
+
     return BlocProvider.value(
       value: getIt<AddContactBloc>(),
       child: BlocConsumer<AddContactBloc, AddContactState>(
@@ -25,43 +30,54 @@ class ChatInfoAddContact extends StatelessWidget {
           }
         },
         builder: (ctx, state) {
-          return Container(
-            decoration: BoxDecoration(
-              color: context.appColors.secondaryBackground,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: TextButton(
-              onPressed: () {
-                if (member != null && member?.phone != null) {
-                  ctx.read<AddContactBloc>().add(
-                    AddContactSubmitted(
-                      Contact(
-                        phone: member?.phone ?? '',
-                        firstName: member?.firstName ?? member?.phone ?? '',
-                        lastName: member?.lastName ?? '',
-                        fullName: member?.fullName ?? member?.phone ?? '',
-                        email: '',
-                        address: '',
-                        imageUrl: '',
+          return Material(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(30),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(30),
+              onTap: () {
+                final phone = member?.phone;
+                if (member == null || phone == null) return;
+                ctx.read<AddContactBloc>().add(
+                      AddContactSubmitted(
+                        Contact(
+                          phone: phone,
+                          firstName: member?.firstName ?? phone,
+                          lastName: member?.lastName ?? '',
+                          fullName: member?.fullName ?? phone,
+                          email: '',
+                          address: '',
+                          imageUrl: '',
+                        ),
                       ),
-                    ),
-                  );
-                }
+                    );
               },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: isDark
+                      ? null
+                      : [
+                          BoxShadow(
+                            color:
+                                const Color(0xFF9A9A9A).withValues(alpha: 0.1),
+                            offset: const Offset(0, 2),
+                            blurRadius: 15,
+                            spreadRadius: -3,
+                          ),
+                        ],
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  context.s.addToContacts,
-                  style: context.text.bodyLarge?.copyWith(color: Colors.blue),
+                child: Container(
+                  height: 56,
+                  alignment: Alignment.center,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Text(
+                    context.s.addToContacts,
+                    style: AppTypography.textMdSemiBold
+                        .copyWith(color: AppColors.brand),
+                  ),
                 ),
               ),
             ),

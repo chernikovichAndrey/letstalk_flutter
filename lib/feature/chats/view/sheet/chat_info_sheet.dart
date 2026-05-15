@@ -19,7 +19,7 @@ class ChatInfoSheet extends StatelessWidget {
     return Container(
       height: context.mediaSize.height * 0.92,
       decoration: BoxDecoration(
-        color: context.theme.scaffoldBackgroundColor,
+        color: context.appColors.backgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: BlocProvider.value(
@@ -28,45 +28,42 @@ class ChatInfoSheet extends StatelessWidget {
           builder: (context, state) {
             final isGroupChat = state.chat?.type == 'group';
             final profileState = getIt<ProfileBloc>().state;
-            final member = state.chat?.memberInfo?.firstWhereOrNull((member) =>
-              member.id != profileState.user?.id
-            );
+            final member = state.chat?.memberInfo
+                ?.firstWhereOrNull((m) => m.id != profileState.user?.id);
 
             return Stack(
               children: [
                 SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    top: context.padding.top + 56,
+                    bottom: 24 + context.padding.bottom,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const SizedBox(height: 8),
+                      ChatInfoAvatar(
+                        member: member,
+                        chat: state.chat,
+                      ),
+                      const SizedBox(height: 28),
+                      Center(
+                        child: ChatInfoActionsGroup(
+                          member: member,
+                          isGroupChat: isGroupChat,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 16,
-                        ),
-                        child: Column(
-                          children: [
-                            ChatInfoAvatar(
-                              member: member,
-                              chat: state.chat,
-                            ),
-                            SizedBox(height: 28,),
-                            if (member != null)
-                              ChatInfoActionsGroup(
-                                member: member,
-                                isGroupChat: isGroupChat,
-                              ),
-                            SizedBox(height: 28,),
-                            if (isGroupChat)
-                              ChatInfoChatMembers()
-                            else
-                              ChatInfoUserInfo(member: member),
-                          ],
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: isGroupChat
+                            ? const ChatInfoChatMembers()
+                            : ChatInfoUserInfo(member: member),
                       ),
                     ],
                   ),
                 ),
-                const ChatInfoAppBar()
+                const ChatInfoAppBar(),
               ],
             );
           },

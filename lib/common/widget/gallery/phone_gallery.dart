@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/gallery/gallery_cubit/gallery_cubit.dart';
 import 'package:lets_talk/common/widget/gallery/gallery_cubit/gallery_state.dart';
+import 'package:lets_talk/common/widget/gallery/widget/gallery_permission_view.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/view/widgets/attachmen_media_sheet/asset_thumbnail.dart';
@@ -78,11 +80,24 @@ class _GalleryContentState extends State<_GalleryContent> {
 
   Future<void> openCamera() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(
-      source: ImageSource.camera,
-    );
-    if (photo != null && mounted) {
-      widget.onGetMediaFile(File(photo.path));
+    try {
+      final XFile? photo = await picker.pickImage(
+        source: ImageSource.camera,
+      );
+      if (photo != null && mounted) {
+        widget.onGetMediaFile(File(photo.path));
+      }
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      if (e.code == 'camera_access_denied' ||
+          e.code == 'camera_access_restricted') {
+        showErrorToast(context.s.cameraPermissionDescription);
+      } else {
+        showErrorToast(e.message ?? context.s.cameraPermissionDenied);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showErrorToast(context.s.cameraPermissionDenied);
     }
   }
 
@@ -95,11 +110,10 @@ class _GalleryContentState extends State<_GalleryContent> {
         }
 
         if (state is GalleryPermissionDenied) {
-          return Center(
-            child: Text(
-              context.s.galleryPermissionDenied,
-              style: const TextStyle(color: Colors.grey),
-            ),
+          return GalleryPermissionView(
+            icon: Icons.photo_library_outlined,
+            title: context.s.galleryPermissionDenied,
+            description: context.s.galleryPermissionDescription,
           );
         }
 

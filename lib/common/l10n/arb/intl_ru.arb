@@ -200,6 +200,10 @@
   "deleteAccountDeleting": "Удаление аккаунта...",
   "failedToLoadVideo": "Не удалось загрузить видео",
   "galleryPermissionDenied": "Нет разрешения на доступ к галерее",
+  "galleryPermissionDescription": "Чтобы выбирать фото и видео, разрешите доступ к медиатеке в настройках приложения.",
+  "cameraPermissionDenied": "Нет разрешения на доступ к камере",
+  "cameraPermissionDescription": "Чтобы снимать фото и видео, разрешите доступ к камере в настройках приложения.",
+  "openSettings": "Открыть настройки",
   "fileSizeLimitExceeded": "Файл слишком большой. Максимальный размер: {size} МБ",
   "@fileSizeLimitExceeded": {
     "placeholders": {

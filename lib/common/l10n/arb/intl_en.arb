@@ -242,6 +242,10 @@
   "deleteAccountDeleting": "Deleting account...",
   "failedToLoadVideo": "Failed to load video",
   "galleryPermissionDenied": "No permission to access gallery",
+  "galleryPermissionDescription": "To select photos and videos, please grant access to your media library in app settings.",
+  "cameraPermissionDenied": "No permission to access camera",
+  "cameraPermissionDescription": "To take photos and videos, please grant access to your camera in app settings.",
+  "openSettings": "Open Settings",
   "fileSizeLimitExceeded": "File is too large. Max size: {size} MB",
   "@fileSizeLimitExceeded": {
     "placeholders": {

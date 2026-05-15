@@ -200,6 +200,10 @@
   "deleteAccountDeleting": "Аккаунт жойылуда...",
   "failedToLoadVideo": "Бейнені жүктеу мүмкін болмады",
   "galleryPermissionDenied": "Галереяға қол жеткізуге рұқсат жоқ",
+  "galleryPermissionDescription": "Фото мен видеоларды таңдау үшін қолданба параметрлерінде медиатекаға рұқсат беріңіз.",
+  "cameraPermissionDenied": "Камераға қол жеткізуге рұқсат жоқ",
+  "cameraPermissionDescription": "Фото мен видео түсіру үшін қолданба параметрлерінде камераға рұқсат беріңіз.",
+  "openSettings": "Параметрлерді ашу",
   "fileSizeLimitExceeded": "Файл тым үлкен. Максималды өлшем: {size} МБ",
   "@fileSizeLimitExceeded": {
     "placeholders": {

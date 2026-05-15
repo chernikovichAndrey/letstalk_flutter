@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
-import 'package:lets_talk/feature/calls_history/view/widgets/call_details_info_row.dart';
+import 'package:lets_talk/feature/calls_history/view/sheet/widget/call_details_info_row.dart';
 
 class CallDetailsInfoCard extends StatelessWidget {
   final List<MapEntry<String, String>> entries;

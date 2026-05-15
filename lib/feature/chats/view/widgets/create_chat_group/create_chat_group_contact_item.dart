@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
@@ -10,12 +12,20 @@ class CreateChatGroupContactItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
+    final fillColor =
+        isDark ? AppColors.messageDark : AppColors.messageLight;
+    final nameColor =
+        isDark ? AppColors.messageLight : AppColors.messageDark;
+    final phoneColor =
+        isDark ? AppColors.grayLight : AppColors.grayDark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
       decoration: BoxDecoration(
-        color: context.appColors.surfaceSecondary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(48),
+        color: fillColor,
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
         children: [
@@ -24,25 +34,22 @@ class CreateChatGroupContactItem extends StatelessWidget {
             name: contact.fullName,
             radius: 20,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   contact.fullName,
-                  style: TextStyle(
-                    color: context.appColors.glassForeground,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTypography.textMdMedium.copyWith(color: nameColor),
+                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 2),
                 Text(
                   contact.phone,
-                  style: TextStyle(
-                    color: context.appColors.glassForeground.withValues(alpha: 0.6),
-                    fontSize: 14,
-                  ),
+                  style: AppTypography.textSmRegular.copyWith(color: phoneColor),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -51,5 +58,4 @@ class CreateChatGroupContactItem extends StatelessWidget {
       ),
     );
   }
-
 }

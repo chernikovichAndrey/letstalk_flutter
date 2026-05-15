@@ -34,60 +34,56 @@ class _AddContactToGroupSheetState extends State<AddContactToGroupSheet> {
           color: context.theme.scaffoldBackgroundColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: Stack(
-          children: [
-            BlocBuilder<ContactsBloc, ContactsState>(
-              builder: (context, state) {
-                if (state is ContactsLoading ||
-                    state is ContactsActionInProgress) {
-                  return const ContactsSceleton();
-                }
-                return CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: context.padding.top + 66),
-                    ),
-                    if (state is ContactsLoaded)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          child: SelectedContactsInput(
-                            hintText: context.s.groupInviteHint,
-                            onSearchChanged: (query) {
-                              context.read<ContactsBloc>().add(
-                                ContactsSearch(query),
-                              );
-                            },
-                            searchQuery: state.query,
-                          ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: CreateChatGroupAppBar(
+            nextLabel: context.s.ready,
+            onPressNext: () {
+              final contactsState = getIt<ContactsBloc>().state;
+              if (contactsState is! ContactsLoaded) return;
+
+              final userIds = contactsState.selectedContactIds.toList();
+              for (var userId in userIds) {
+                getIt<ChatDetailsBloc>().add(AddMembersToChat(userId));
+              }
+              context.pop();
+            },
+          ),
+          body: BlocBuilder<ContactsBloc, ContactsState>(
+            builder: (context, state) {
+              if (state is ContactsLoading ||
+                  state is ContactsActionInProgress) {
+                return const ContactsSceleton();
+              }
+              return CustomScrollView(
+                slivers: [
+                  if (state is ContactsLoaded)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: SelectedContactsInput(
+                          hintText: context.s.groupInviteHint,
+                          onSearchChanged: (query) {
+                            context.read<ContactsBloc>().add(
+                                  ContactsSearch(query),
+                                );
+                          },
+                          searchQuery: state.query,
                         ),
                       ),
-                    ContactsSlivers(
-                      state: state,
-                      isRegisteredOnly: true,
-                      showSearch: false,
                     ),
-                  ],
-                );
-              },
-            ),
-            CreateChatGroupAppBar(
-              nextLabel: context.s.ready,
-              onPressNext: () {
-                final contactsState = getIt<ContactsBloc>().state;
-                if (contactsState is! ContactsLoaded) return;
-
-                final userIds = contactsState.selectedContactIds.toList();
-                for (var userId in userIds) {
-                  getIt<ChatDetailsBloc>().add(AddMembersToChat(userId));
-                }
-                context.pop();
-              },
-            ),
-          ],
+                  ContactsSlivers(
+                    state: state,
+                    isRegisteredOnly: true,
+                    showSearch: false,
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

@@ -7,13 +7,12 @@ import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_name_input.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_contact_item.dart';
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_app_bar.dart';
+import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_contact_item.dart';
+import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_name_input.dart';
+import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
-import 'package:lets_talk/feature/chats/domain/repository/chats_repository.dart';
-import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class CreateChatGroupPage extends StatefulWidget {
@@ -26,7 +25,7 @@ class CreateChatGroupPage extends StatefulWidget {
 class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
   final TextEditingController _groupNameController = TextEditingController();
   bool _isCreating = false;
-  String? _avatar = null;
+  String? _avatar;
 
   @override
   void initState() {
@@ -44,7 +43,8 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
 
   List<Contact> _getSelectedContacts(ContactsLoaded state) {
     return state.allContacts
-        .where((contact) => state.selectedContactIds.contains(contact.registeredUserId))
+        .where((contact) =>
+            state.selectedContactIds.contains(contact.registeredUserId))
         .toList();
   }
 
@@ -60,7 +60,6 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
     if (profileState.user != null) {
       userIds.add(profileState.user!.id);
     }
-
 
     final title = _groupNameController.text.trim();
     if (title.isEmpty) {
@@ -92,57 +91,51 @@ class _CreateChatGroupPageState extends State<CreateChatGroupPage> {
     return BlocProvider.value(
       value: getIt<ContactsBloc>(),
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        body: Stack(
+        backgroundColor: context.appColors.backgroundColor,
+        appBar: CreateChatGroupAppBar(
+          title: context.s.newGroup,
+          nextLabel: context.s.create,
+          isActionEnabled:
+              _groupNameController.text.trim().isNotEmpty && !_isCreating,
+          onPressNext: _createGroupChat,
+        ),
+        body: Column(
           children: [
-            SafeArea(
-              child: Column(
-                children: [
-                  CreateChatGroupNameInput(
-                    avatar: _avatar,
-                    groupNameController: _groupNameController,
-                    onPressCamera: () async {
-                      final avatarFile = await context.push<File>(Routes.chatAvatarSheet);
-                      setState(() {
-                        _avatar = avatarFile?.path;
-                      });
-                    },
-                    onClearInput: () {
-                      setState(() {
-                        _groupNameController.clear();
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: BlocBuilder<ContactsBloc, ContactsState>(
-                      builder: (context, state) {
-                        if (state is ContactsLoaded) {
-                          final selectedContacts = _getSelectedContacts(state);
-                          
-                          if (selectedContacts.isEmpty) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
-                            itemCount: selectedContacts.length,
-                            itemBuilder: (context, index) {
-                              final contact = selectedContacts[index];
-                              return CreateChatGroupContactItem(contact: contact);
-                            },
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 8),
+            CreateChatGroupNameInput(
+              avatar: _avatar,
+              groupNameController: _groupNameController,
+              onPressCamera: () async {
+                final avatarFile =
+                    await context.push<File>(Routes.chatAvatarSheet);
+                setState(() {
+                  _avatar = avatarFile?.path;
+                });
+              },
             ),
-            CreateChatGroupAppBar(
-              isActionEnabled: _groupNameController.text.trim().isNotEmpty && !_isCreating,
-              nextLabel: context.s.create,
-              onPressNext: _createGroupChat,
+            const SizedBox(height: 8),
+            Expanded(
+              child: BlocBuilder<ContactsBloc, ContactsState>(
+                builder: (context, state) {
+                  if (state is! ContactsLoaded) {
+                    return const SizedBox.shrink();
+                  }
+                  final selectedContacts = _getSelectedContacts(state);
+                  if (selectedContacts.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: selectedContacts.length,
+                    itemBuilder: (context, index) {
+                      return CreateChatGroupContactItem(
+                        contact: selectedContacts[index],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

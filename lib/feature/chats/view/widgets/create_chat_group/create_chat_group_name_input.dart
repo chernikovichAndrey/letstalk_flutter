@@ -1,104 +1,62 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_camera_avatar.dart';
 
 class CreateChatGroupNameInput extends StatelessWidget {
   final TextEditingController groupNameController;
-  final VoidCallback onClearInput;
   final VoidCallback onPressCamera;
   final String? avatar;
 
   const CreateChatGroupNameInput({
     super.key,
     required this.groupNameController,
-    required this.onClearInput,
     required this.onPressCamera,
     this.avatar,
   });
 
-  Widget avatarWidget(BuildContext context) {
-    if (avatar != null) {
-      return Image.file(
-        File(avatar!),
-        fit: BoxFit.scaleDown,
-        gaplessPlayback: true,
-        filterQuality:
-        FilterQuality.medium,
-      );
-    }
-    return Icon(
-      Icons.camera_alt,
-      color: context.appColors.telegramBlue,
-      size: 44,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
+    final fillColor =
+        isDark ? AppColors.messageDark : AppColors.messageLight;
+    final textColor =
+        isDark ? AppColors.messageLight : AppColors.messageDark;
+    final hintColor =
+        isDark ? AppColors.grayDark : AppColors.grayLight;
+
     return Padding(
-      padding: EdgeInsets.only(
-        top: context.padding.top + 80,
-        left: 16,
-        right: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
         decoration: BoxDecoration(
-          color: context.appColors.surfaceSecondary.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(28),
+          color: fillColor,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
-            GestureDetector(
+            CreateChatGroupCameraAvatar(
+              avatar: avatar,
               onTap: onPressCamera,
-              child: Container(
-                width: 92,
-                height: 92,
-                decoration: BoxDecoration(
-                  color: context.appColors.telegramBlue.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: avatarWidget(context),
-              ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             Expanded(
               child: TextField(
-                autofocus: true,
                 controller: groupNameController,
                 maxLines: 1,
-                style: TextStyle(
-                  color: context.appColors.glassForeground,
-                  fontSize: 16,
-                ),
+                cursorColor: AppColors.brand,
+                style: AppTypography.textMdRegular.copyWith(color: textColor),
                 decoration: InputDecoration(
                   hintText: context.s.groupNameHint,
-                  hintStyle: TextStyle(
-                    color: context.appColors.glassForeground.withValues(
-                      alpha: 0.5,
-                    ),
-                    fontSize: 16,
-                  ),
+                  hintStyle:
+                      AppTypography.textMdRegular.copyWith(color: hintColor),
                   border: InputBorder.none,
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 ),
               ),
             ),
-            if (groupNameController.text.isNotEmpty) ...[
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: onClearInput,
-                child: Icon(
-                  Icons.close,
-                  size: 20,
-                  color: context.appColors.glassForeground.withValues(
-                    alpha: 0.5,
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),

@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
@@ -14,23 +15,25 @@ class CallDetailsInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: AppTypography.textMdMedium.copyWith(
-              color: context.appColors.dateSeparatorText,
-            ),
+    final isDark = context.theme.brightness == Brightness.dark;
+    final valueColor = isDark ? AppColors.messageLight : AppColors.messageDark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTypography.textSmMedium.copyWith(
+            fontWeight: FontWeight.w400,
+            color: AppColors.grayLight,
           ),
-          Text(
-            value,
-            style: AppTypography.textMdSemiBold,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: AppTypography.textMdMedium.copyWith(color: valueColor),
+        ),
+      ],
     );
   }
 }

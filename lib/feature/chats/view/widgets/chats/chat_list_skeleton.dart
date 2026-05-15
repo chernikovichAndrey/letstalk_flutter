@@ -6,13 +6,10 @@ class ChatListSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return ListView.builder(
       padding: EdgeInsets.zero,
-      itemCount: 15,
-      separatorBuilder: (_, __) => const SizedBox(height: 1),
-      itemBuilder: (context, index) {
-        return const _ChatListSkeletonItem();
-      },
+      itemCount: 12,
+      itemBuilder: (context, index) => const _ChatListSkeletonItem(),
     );
   }
 }
@@ -23,54 +20,38 @@ class _ChatListSkeletonItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
       child: Row(
         children: [
-          const CSkeleton(
-            width: 56,
-            height: 56,
-            radius: 28,
-          ),
-          const SizedBox(width: 12),
+          const CSkeleton(width: 60, height: 60, radius: 30),
+          const SizedBox(width: 8),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CSkeleton(
-                      width: 120,
-                      height: 16,
-                      radius: 4,
-                    ),
-                    const SizedBox(width: 8),
-                    const CSkeleton(
-                      width: 40,
-                      height: 12,
-                      radius: 4,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Expanded(
-                      child: CSkeleton(
-                        height: 14,
-                        radius: 4,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const CSkeleton(
-                      width: 20,
-                      height: 20,
-                      radius: 10,
-                    ),
-                  ],
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6).copyWith(
+                right: 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: const [
+                      CSkeleton(width: 120, height: 16, radius: 4),
+                      Spacer(),
+                      CSkeleton(width: 36, height: 13, radius: 4),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: const [
+                      Expanded(child: CSkeleton(height: 13, radius: 4)),
+                      SizedBox(width: 8),
+                      CSkeleton(width: 20, height: 20, radius: 10),
+                    ],
+                  ),
+                  const SizedBox(height: 13),
+                ],
+              ),
             ),
           ),
         ],

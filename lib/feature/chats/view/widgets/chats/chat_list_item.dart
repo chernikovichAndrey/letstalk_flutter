@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
+import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_unread_badge.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
+
+const double _avatarSize = 60;
+const double _hSpacing = 8;
+const double _hPadding = 16;
+const double _vGap = 4;
 
 class ChatListItem extends StatelessWidget {
   final Chat chat;
@@ -107,55 +115,63 @@ class ChatListItem extends StatelessWidget {
   }
 
   String? _chatTitle(BuildContext context) {
-    if (chat.type == 'group') {
-      return chat.title;
-    }
-    if (chat.type == 'private') {
-      return _getMemberName(phone: true);
-    }
-    if (chat.type == 'favorites') {
-      return context.s.favorites;
-    }
-
+    if (chat.type == 'group') return chat.title;
+    if (chat.type == 'private') return _getMemberName(phone: true);
+    if (chat.type == 'favorites') return context.s.favorites;
     return null;
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        InkWell(
+    final isDark = context.theme.brightness == Brightness.dark;
+    final titleColor = isDark ? AppColors.white : AppColors.messageDark;
+    final subtitleColor = isDark ? AppColors.grayLight : AppColors.grayDark;
+    final timeColor = AppColors.grayLight;
+    final dividerColor = isDark
+        ? AppColors.white.withValues(alpha: 0.08)
+        : AppColors.messageLight;
+
+    return InkWell(
       onTap: isSelectionMode ? () => onSelect?.call(!isSelected) : onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: IntrinsicHeight(
-          child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.only(
+          left: _hPadding,
+          top: _vGap,
+          bottom: _vGap,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Align(
-              alignment: Alignment.center,
-              child: CAvatar(
-                imageUrl: chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
-                name: chat.type == 'group' ? chat.title : _getMemberName(context: context),
-                radius: 28,
-              ),
+            CAvatar(
+              imageUrl:
+                  chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
+              name: chat.type == 'group'
+                  ? chat.title
+                  : _getMemberName(context: context),
+              radius: _avatarSize / 2,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: _hSpacing),
             Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: dividerColor),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: _hPadding),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Text(
                             _chatTitle(context) ?? context.s.noTitle,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                            style: AppTypography.textMdMedium.copyWith(
+                              color: titleColor,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -164,99 +180,98 @@ class ChatListItem extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           _formatTime(chat.lastMessageAt, context),
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          style: AppTypography.textSmRegular.copyWith(
+                            color: timeColor,
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 36,
-                      child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (chat.lastMessageType != null && chat.lastMessageType != 'text')
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.attach_file,
-                                  color: Colors.grey[600],
-                                  size: 16,
-                                ),
-                                Text(
-                                  getMessageTypeText(context, chat.lastMessageType ?? ''),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          Expanded(
-                            child: Text(
-                              _lastMessagePreview(context),
-                              style: context.text.bodyMedium?.copyWith(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                                height: 1
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        Expanded(
+                          child: _LastMessagePreview(
+                            chat: chat,
+                            text: _lastMessagePreview(context),
+                            color: subtitleColor,
+                            isTyping: isTyping,
                           ),
-                        if (chat.unreadCount > 0)
-                          Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: chat.muted ? context.appColors.hintText : context.appColors.messageMeBubble,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            constraints: const BoxConstraints(minWidth: 20),
-                            height: 20,
-                            child: Center(
-                              child: Text(
-                                chat.unreadCount.toString(),
-                                style: TextStyle(
-                                  color: context.appColors.messageMeText,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                        ),
+                        if (isSelectionMode) ...[
+                          const SizedBox(width: 8),
+                          Icon(
+                            isSelected
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            size: 20,
+                            color: isSelected
+                                ? AppColors.brand
+                                : titleColor.withValues(alpha: 0.3),
                           ),
+                        ] else if (chat.unreadCount > 0) ...[
+                          const SizedBox(width: 4),
+                          ChatListUnreadBadge(
+                            count: chat.unreadCount,
+                            muted: chat.muted,
+                          ),
+                        ],
                       ],
-                    ),
                     ),
                   ],
                 ),
-            ),
-            if (isSelectionMode) ...[
-              const SizedBox(width: 12),
-              Icon(
-                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: isSelected
-                    ? context.color.primary
-                    : context.color.onSurface.withValues(alpha: 0.3),
+                ),
               ),
-            ],
+            ),
           ],
         ),
-        ),
       ),
-        ),
-        Divider(
-          height: 0.5,
-          thickness: 0.5,
-          indent: 84,
-          color: context.color.onSurface.withValues(alpha: 0.1),
-        ),
-      ],
+    );
+  }
+}
+
+class _LastMessagePreview extends StatelessWidget {
+  final Chat chat;
+  final String text;
+  final Color color;
+  final bool isTyping;
+
+  const _LastMessagePreview({
+    required this.chat,
+    required this.text,
+    required this.color,
+    required this.isTyping,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final style = AppTypography.textSmRegular.copyWith(color: color);
+
+    if (!isTyping &&
+        chat.lastMessageType != null &&
+        chat.lastMessageType != 'text') {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Icon(Icons.attach_file, color: color, size: 16),
+          const SizedBox(width: 2),
+          Flexible(
+            child: Text(
+              getMessageTypeText(context, chat.lastMessageType ?? ''),
+              style: style,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Text(
+      text,
+      style: style,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

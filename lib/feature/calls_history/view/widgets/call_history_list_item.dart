@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:lets_talk/app/router/arg/call_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
@@ -11,6 +10,7 @@ import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
 import 'package:lets_talk/feature/calls_history/domain/calls_hisotry_bloc/calls_history_bloc.dart';
+import 'package:lets_talk/feature/calls_history/view/widgets/call_history_list_item_trailing.dart';
 
 class CallHistoryListItem extends StatelessWidget {
   final CallHistory call;
@@ -38,10 +38,51 @@ class CallHistoryListItem extends StatelessWidget {
     final base = _isIncoming
         ? context.s.callDirectionIncoming
         : context.s.callDirectionOutgoing;
-    if (call.durationFormatted != null && call.durationFormatted!.isNotEmpty) {
-      return '$base (${call.durationFormatted})';
+    final duration = _formatDuration(context);
+    if (duration == null) return base;
+    return '$base ($duration)';
+  }
+
+  int? _durationSeconds() {
+    if (call.duration != null && call.duration! > 0) return call.duration;
+    if (call.answeredAt != null && call.endedAt != null) {
+      final diff = call.endedAt!.difference(call.answeredAt!).inSeconds;
+      return diff > 0 ? diff : null;
     }
-    return base;
+    return null;
+  }
+
+  String? _formatDuration(BuildContext context) {
+    final seconds = _durationSeconds();
+    if (seconds == null || seconds <= 0) return null;
+
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+
+    final h = context.s.hourAbbr;
+    final m = context.s.minuteAbbr;
+    final s = context.s.secondAbbr;
+
+    if (hours > 0) {
+      if (minutes == 0) return '$hours $h';
+      return '$hours $h $minutes $m';
+    }
+    if (minutes > 0) return '$minutes $m';
+    return '$secs $s';
+  }
+
+  void _onTap(BuildContext context) {
+    if (isSelectionMode) {
+      context.read<CallsHistoryBloc>().add(
+        CallsHistoryToggleCallSelection(call.id),
+      );
+    } else {
+      context.push(
+        Routes.callDetails.path,
+        extra: CallDetailsArgs(callId: call.id),
+      );
+    }
   }
 
   @override
@@ -52,7 +93,6 @@ class CallHistoryListItem extends StatelessWidget {
         ? AppColors.error
         : (isDark ? AppColors.messageLight : AppColors.messageDark);
     final subtitleColor = isDark ? AppColors.grayLight : AppColors.grayDark;
-    final timeColor = AppColors.grayLight;
     final borderColor = isDark ? AppColors.messageDark : AppColors.messageLight;
     final iconColor = isDark ? AppColors.grayLight : AppColors.grayDark;
 
@@ -129,11 +169,11 @@ class CallHistoryListItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      _Trailing(
+                      CallHistoryListItemTrailing(
                         call: call,
                         isSelectionMode: isSelectionMode,
                         isSelected: isSelected,
-                        timeColor: timeColor,
+                        timeColor: AppColors.grayLight,
                         iconColor: iconColor,
                         subtitleColor: subtitleColor,
                       ),
@@ -146,96 +186,5 @@ class CallHistoryListItem extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _onTap(BuildContext context) {
-    if (isSelectionMode) {
-      context.read<CallsHistoryBloc>().add(
-        CallsHistoryToggleCallSelection(call.id),
-      );
-    } else {
-      context.push(
-        Routes.callDetails.path,
-        extra: CallDetailsArgs(callId: call.id),
-      );
-    }
-  }
-}
-
-class _Trailing extends StatelessWidget {
-  final CallHistory call;
-  final bool isSelectionMode;
-  final bool isSelected;
-  final Color timeColor;
-  final Color iconColor;
-  final Color subtitleColor;
-
-  const _Trailing({
-    required this.call,
-    required this.isSelectionMode,
-    required this.isSelected,
-    required this.timeColor,
-    required this.iconColor,
-    required this.subtitleColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (isSelectionMode) {
-      return Icon(
-        isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-        color: isSelected
-            ? AppColors.brand
-            : subtitleColor.withValues(alpha: 0.3),
-      );
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          _formatDate(call.endedAt ?? call.startedAt),
-          style: AppTypography.textXsRegular.copyWith(color: timeColor),
-        ),
-        const SizedBox(width: 8),
-        GestureDetector(
-          onTap: () => context.push(
-            Routes.callDetails.path,
-            extra: CallDetailsArgs(callId: call.id),
-          ),
-          behavior: HitTestBehavior.opaque,
-          child: SvgPicture.asset(
-            'assets/icons/info_circle.svg',
-            width: 20,
-            height: 20,
-            colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return '';
-
-    final now = DateTime.now();
-    final localDate = date.toLocal();
-    final today = DateTime(now.year, now.month, now.day);
-    final dateOnly = DateTime(localDate.year, localDate.month, localDate.day);
-
-    if (dateOnly == today) {
-      return DateFormat('HH:mm').format(localDate);
-    }
-
-    final startOfWeek = today.subtract(Duration(days: now.weekday - 1));
-    if (dateOnly.isAfter(startOfWeek.subtract(const Duration(days: 1)))) {
-      return DateFormat('EE', 'ru').format(localDate);
-    }
-
-    if (localDate.year == now.year) {
-      return DateFormat('dd.MM').format(localDate);
-    }
-
-    return DateFormat('dd.MM.yy').format(localDate);
   }
 }

@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -22,6 +23,7 @@ class _SettingsFooterState extends State<SettingsFooter> {
 
   Future<void> _loadVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
+    if (!mounted) return;
     setState(() {
       _version = '${packageInfo.version}(${packageInfo.buildNumber})';
     });
@@ -29,41 +31,39 @@ class _SettingsFooterState extends State<SettingsFooter> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
+    final linkColor = isDark ? AppColors.grayDark : AppColors.grayLight;
+
+    final linkStyle = TextStyle(
+      color: linkColor,
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      height: 1.3,
+      decoration: TextDecoration.none,
+    );
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (_version.isNotEmpty)
+        GestureDetector(
+          onTap: () => context.push(Routes.privacyPolicy),
+          child: Text(context.s.privacyPolicy, style: linkStyle),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => context.push(Routes.termsOfService),
+          child: Text(context.s.termsOfService, style: linkStyle),
+        ),
+        if (_version.isNotEmpty) ...[
+          const SizedBox(height: 8),
           Text(
             '${context.s.version} $_version',
-            style: context.theme.textTheme.bodySmall?.copyWith(
-              color: context.color.onSurface.withOpacity(0.6),
+            style: linkStyle.copyWith(
+              color: linkColor.withValues(alpha: 0.7),
+              fontSize: 11,
             ),
           ),
-        const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () {
-            context.push(Routes.termsOfService);
-          },
-          child: Text(
-            context.s.termsOfService,
-            style: context.theme.textTheme.bodySmall?.copyWith(
-              color: context.appColors.telegramBlue,
-              decoration: TextDecoration.none,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () {
-            context.push(Routes.privacyPolicy);
-          },
-          child: Text(
-            context.s.privacyPolicy,
-            style: context.theme.textTheme.bodySmall?.copyWith(
-              color: context.appColors.telegramBlue,
-              decoration: TextDecoration.none,
-            ),
-          ),
-        ),
+        ],
       ],
     );
   }

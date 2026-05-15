@@ -1,16 +1,15 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
-import 'package:lets_talk/feature/settings/view/widgets/profile_action_button.dart';
-import 'package:lets_talk/feature/settings/view/widgets/profile_avatar.dart';
 
 class ProfileWidget extends StatelessWidget {
+  final VoidCallback? onAvatarTap;
 
-  const ProfileWidget({super.key});
+  const ProfileWidget({super.key, this.onAvatarTap});
 
   String _getUserDisplayName(UserModel user) {
     if (user.fullName != null && user.fullName!.isNotEmpty) {
@@ -27,42 +26,51 @@ class ProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
+    final isDark = context.theme.brightness == Brightness.dark;
+    final nameColor = isDark ? AppColors.messageLight : AppColors.backgroundDark;
+    final phoneColor = isDark ? AppColors.grayLight : AppColors.grayDark;
+    final nameWeight = isDark ? FontWeight.w600 : FontWeight.w500;
+    final phoneSize = isDark ? 14.0 : 13.0;
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
         final user = state.user;
-        if (user == null) return Container();
+        if (user == null) return const SizedBox.shrink();
         final displayName = _getUserDisplayName(user);
+
         return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            ProfileAvatar(),
-            const SizedBox(height: 16),
+            CAvatar(
+              imageUrl: user.avatarUrl,
+              name: displayName,
+              radius: 50,
+              isLoading: state.status == ProfileStatus.avatarUploadLoading,
+              onTap: onAvatarTap,
+            ),
+            const SizedBox(height: 12),
             if (displayName.isNotEmpty) ...[
               Text(
                 displayName,
                 style: TextStyle(
-                  color: appColors.glassForeground,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
+                  color: nameColor,
+                  fontSize: 20,
+                  fontWeight: nameWeight,
+                  height: 1.2,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
             ],
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  user.phone,
-                  style: TextStyle(
-                    color: appColors.glassForeground.withOpacity(0.7),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+            Text(
+              user.phone,
+              style: TextStyle(
+                color: phoneColor,
+                fontSize: phoneSize,
+                fontWeight: FontWeight.w400,
+                height: 1.25,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         );

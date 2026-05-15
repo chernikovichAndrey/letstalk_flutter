@@ -8,12 +8,14 @@ import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chat_list_unread_badge.dart';
+import 'package:lets_talk/feature/chats/view/widgets/chats/chat_selection_checkbox.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 const double _avatarSize = 60;
 const double _hSpacing = 8;
 const double _hPadding = 16;
 const double _vGap = 4;
+const double _checkboxGap = 12;
 
 class ChatListItem extends StatelessWidget {
   final Chat chat;
@@ -131,99 +133,99 @@ class ChatListItem extends StatelessWidget {
         ? AppColors.white.withValues(alpha: 0.08)
         : AppColors.messageLight;
 
-    return InkWell(
-      onTap: isSelectionMode ? () => onSelect?.call(!isSelected) : onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: _hPadding,
-          top: _vGap,
-          bottom: _vGap,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CAvatar(
-              imageUrl:
-                  chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
-              name: chat.type == 'group'
-                  ? chat.title
-                  : _getMemberName(context: context),
-              radius: _avatarSize / 2,
-            ),
-            const SizedBox(width: _hSpacing),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: dividerColor),
+    final selectedBg = isDark
+        ? AppColors.white.withValues(alpha: 0.06)
+        : AppColors.messageLight;
+
+    return Material(
+      color: isSelectionMode && isSelected ? selectedBg : Colors.transparent,
+      child: InkWell(
+        onTap: isSelectionMode ? () => onSelect?.call(!isSelected) : onTap,
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: _hPadding,
+            top: _vGap,
+            bottom: _vGap,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (isSelectionMode) ...[
+                ChatSelectionCheckbox(isSelected: isSelected),
+                const SizedBox(width: _checkboxGap),
+              ],
+              CAvatar(
+                imageUrl:
+                    chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
+                name: chat.type == 'group'
+                    ? chat.title
+                    : _getMemberName(context: context),
+                radius: _avatarSize / 2,
+              ),
+              const SizedBox(width: _hSpacing),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: dividerColor),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: _hPadding),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _chatTitle(context) ?? context.s.noTitle,
+                                style: AppTypography.textMdMedium.copyWith(
+                                  color: titleColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _formatTime(chat.lastMessageAt, context),
+                              style: AppTypography.textSmRegular.copyWith(
+                                color: timeColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: _LastMessagePreview(
+                                chat: chat,
+                                text: _lastMessagePreview(context),
+                                color: subtitleColor,
+                                isTyping: isTyping,
+                              ),
+                            ),
+                            if (chat.unreadCount > 0) ...[
+                              const SizedBox(width: 4),
+                              ChatListUnreadBadge(
+                                count: chat.unreadCount,
+                                muted: chat.muted,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(right: _hPadding),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _chatTitle(context) ?? context.s.noTitle,
-                            style: AppTypography.textMdMedium.copyWith(
-                              color: titleColor,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _formatTime(chat.lastMessageAt, context),
-                          style: AppTypography.textSmRegular.copyWith(
-                            color: timeColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: _LastMessagePreview(
-                            chat: chat,
-                            text: _lastMessagePreview(context),
-                            color: subtitleColor,
-                            isTyping: isTyping,
-                          ),
-                        ),
-                        if (isSelectionMode) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            isSelected
-                                ? Icons.check_circle
-                                : Icons.radio_button_unchecked,
-                            size: 20,
-                            color: isSelected
-                                ? AppColors.brand
-                                : titleColor.withValues(alpha: 0.3),
-                          ),
-                        ] else if (chat.unreadCount > 0) ...[
-                          const SizedBox(width: 4),
-                          ChatListUnreadBadge(
-                            count: chat.unreadCount,
-                            muted: chat.muted,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

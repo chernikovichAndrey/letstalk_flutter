@@ -32,7 +32,7 @@ class ChatsAppBarLeading extends StatelessWidget {
                   child: Icon(
                     Icons.delete_outline,
                     size: 24,
-                    color: AppColors.error,
+                    color: iconColor,
                   ),
                 ),
             ],

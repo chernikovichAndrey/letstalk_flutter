@@ -1,13 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/feature/chats/domain/chats_bloc/chats_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chats_app_bar_leading.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chats/chats_app_bar_new_chat_button.dart';
 
@@ -37,25 +35,12 @@ class ChatsAppBar extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Center(
-                      child: BlocBuilder<ChatsBloc, ChatsState>(
-                        buildWhen: (prev, curr) {
-                          if (prev is ChatsLoaded && curr is ChatsLoaded) {
-                            return prev.isSelectionMode != curr.isSelectionMode ||
-                                prev.selectedChatIds.length !=
-                                    curr.selectedChatIds.length;
-                          }
-                          return prev.runtimeType != curr.runtimeType;
-                        },
-                        builder: (context, state) {
-                          final title = _title(context, state);
-                          return Text(
-                            title,
-                            style: AppTypography.headingXsMedium.copyWith(
-                              color: titleColor,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        },
+                      child: Text(
+                        context.s.chats,
+                        style: AppTypography.headingXsMedium.copyWith(
+                          color: titleColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const Align(
@@ -78,12 +63,4 @@ class ChatsAppBar extends StatelessWidget {
     );
   }
 
-  String _title(BuildContext context, ChatsState state) {
-    if (state is ChatsLoaded &&
-        state.isSelectionMode &&
-        state.selectedChatIds.isNotEmpty) {
-      return state.selectedChatIds.length.toString();
-    }
-    return context.s.chats;
-  }
 }

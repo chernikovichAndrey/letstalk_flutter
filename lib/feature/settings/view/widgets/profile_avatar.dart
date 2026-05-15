@@ -5,8 +5,9 @@ import 'package:lets_talk/feature/settings/data/model/user_model.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 class ProfileAvatar extends StatelessWidget {
-  const ProfileAvatar({super.key});
+  const ProfileAvatar({super.key, this.radius = 50});
 
+  final double radius;
 
   String _getUserDisplayName(UserModel user) {
     if (user.fullName != null && user.fullName!.isNotEmpty) {
@@ -20,12 +21,13 @@ class ProfileAvatar extends StatelessWidget {
     }
     return '';
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        if (state.status != ProfileStatus.loaded && 
-            state.status != ProfileStatus.saving && 
+        if (state.status != ProfileStatus.loaded &&
+            state.status != ProfileStatus.saving &&
             state.status != ProfileStatus.avatarUploadLoading) {
           return const SizedBox.shrink();
         }
@@ -38,7 +40,7 @@ class ProfileAvatar extends StatelessWidget {
         return CAvatar(
           imageUrl: user.avatarUrl,
           name: _getUserDisplayName(user),
-          radius: 60,
+          radius: radius,
           isLoading: state.status == ProfileStatus.avatarUploadLoading,
         );
       },

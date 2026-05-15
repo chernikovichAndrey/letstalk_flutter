@@ -70,7 +70,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<UserModel> updateProfile({
     String? firstName,
     String? lastName,
-    String? birthday,
   }) async {
     final data = <String, dynamic>{};
     
@@ -79,9 +78,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
     if (lastName != null) {
       data['last_name'] = lastName;
-    }
-    if (birthday != null) {
-      data['birthday'] = birthday;
     }
     
     final response = await _apiService.put(

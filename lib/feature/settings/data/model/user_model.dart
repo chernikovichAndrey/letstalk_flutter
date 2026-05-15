@@ -9,7 +9,6 @@ class UserModel {
   final String? username;
   final String? avatar;
   final String? avatarUrl;
-  final String? birthday;
   final String? createdAt;
   final String? updatedAt;
 
@@ -24,7 +23,6 @@ class UserModel {
     this.username,
     this.avatar,
     this.avatarUrl,
-    this.birthday,
     this.createdAt,
     this.updatedAt,
   });
@@ -41,7 +39,6 @@ class UserModel {
       username: json['username'] as String?,
       avatar: json['avatar'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      birthday: json['birthday'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
     );
@@ -59,7 +56,6 @@ class UserModel {
       'username': username,
       'avatar': avatar,
       'avatar_url': avatarUrl,
-      'birthday': birthday,
       'created_at': createdAt,
       'updated_at': updatedAt,
     };

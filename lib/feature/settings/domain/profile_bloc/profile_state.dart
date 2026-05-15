@@ -17,8 +17,6 @@ class ProfileState {
   final UserModel? user;
   final String? editingFirstName;
   final String? editingLastName;
-  final DateTime? editingBirthday;
-  final bool isBirthdayPickerExpanded;
   final String? errorMessage;
 
   const ProfileState({
@@ -26,8 +24,6 @@ class ProfileState {
     this.user,
     this.editingFirstName,
     this.editingLastName,
-    this.editingBirthday,
-    this.isBirthdayPickerExpanded = false,
     this.errorMessage,
   });
 
@@ -38,18 +34,13 @@ class ProfileState {
     UserModel? user,
     String? editingFirstName,
     String? editingLastName,
-    DateTime? editingBirthday,
-    bool? isBirthdayPickerExpanded,
     String? errorMessage,
-    bool clearBirthday = false,
   }) {
     return ProfileState(
       status: status ?? this.status,
       user: user ?? this.user,
       editingFirstName: editingFirstName ?? this.editingFirstName,
       editingLastName: editingLastName ?? this.editingLastName,
-      editingBirthday: clearBirthday ? null : (editingBirthday ?? this.editingBirthday),
-      isBirthdayPickerExpanded: isBirthdayPickerExpanded ?? this.isBirthdayPickerExpanded,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }

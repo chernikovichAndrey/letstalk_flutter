@@ -11,6 +11,7 @@ class CNameField extends StatelessWidget {
     required this.padding,
     this.autofocus = false,
     this.textInputAction = TextInputAction.next,
+    this.onChanged,
     super.key,
   });
 
@@ -21,6 +22,7 @@ class CNameField extends StatelessWidget {
   final EdgeInsets padding;
   final bool autofocus;
   final TextInputAction textInputAction;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class CNameField extends StatelessWidget {
         cursorColor: AppColors.brand,
         cursorWidth: 2,
         style: AppTypography.textMdRegular.copyWith(color: textColor),
+        onChanged: onChanged,
         decoration: InputDecoration(
           isCollapsed: true,
           border: InputBorder.none,

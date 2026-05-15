@@ -3,23 +3,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/c_button.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
-import 'package:lets_talk/feature/settings/view/widgets/delete_account_dialog.dart';
-import 'package:lets_talk/feature/settings/view/widgets/profile_app_bar.dart';
+import 'package:lets_talk/feature/settings/view/widgets/change_photo_button.dart';
+import 'package:lets_talk/feature/settings/view/widgets/edit_profile_header.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_avatar.dart';
-import 'package:lets_talk/feature/settings/view/widgets/profile_birthday_picker.dart';
+import 'package:lets_talk/feature/settings/view/widgets/profile_delete_account_tile.dart';
 import 'package:lets_talk/feature/settings/view/widgets/profile_name_group.dart';
+import 'package:lets_talk/feature/settings/view/widgets/profile_phone_card.dart';
 
 class EditProfileDetailsPage extends StatelessWidget {
   const EditProfileDetailsPage({super.key});
 
+  void _onLogout(BuildContext context) {
+    context.go(Routes.settings.path);
+    context.read<AuthBloc>().add(AuthLogout());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-    final topPadding = context.padding.top;
-    final cardColor = appColors.surfaceSecondary;
-
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
         if (state.status == ProfileStatus.accountDeleted) {
@@ -28,115 +31,53 @@ class EditProfileDetailsPage extends StatelessWidget {
       },
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
-        if (state.status != ProfileStatus.loaded &&
-            state.status != ProfileStatus.saving &&
-            state.status != ProfileStatus.avatarUploadLoading) {
-          return Scaffold(
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
+          if (state.status != ProfileStatus.loaded &&
+              state.status != ProfileStatus.saving &&
+              state.status != ProfileStatus.avatarUploadLoading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
 
-        return GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            extendBodyBehindAppBar: true,
-            body: Stack(
-              children: [
-                CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: topPadding + 16),
-                      sliver: SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            ProfileAvatar(),
-                            const SizedBox(height: 16),
-                            GestureDetector(
-                              onTap: () => context.push(Routes.profileAvatarSheet.path),
-                              child: Text(
-                                context.s.selectPhoto,
-                                style: TextStyle(
-                                  color: appColors.telegramBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                            ProfileNamesGroup(),
-                            const SizedBox(height: 24),
-                            ProfileBirthdayPicker(),
-                            const SizedBox(height: 32),
-                            Container(
-                              padding: const EdgeInsets.all(16.0),
-                              margin: const EdgeInsets.only(bottom: 18),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    context.go(Routes.settings.path);
-                                    context.read<AuthBloc>().add(AuthLogout());
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: cardColor,
-                                    foregroundColor: Colors.red,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    context.s.logout,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              margin: const EdgeInsets.only(bottom: 18),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () => showDeleteAccountConfirmDialog(context),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: cardColor,
-                                    foregroundColor: Colors.red,
-                                    disabledBackgroundColor: cardColor.withOpacity(0.5),
-                                    disabledForegroundColor: Colors.red.withOpacity(0.5),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    context.s.deleteAccount,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+          return GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              body: Column(
+                children: [
+                  const EditProfileHeader(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                      child: Column(
+                        children: const [
+                          Center(child: ProfileAvatar()),
+                          SizedBox(height: 12),
+                          ChangePhotoButton(),
+                          SizedBox(height: 28),
+                          ProfileNamesGroup(),
+                          SizedBox(height: 12),
+                          ProfilePhoneCard(),
+                          SizedBox(height: 12),
+                          ProfileDeleteAccountTile(),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-                ProfileAppBar(),
-              ],
+                  ),
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: CButton.secondary(
+                        label: context.s.logout,
+                        icon: Icons.logout,
+                        onPressed: () => _onLogout(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
+          );
         },
       ),
     );

@@ -18,8 +18,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileUpdateAvatarEvent>(_onProfileUpdateAvatar);
     on<ProfileUpdateFirstNameEvent>(_onProfileUpdateFirstName);
     on<ProfileUpdateLastNameEvent>(_onProfileUpdateLastName);
-    on<ProfileUpdateBirthdayEvent>(_onProfileUpdateBirthday);
-    on<ProfileToggleBirthdayPickerEvent>(_onToggleBirthdayPicker);
     on<ProfileSaveChangesEvent>(_onSaveChanges);
     on<ProfileRequestDeleteAccountCodeEvent>(_onRequestDeleteAccountCode);
     on<ProfileDeleteAccountEvent>(_onDeleteAccount);
@@ -89,29 +87,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(editingLastName: event.lastName));
   }
 
-  void _onProfileUpdateBirthday(
-    ProfileUpdateBirthdayEvent event,
-    Emitter<ProfileState> emit,
-  ) {
-    if (state.status != ProfileStatus.loaded) return;
-    
-    emit(state.copyWith(
-      editingBirthday: event.birthday,
-      clearBirthday: event.birthday == null,
-    ));
-  }
-
-  void _onToggleBirthdayPicker(
-    ProfileToggleBirthdayPickerEvent event,
-    Emitter<ProfileState> emit,
-  ) {
-    if (state.status != ProfileStatus.loaded) return;
-    
-    emit(state.copyWith(
-      isBirthdayPickerExpanded: !state.isBirthdayPickerExpanded,
-    ));
-  }
-
   Future<void> _onSaveChanges(
     ProfileSaveChangesEvent event,
     Emitter<ProfileState> emit,
@@ -120,32 +95,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     
     emit(state.copyWith(status: ProfileStatus.saving));
     try {
-      String? birthday;
-      if (state.editingBirthday != null) {
-        birthday = '${state.editingBirthday!.year}-'
-            '${state.editingBirthday!.month.toString().padLeft(2, '0')}-'
-            '${state.editingBirthday!.day.toString().padLeft(2, '0')}';
-      }
-      
       final updatedUser = await _profileRepository.updateProfile(
         firstName: state.editingFirstName ?? state.user?.firstName,
         lastName: state.editingLastName ?? state.user?.lastName,
-        birthday: birthday ?? state.user?.birthday,
       );
       
       emit(state.copyWith(
         status: ProfileStatus.loaded,
         user: updatedUser,
-        editingBirthday: null,
         editingFirstName: null,
         editingLastName: null,
-        isBirthdayPickerExpanded: false,
       ));
     } catch (e) {
       emit(state.copyWith(
         status: ProfileStatus.error,
         errorMessage: e.toString(),
-        isBirthdayPickerExpanded: false,
       ));
       emit(state.copyWith(status: ProfileStatus.loaded));
     }

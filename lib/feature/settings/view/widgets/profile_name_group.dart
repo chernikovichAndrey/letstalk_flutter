@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/widget/c_name_field.dart';
 import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
+import 'package:lets_talk/feature/settings/view/widgets/profile_edit_card.dart';
 
 class ProfileNamesGroup extends StatefulWidget {
   const ProfileNamesGroup({super.key});
@@ -20,8 +22,10 @@ class _ProfileNamesGroupState extends State<ProfileNamesGroup> {
     super.initState();
     final profileState = context.read<ProfileBloc>().state;
     if (profileState.user != null) {
-      _firstNameController.text = profileState.editingFirstName ?? profileState.user!.firstName ?? '';
-      _lastNameController.text = profileState.editingLastName ?? profileState.user!.lastName ?? '';
+      _firstNameController.text =
+          profileState.editingFirstName ?? profileState.user!.firstName ?? '';
+      _lastNameController.text =
+          profileState.editingLastName ?? profileState.user!.lastName ?? '';
     }
   }
 
@@ -34,62 +38,40 @@ class _ProfileNamesGroupState extends State<ProfileNamesGroup> {
 
   @override
   Widget build(BuildContext context) {
-    final hintStyle = context.text.bodyLarge?.copyWith(
-      color: context.appColors.hintText,
-    );
-    return Padding(
+    final isDark = context.theme.brightness == Brightness.dark;
+    final textColor = isDark ? AppColors.messageLight : AppColors.messageDark;
+    final hintColor = isDark ? AppColors.grayDark : AppColors.grayLight;
+    final dividerColor = isDark
+        ? AppColors.messageLight.withValues(alpha: 0.1)
+        : AppColors.messageDark.withValues(alpha: 0.1);
+
+    return ProfileEditCard(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: context.appColors.secondaryBackground,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            TextField(
-              controller: _firstNameController,
-              style: context.text.bodyLarge,
-              onChanged: (value) {
-                context.read<ProfileBloc>().add(
-                  ProfileUpdateFirstNameEvent(value),
-                );
-              },
-              decoration: InputDecoration(
-                hintText: context.s.firstName,
-                hintStyle: hintStyle,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 20,
-                ),
-                border: InputBorder.none,
-              ),
+      child: Column(
+        children: [
+          CNameField(
+            controller: _firstNameController,
+            hintText: context.s.firstName,
+            textColor: textColor,
+            hintColor: hintColor,
+            padding: const EdgeInsets.only(top: 16, bottom: 12),
+            onChanged: (value) => context.read<ProfileBloc>().add(
+              ProfileUpdateFirstNameEvent(value),
             ),
-            Divider(
-              height: 1,
-              indent: 16,
-              endIndent: 16,
-              color: context.appColors.divider,
+          ),
+          Container(height: 1, color: dividerColor),
+          CNameField(
+            controller: _lastNameController,
+            hintText: context.s.lastName,
+            textColor: textColor,
+            hintColor: hintColor,
+            textInputAction: TextInputAction.done,
+            padding: const EdgeInsets.only(top: 12, bottom: 16),
+            onChanged: (value) => context.read<ProfileBloc>().add(
+              ProfileUpdateLastNameEvent(value),
             ),
-            TextField(
-              controller: _lastNameController,
-              style: context.text.bodyLarge,
-              onChanged: (value) {
-                context.read<ProfileBloc>().add(
-                  ProfileUpdateLastNameEvent(value),
-                );
-              },
-              decoration: InputDecoration(
-                hintText: context.s.lastName,
-                hintStyle: hintStyle,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 20,
-                ),
-                border: InputBorder.none,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

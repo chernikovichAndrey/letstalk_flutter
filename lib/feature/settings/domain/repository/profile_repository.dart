@@ -6,7 +6,6 @@ abstract class ProfileRepository {
   Future<UserModel> updateProfile({
     String? firstName,
     String? lastName,
-    String? birthday,
   });
   Future<void> requestDeleteAccountCode(String phone);
   Future<void> deleteAccount(String confirmCode);

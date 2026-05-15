@@ -25,14 +25,6 @@ class ProfileUpdateLastNameEvent extends ProfileEvent {
   ProfileUpdateLastNameEvent(this.lastName);
 }
 
-class ProfileUpdateBirthdayEvent extends ProfileEvent {
-  final DateTime? birthday;
-  
-  ProfileUpdateBirthdayEvent(this.birthday);
-}
-
-class ProfileToggleBirthdayPickerEvent extends ProfileEvent {}
-
 class ProfileSaveChangesEvent extends ProfileEvent {}
 
 class ProfileRequestDeleteAccountCodeEvent extends ProfileEvent {}

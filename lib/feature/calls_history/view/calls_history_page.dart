@@ -14,7 +14,7 @@ class CallsHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = context.padding.top + 42;
+    final topPadding = context.padding.top + 56;
 
     return DefaultTabController(
       length: 2,
@@ -22,24 +22,25 @@ class CallsHistoryPage extends StatelessWidget {
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-          BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
-            builder: (context, state) {
-              if (state is CallsHistoryLoading ||
-                  state is CallsHistoryActionInProgress) {
-                return Padding(
-                  padding: EdgeInsets.only(top: topPadding),
-                  child: const CallHistoryListSkeleton(),
-                );
-              } else if (state is CallsHistoryError) {
+            BlocBuilder<CallsHistoryBloc, CallsHistoryState>(
+              builder: (context, state) {
+                if (state is CallsHistoryLoading ||
+                    state is CallsHistoryActionInProgress) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: topPadding),
+                    child: const CallHistoryListSkeleton(),
+                  );
+                } else if (state is CallsHistoryError) {
                   return CRefreshableScrollView(
                     edgeOffset: topPadding,
                     onRefresh: () async {
                       final completer = Completer();
-                      context.read<CallsHistoryBloc>().add(RefreshHistoryCalls(completer: completer));
+                      context.read<CallsHistoryBloc>().add(
+                        RefreshHistoryCalls(completer: completer),
+                      );
                       return completer.future;
                     },
                     slivers: [
-
                       SliverFillRemaining(
                         hasScrollBody: false,
                         child: Center(child: Text(state.message)),
@@ -69,11 +70,11 @@ class CallsHistoryPage extends StatelessWidget {
                 return const SizedBox.shrink();
               },
             ),
-            Positioned(
+            const Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: const CallHistoryAppBar(),
+              child: CallHistoryAppBar(),
             ),
           ],
         ),

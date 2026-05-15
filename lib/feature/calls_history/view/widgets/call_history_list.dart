@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_refreshable_scroll_view.dart';
 import 'package:lets_talk/feature/calls_history/data/model/call_history_model.dart';
@@ -28,9 +29,9 @@ class CallHistoryList extends StatelessWidget {
       edgeOffset: topPadding,
       onRefresh: () async {
         final completer = Completer();
-        context
-            .read<CallsHistoryBloc>()
-            .add(RefreshHistoryCalls(completer: completer));
+        context.read<CallsHistoryBloc>().add(
+          RefreshHistoryCalls(completer: completer),
+        );
         return completer.future;
       },
       slivers: [
@@ -38,35 +39,24 @@ class CallHistoryList extends StatelessWidget {
           SliverFillRemaining(
             hasScrollBody: false,
             child: Center(
-              child: Text(context.s.noCalls),
+              child: Text(
+                context.s.noCalls,
+                style: AppTypography.textMdMedium.copyWith(
+                  color: context.color.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
             ),
           )
         else
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final call = calls[index];
-                final isLast = index == calls.length - 1;
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CallHistoryListItem(
-                      call: call,
-                      isSelectionMode: isSelectionMode,
-                      isSelected: selectedCallIds.contains(call.id),
-                    ),
-                    if (!isLast)
-                      Divider(
-                        height: 0.5,
-                        thickness: 0.5,
-                        indent: 84,
-                        color: context.color.onSurface.withValues(alpha: 0.1),
-                      ),
-                  ],
-                );
-              },
-              childCount: calls.length,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final call = calls[index];
+              return CallHistoryListItem(
+                call: call,
+                isSelectionMode: isSelectionMode,
+                isSelected: selectedCallIds.contains(call.id),
+              );
+            }, childCount: calls.length),
           ),
       ],
     );

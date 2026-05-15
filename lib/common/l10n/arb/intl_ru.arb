@@ -63,6 +63,7 @@
   "callDirection": "Направление",
   "callDirectionIncoming": "Входящий",
   "callDirectionOutgoing": "Исходящий",
+  "missedCall": "Пропущенный",
   "download": "Сохранить",
   "copy": "Скопировать",
   "reply": "Ответить",

@@ -63,6 +63,7 @@
   "callDirection": "Бағыты",
   "callDirectionIncoming": "Кіріс",
   "callDirectionOutgoing": "Шығыс",
+  "missedCall": "Өткізілген",
   "download": "Суретті",
   "copy": "Көшіру",
   "reply": "Жауап беру",

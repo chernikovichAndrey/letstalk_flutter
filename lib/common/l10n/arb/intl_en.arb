@@ -91,6 +91,7 @@
   "callDirection": "Direction",
   "callDirectionIncoming": "Incoming",
   "callDirectionOutgoing": "Outgoing",
+  "missedCall": "Missed",
   "download": "Save",
   "copy": "Copy",
   "reply": "Reply",

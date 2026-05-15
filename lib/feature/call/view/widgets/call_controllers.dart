@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -24,9 +22,7 @@ class _CallControllersState extends State<CallControllers> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isSpeakerOn = widget.isVideo;
-    });
+    _isSpeakerOn = widget.isVideo;
   }
 
   void _onEndCallPress() {
@@ -39,69 +35,77 @@ class _CallControllersState extends State<CallControllers> {
     };
 
     if (state is CallIncoming) {
-      // Reject
       if (callId != null) {
         getIt<CallBloc>().add(CallRejected(callId: callId));
       }
     } else {
-      // Hangup
-      if (callId != null) {
-        getIt<CallBloc>().add(CallHangup(callId: callId));
-      } else {
-        getIt<CallBloc>().add(CallHangup(callId: -1));
-      }
+      getIt<CallBloc>().add(CallHangup(callId: callId ?? -1));
     }
+  }
+
+  void _onSpeakerTap() {
+    setState(() => _isSpeakerOn = !_isSpeakerOn);
+    _webRTCService.setSpeakerphone(_isSpeakerOn);
+  }
+
+  void _onVideoTap() {
+    getIt<CallBloc>().add(
+      CallCameraToggleRequested(
+        callId: getIt<CallBloc>().state.callId ?? -1,
+        enabled: !_webRTCService.isVideoEnabled,
+      ),
+    );
+  }
+
+  void _onMuteTap() {
+    setState(() => _isMuted = !_isMuted);
+    _webRTCService.toggleAudio();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isVideoEnabled = _webRTCService.isVideoEnabled;
+
     return Positioned(
       bottom: 40,
-      left: 0,
-      right: 0,
+      left: 16,
+      right: 16,
       child: SafeArea(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CallActionButton(
-              label: context.s.speaker,
-              icon: _isSpeakerOn ? Icons.volume_up : Icons.volume_off,
-              onTap: () {
-                setState(() {
-                  _isSpeakerOn = !_isSpeakerOn;
-                });
-                _webRTCService.setSpeakerphone(_isSpeakerOn);
-              },
+            Expanded(
+              child: CallActionButton(
+                label: context.s.speaker,
+                icon: Icons.volume_up_rounded,
+                isActive: _isSpeakerOn,
+                onTap: _onSpeakerTap,
+              ),
             ),
             if (widget.isVideo)
-              CallActionButton(
-                label: context.s.video,
-                icon: _webRTCService.isVideoEnabled ? Icons.videocam : Icons.videocam_off,
-                onTap: () {
-                  getIt<CallBloc>().add(
-                    CallCameraToggleRequested(
-                      callId: getIt<CallBloc>().state.callId ?? -1,
-                      enabled: !_webRTCService.isVideoEnabled,
-                    ),
-                  );
-                },
+              Expanded(
+                child: CallActionButton(
+                  label: context.s.video,
+                  icon: Icons.videocam_outlined,
+                  isActive: !isVideoEnabled,
+                  onTap: _onVideoTap,
+                ),
               ),
-            CallActionButton(
-              label: context.s.mute,
-              icon: _isMuted ? Icons.mic_off : Icons.mic,
-              onTap: () {
-                setState(() {
-                  _isMuted = !_isMuted;
-                });
-                _webRTCService.toggleAudio();
-              },
+            Expanded(
+              child: CallActionButton(
+                label: context.s.mute,
+                icon: Icons.mic_off_outlined,
+                isActive: _isMuted,
+                onTap: _onMuteTap,
+              ),
             ),
-            CallActionButton(
-              label: context.s.endCall,
-              icon: Icons.call_end,
-              backgroundColor: Colors.red,
-              onTap: _onEndCallPress,
+            Expanded(
+              child: CallActionButton(
+                label: context.s.endCall,
+                icon: Icons.call_end_rounded,
+                isDestructive: true,
+                onTap: _onEndCallPress,
+              ),
             ),
           ],
         ),

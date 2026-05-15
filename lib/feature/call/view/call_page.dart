@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lets_talk/common/extension/build_context_style_ext.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/service/webrtc_service.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
@@ -101,31 +101,33 @@ class _CallPageState extends State<CallPage> {
           }
           return Stack(
             children: [
-              // Background
-              Positioned.fill(
-                child: Container(
+              const Positioned.fill(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: context.appGradients.backgroundGradient,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [AppColors.orangeLight, AppColors.brand],
+                    ),
                   ),
                 ),
               ),
 
-              // Video Views (if video call)
               if (isVideo) ...[
-                // Remote Video (Full Screen)
                 if (_isRemoteVideoEnabled)
-                Positioned.fill(
-                  child: RTCVideoView(
-                    _webRTCService.remoteRenderer,
-                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                    placeholderBuilder: (context) => CallAvatar(
-                      avatar: _avatar,
-                      fullName: _fullName,
-                      state: state,
-                      duration: _duration,
+                  Positioned.fill(
+                    child: RTCVideoView(
+                      _webRTCService.remoteRenderer,
+                      objectFit:
+                          RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                      placeholderBuilder: (context) => CallAvatar(
+                        avatar: _avatar,
+                        fullName: _fullName,
+                        state: state,
+                        duration: _duration,
+                      ),
                     ),
-                  ),
-                )
+                  )
                 else
                   CallAvatar(
                     avatar: _avatar,
@@ -134,14 +136,13 @@ class _CallPageState extends State<CallPage> {
                     duration: _duration,
                   ),
 
-                // Local Video (Small floating)
                 Positioned(
                   right: 20,
-                  top: 50,
-                  width: 100,
-                  height: 150,
+                  top: MediaQuery.of(context).padding.top + 12,
+                  width: 120,
+                  height: 170,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(20),
                     child: _webRTCService.isVideoEnabled
                         ? RTCVideoView(
                             _webRTCService.localRenderer,
@@ -149,7 +150,7 @@ class _CallPageState extends State<CallPage> {
                             objectFit: RTCVideoViewObjectFit
                                 .RTCVideoViewObjectFitCover,
                           )
-                        : CallUserAvatar(),
+                        : const CallUserAvatar(),
                   ),
                 ),
               ] else if (state is! CallInitial) ...[

@@ -1,40 +1,70 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 
 class CallActionButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
-  final Color? backgroundColor;
+  final bool isActive;
+  final bool isDestructive;
 
   const CallActionButton({
     super.key,
     required this.label,
     required this.icon,
     required this.onTap,
-    this.backgroundColor,
+    this.isActive = false,
+    this.isDestructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color backgroundColor;
+    final Color iconColor;
+
+    if (isDestructive) {
+      backgroundColor = AppColors.error;
+      iconColor = AppColors.white;
+    } else if (isActive) {
+      backgroundColor = AppColors.white;
+      iconColor = AppColors.messageDark;
+    } else {
+      backgroundColor = AppColors.messageLight.withValues(alpha: 0.4);
+      iconColor = AppColors.messageDark;
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GlassButton(
-          icon: icon,
-          onTap: onTap,
-          size: 60,
-          iconColor: Colors.white,
-          backgroundColor: backgroundColor,
+        Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              shape: BoxShape.circle,
+            ),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onTap,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Icon(icon, color: iconColor, size: 24),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           label,
+          textAlign: TextAlign.center,
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.messageDark,
             fontSize: 12,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w400,
+            height: 1.3,
           ),
         ),
       ],

@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
+import 'package:lets_talk/feature/call/view/widgets/call_status_line.dart';
 
 class CallAvatar extends StatelessWidget {
   final String? avatar;
@@ -18,42 +19,29 @@ class CallAvatar extends StatelessWidget {
     this.duration,
   });
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Center(
+      child: Align(
+        alignment: const Alignment(0, -0.18),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CAvatar(imageUrl: avatar, name: fullName, radius: 80),
-            const SizedBox(height: 24),
+            CAvatar(imageUrl: avatar, name: fullName, radius: 70),
+            const SizedBox(height: 12),
             Text(
               fullName ?? context.s.defaultUserName,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+                color: AppColors.messageDark,
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+                height: 1.25,
               ),
             ),
-            const SizedBox(height: 8),
-            if (state is CallOutgoing)
-              Text(
-                context.s.calling,
-                style: const TextStyle(color: Colors.white70, fontSize: 18),
-              )
-            else if (state is CallActive && duration != null)
-              Text(
-                _formatDuration(duration!),
-                style: const TextStyle(color: Colors.white70, fontSize: 18),
-              ),
+            const SizedBox(height: 4),
+            CallStatusLine(state: state, duration: duration),
           ],
         ),
       ),

@@ -63,6 +63,11 @@ class AppTypography {
   );
 
   // Text sm — 13px / 1.25
+  static TextStyle get textSmRegular => GoogleFonts.roboto(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    height: 1.25,
+  );
   static TextStyle get textSmMedium => GoogleFonts.roboto(
     fontSize: 13,
     fontWeight: FontWeight.w500,

@@ -20,7 +20,7 @@ class CreateContactAppBar extends StatelessWidget
         isDark ? AppColors.messageLight : AppColors.messageDark;
 
     return AppBar(
-      backgroundColor: context.appColors.surfaceSecondary,
+      backgroundColor: context.appColors.backgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,

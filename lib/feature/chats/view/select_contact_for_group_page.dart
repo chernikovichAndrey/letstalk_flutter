@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/create_chat_group_app_bar.dart';
-import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/selected_contacts_input.dart';
+import 'package:lets_talk/feature/chats/view/widgets/select_contact_for_group/contacts_search_field.dart';
+import 'package:lets_talk/feature/chats/view/widgets/select_contact_for_group/select_contact_for_group_app_bar.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
@@ -12,15 +14,23 @@ class SelectContactsForGroupPage extends StatefulWidget {
   const SelectContactsForGroupPage({super.key});
 
   @override
-  State<SelectContactsForGroupPage> createState() => _SelectContactsForGroupPageState();
+  State<SelectContactsForGroupPage> createState() =>
+      _SelectContactsForGroupPageState();
 }
 
-class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage> {
-
+class _SelectContactsForGroupPageState
+    extends State<SelectContactsForGroupPage> {
   @override
   void deactivate() {
     getIt<ContactsBloc>().add(ContactsToggleSelectionMode());
     super.deactivate();
+  }
+
+  void _onPressNext() {
+    final state = getIt<ContactsBloc>().state;
+    if (state is! ContactsLoaded) return;
+    if (state.selectedContactIds.isEmpty) return;
+    context.push(Routes.createChatGroup);
   }
 
   @override
@@ -28,47 +38,30 @@ class _SelectContactsForGroupPageState extends State<SelectContactsForGroupPage>
     return BlocProvider.value(
       value: getIt<ContactsBloc>()..add(ContactsToggleSelectionMode()),
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        body: Stack(
-          children: [
-            BlocBuilder<ContactsBloc, ContactsState>(
-              builder: (context, state) {
-                if (state is ContactsLoading ||
-                    state is ContactsActionInProgress) {
-                  return const ContactsSceleton();
-                }
-                return CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: context.padding.top + 66),
-                    ),
-                    if (state is ContactsLoaded)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          child: SelectedContactsInput(
-                            hintText: context.s.groupInviteHint,
-                            onSearchChanged: (query) {
-                              context.read<ContactsBloc>().add(ContactsSearch(query));
-                            },
-                            searchQuery: state.query,
-                          ),
-                        ),
-                      ),
-                    ContactsSlivers(
-                      state: state,
-                      isRegisteredOnly: true,
-                      showSearch: false,
-                    ),
-                  ],
-                );
-              },
-            ),
-            const CreateChatGroupAppBar(),
-          ],
+        backgroundColor: context.appColors.backgroundColor,
+        appBar: SelectContactsForGroupAppBar(onPressNext: _onPressNext),
+        body: BlocBuilder<ContactsBloc, ContactsState>(
+          builder: (context, state) {
+            if (state is ContactsLoading ||
+                state is ContactsActionInProgress) {
+              return const ContactsSceleton();
+            }
+            return CustomScrollView(
+              keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                if (state is ContactsLoaded)
+                  SliverToBoxAdapter(
+                    child: ContactsSearchField(state: state),
+                  ),
+                ContactsSlivers(
+                  state: state,
+                  isRegisteredOnly: true,
+                  showSearch: false,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

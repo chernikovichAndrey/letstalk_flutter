@@ -111,7 +111,7 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
         }
       },
       child: Scaffold(
-        backgroundColor: context.appColors.surfaceSecondary,
+        backgroundColor: context.appColors.backgroundColor,
         body: SafeArea(
           child: Stack(
             children: [

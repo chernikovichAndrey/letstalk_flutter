@@ -20,7 +20,7 @@ class ChatAppBarActionButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPress,
         style: ElevatedButton.styleFrom(
-          backgroundColor: context.appColors.surfaceSecondary,
+          backgroundColor: context.appColors.backgroundColor,
           foregroundColor: isRead ? Colors.red : context.appColors.messageOtherText,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

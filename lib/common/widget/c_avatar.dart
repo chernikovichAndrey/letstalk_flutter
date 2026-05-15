@@ -75,7 +75,7 @@ class CAvatar extends StatelessWidget {
         ),
         placeholder: (context, url) => CircleAvatar(
           radius: radius,
-          backgroundColor: context.appColors.surfaceSecondary,
+          backgroundColor: context.appColors.backgroundColor,
           child: SizedBox(
             width: radius * 0.5,
             height: radius * 0.5,

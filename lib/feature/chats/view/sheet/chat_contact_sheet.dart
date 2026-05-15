@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/routes.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/di/injection.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_action_button.dart';
+import 'package:lets_talk/feature/chats/view/sheet/widgets/chat_contact_sheet_action.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_skeleton.dart';
 import 'package:lets_talk/feature/contacts/view/widgets/contacts_slivers.dart';
@@ -16,6 +16,7 @@ class ChatContactsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
     return BlocProvider.value(
       value: getIt<ContactsBloc>()..add(ContactsLoad()),
       child: BlocListener<ContactsBloc, ContactsState>(
@@ -30,19 +31,24 @@ class ChatContactsSheet extends StatelessWidget {
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           child: Scaffold(
-            backgroundColor: context.appColors.surfaceSecondary,
+            backgroundColor: appColors.backgroundColor,
             appBar: AppBar(
-              backgroundColor: context.appColors.surfaceSecondary,
+              backgroundColor: appColors.backgroundColor,
               elevation: 0,
-              leading: Padding(
-                padding: const EdgeInsets.all(8),
-                child: GlassButton(icon: Icons.close, onTap: context.pop),
+              leadingWidth: 56,
+              leading: IconButton(
+                onPressed: context.pop,
+                icon: Icon(
+                  Icons.close,
+                  size: 24,
+                  color: appColors.glassForeground,
+                ),
               ),
+              actions: const [SizedBox(width: 56)],
               title: Text(
                 context.s.writeMessage,
-                style: context.text.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: context.appColors.glassForeground,
+                style: AppTypography.textLgMedium.copyWith(
+                  color: appColors.glassForeground,
                 ),
               ),
               centerTitle: true,
@@ -59,24 +65,27 @@ class ChatContactsSheet extends StatelessWidget {
                       state: state,
                       isRegisteredOnly: true,
                       children: [
-                        ChatActionButton(
+                        ChatContactSheetAction(
                           icon: Icons.group_outlined,
                           title: context.s.createGroup,
-                          onTap: () => context.push(Routes.selectContactsFroGroup.path),
+                          onTap: () =>
+                              context.push(Routes.selectContactsFroGroup.path),
                         ),
-                        const Divider(height: 1, indent: 12, endIndent: 12,),
-                        ChatActionButton(
-                            icon: Icons.person_add_outlined,
-                            title: context.s.createContact,
-                            onTap: () async {
-                              await context.push(Routes.createContact.path);
-                              if (context.mounted) {
-                                context.read<ContactsBloc>().add(ContactsRefresh());
-                              }
+                        ChatContactSheetAction(
+                          icon: Icons.person_add_outlined,
+                          title: context.s.createContact,
+                          onTap: () async {
+                            await context.push(Routes.createContact.path);
+                            if (context.mounted) {
+                              context.read<ContactsBloc>().add(
+                                ContactsRefresh(),
+                              );
                             }
+                          },
                         ),
+                        const SizedBox(height: 8),
                       ],
-                    )
+                    ),
                   ],
                 );
               },

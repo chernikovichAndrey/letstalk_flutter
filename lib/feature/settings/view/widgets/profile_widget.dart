@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/settings/data/model/user_model.dart';
@@ -52,11 +53,9 @@ class ProfileWidget extends StatelessWidget {
             if (displayName.isNotEmpty) ...[
               Text(
                 displayName,
-                style: TextStyle(
+                style: AppTypography.headingXsMedium.copyWith(
                   color: nameColor,
-                  fontSize: 20,
                   fontWeight: nameWeight,
-                  height: 1.2,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -64,11 +63,9 @@ class ProfileWidget extends StatelessWidget {
             ],
             Text(
               user.phone,
-              style: TextStyle(
+              style: AppTypography.textSmRegular.copyWith(
                 color: phoneColor,
                 fontSize: phoneSize,
-                fontWeight: FontWeight.w400,
-                height: 1.25,
               ),
               textAlign: TextAlign.center,
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 
@@ -57,17 +58,15 @@ class IncomingCallBanner extends StatelessWidget {
                         callType == 'video'
                             ? context.s.incomingVideoCall
                             : context.s.incomingAudioCall,
-                        style: TextStyle(
+                        style: AppTypography.textXsRegular.copyWith(
                           color: Colors.grey[400],
-                          fontSize: 12,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         callerName,
-                        style: const TextStyle(
+                        style: AppTypography.textLgMedium.copyWith(
                           color: Colors.white,
-                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 1,

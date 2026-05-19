@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class AddParticipantsBanner extends StatelessWidget {
@@ -48,10 +49,8 @@ class AddParticipantsBanner extends StatelessWidget {
                     child: Center(
                       child: Text(
                         context.s.addParticipants,
-                        style: TextStyle(
+                        style: AppTypography.textSmMedium.copyWith(
                           color: Colors.blue,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),

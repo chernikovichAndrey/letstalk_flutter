@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +9,9 @@ import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_button.dart';
 import 'package:lets_talk/common/widget/c_name_input_card.dart';
+import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
+import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:lets_talk/feature/auth/view/widgets/auth_back_button.dart';
 import 'package:lets_talk/feature/auth/view/widgets/avatar_placeholder.dart';
 
@@ -21,6 +25,9 @@ class AuthProfilePage extends StatefulWidget {
 class _AuthProfilePageState extends State<AuthProfilePage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+
+  File? _avatarFile;
+  bool _isAvatarLoading = false;
 
   @override
   void initState() {
@@ -50,6 +57,20 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
         lastName: lastName.isEmpty ? null : lastName,
       ),
     );
+  }
+
+  Future<void> _handleAvatarTap() async {
+    final file = await context.push<File>(Routes.profileAvatarSheet.path);
+    if (file != null && mounted) {
+      setState(() {
+        _avatarFile = file;
+        _isAvatarLoading = true;
+      });
+      try {
+        await getIt<AuthRepository>().updateAvatar(file.path);
+      } catch (_) {}
+      if (mounted) setState(() => _isAvatarLoading = false);
+    }
   }
 
   @override
@@ -104,6 +125,9 @@ class _AuthProfilePageState extends State<AuthProfilePage> {
                     backgroundColor: fieldBg,
                     iconColor:
                         isDark ? AppColors.grayLight : AppColors.grayDark,
+                    localFile: _avatarFile,
+                    isLoading: _isAvatarLoading,
+                    onTap: _handleAvatarTap,
                   ),
                 ),
                 const SizedBox(height: 28),

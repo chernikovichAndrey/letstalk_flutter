@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -51,7 +52,7 @@ class CallUserAvatar extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   user?.fullName ?? context.s.defaultUserName,
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: AppTypography.textXsRegular.copyWith(color: Colors.white),
                 ),
               ],
             ),

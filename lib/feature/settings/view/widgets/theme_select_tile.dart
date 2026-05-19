@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class ThemeSelectTile extends StatelessWidget {
@@ -50,14 +51,10 @@ class ThemeSelectTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 16,
-                      fontWeight: isSelected
-                          ? FontWeight.w500
-                          : FontWeight.w400,
-                      height: 1.25,
-                    ),
+                    style: (isSelected
+                            ? AppTypography.textMdMedium
+                            : AppTypography.textMdRegular)
+                        .copyWith(color: textColor),
                   ),
                 ),
                 if (isSelected)

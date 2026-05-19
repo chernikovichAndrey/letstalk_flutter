@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class EditPhotoSlider extends StatelessWidget {
@@ -24,9 +25,8 @@ class EditPhotoSlider extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: AppTypography.textSmRegular.copyWith(
             color: context.appColors.glassForeground.withValues(alpha: 0.7),
-            fontSize: 14,
           ),
         ),
         Slider(

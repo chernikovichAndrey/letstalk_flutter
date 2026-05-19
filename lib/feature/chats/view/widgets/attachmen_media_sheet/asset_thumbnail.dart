@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class AssetThumbnail extends StatelessWidget {
@@ -56,10 +57,8 @@ class AssetThumbnail extends StatelessWidget {
                       ),
                       child: Text(
                         _formatDuration(asset.videoDuration),
-                        style: const TextStyle(
+                        style: AppTypography.textXsMedium.copyWith(
                           color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.right,
                       ),

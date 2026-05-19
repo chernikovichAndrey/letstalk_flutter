@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
@@ -33,11 +34,8 @@ class CallAvatar extends StatelessWidget {
             Text(
               fullName ?? context.s.defaultUserName,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: AppTypography.headingSmMedium.copyWith(
                 color: AppColors.messageDark,
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
-                height: 1.25,
               ),
             ),
             const SizedBox(height: 4),

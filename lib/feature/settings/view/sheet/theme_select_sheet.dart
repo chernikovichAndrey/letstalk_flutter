@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_bloc.dart';
 import 'package:lets_talk/feature/settings/domain/theme_bloc/theme_event.dart';
@@ -63,12 +64,7 @@ class ThemeSelectSheet extends StatelessWidget {
                     child: Text(
                       context.s.selectTheme,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: titleColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        height: 1.2,
-                      ),
+                      style: AppTypography.textLgMedium.copyWith(color: titleColor),
                     ),
                   ),
                   const SizedBox(width: 24),

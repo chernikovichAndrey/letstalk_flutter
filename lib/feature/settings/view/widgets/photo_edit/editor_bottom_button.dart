@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class EditorBottomButton extends StatelessWidget {
@@ -41,11 +42,10 @@ class EditorBottomButton extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
+            style: AppTypography.textXsRegular.copyWith(
               color: isEnabled
                   ? context.appColors.glassForeground.withValues(alpha: 0.7)
                   : context.appColors.glassForeground.withValues(alpha: 0.3),
-              fontSize: 11,
             ),
           ),
         ],

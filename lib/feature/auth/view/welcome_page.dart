@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_button.dart';
 
@@ -33,7 +34,7 @@ class WelcomePage extends StatelessWidget {
                   const Spacer(),
                   Text(
                     context.s.welcomeTitle,
-                    style: const TextStyle(
+                    style: AppTypography.headingSmMedium.copyWith(
                       color: AppColors.backgroundLight,
                       fontSize: 40,
                       fontWeight: FontWeight.w600,

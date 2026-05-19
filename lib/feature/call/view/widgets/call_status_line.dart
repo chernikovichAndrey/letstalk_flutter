@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/call/domain/bloc/call_bloc.dart';
 
@@ -22,11 +23,8 @@ class CallStatusLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(
+    final textStyle = AppTypography.textMdRegular.copyWith(
       color: AppColors.messageDark,
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      height: 1.25,
     );
 
     if (state is CallActive && duration != null) {

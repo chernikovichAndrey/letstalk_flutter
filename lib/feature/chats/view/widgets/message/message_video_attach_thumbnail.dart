@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
@@ -220,12 +221,11 @@ class _MessageVideoAttachThumbnailState
                               strokeWidth: 3,
                             ),
                           ),
-                          if (progressPercent > 0)
+                            if (progressPercent > 0)
                             Text(
                               '$progressPercent%',
-                              style: const TextStyle(
+                              style: AppTypography.textSmRegular.copyWith(
                                 color: Colors.white,
-                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

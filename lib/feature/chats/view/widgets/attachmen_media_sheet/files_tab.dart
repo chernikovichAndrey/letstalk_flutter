@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class FilesTab extends StatelessWidget {
@@ -40,7 +41,7 @@ class FilesTab extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           context.s.selectFromFiles,
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: AppTypography.textXsRegular.copyWith(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                       ],

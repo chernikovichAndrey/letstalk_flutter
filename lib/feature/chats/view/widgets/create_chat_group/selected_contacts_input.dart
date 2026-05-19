@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/view/widgets/create_chat_group/contact_chip.dart';
@@ -96,15 +97,13 @@ class _SelectedContactsInputState extends State<SelectedContactsInput> {
             TextField(
               controller: _controller,
               focusNode: _focusNode,
-              style: TextStyle(
+              style: AppTypography.textMdRegular.copyWith(
                 color: context.appColors.glassForeground,
-                fontSize: 16,
               ),
               decoration: InputDecoration(
                 hintText: widget.hintText,
-                hintStyle: TextStyle(
+                hintStyle: AppTypography.textMdRegular.copyWith(
                   color: context.appColors.glassForeground.withValues(alpha: 0.5),
-                  fontSize: 16,
                 ),
                 border: InputBorder.none,
                 isDense: true,

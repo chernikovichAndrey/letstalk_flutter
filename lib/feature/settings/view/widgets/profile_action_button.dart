@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class ProfileActionButton extends StatelessWidget {
@@ -41,11 +42,7 @@ class ProfileActionButton extends StatelessWidget {
                 child: Center(
                   child: Text(
                     label,
-                    style: TextStyle(
-                      color: labelColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: AppTypography.textMdMedium.copyWith(color: labelColor),
                   ),
                 ),
               ),

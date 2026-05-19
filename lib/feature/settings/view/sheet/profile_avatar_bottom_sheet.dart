@@ -21,7 +21,7 @@ class ProfileAvatarBottomSheet extends StatelessWidget {
     );
     
     if (editedFile != null && context.mounted) {
-      context.pop();
+      context.pop(editedFile);
       getIt<ProfileBloc>().add(ProfileUpdateAvatarEvent(editedFile.path));
     }
   }

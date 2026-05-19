@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_avatar.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
@@ -35,10 +36,8 @@ class ContactChip extends StatelessWidget {
             Flexible(
               child: Text(
                 contact.fullName,
-                style: TextStyle(
+                style: AppTypography.textSmMedium.copyWith(
                   color: context.appColors.glassForeground,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),

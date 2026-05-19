@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class ChatAppBarActionButton extends StatelessWidget {
@@ -29,7 +30,7 @@ class ChatAppBarActionButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: AppTypography.textMdSemiBold,
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 
@@ -64,9 +65,8 @@ class MessageUploadingPreview extends StatelessWidget {
                     if (progressPercent > 0)
                       Text(
                         '$progressPercent%',
-                        style: const TextStyle(
+                        style: AppTypography.textSmRegular.copyWith(
                           color: Colors.white,
-                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -75,10 +75,7 @@ class MessageUploadingPreview extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   context.s.uploading,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
+                  style: AppTypography.textXsRegular.copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -112,10 +109,7 @@ class MessageUploadingPreview extends StatelessWidget {
                 children: [
                   Text(
                     filename,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: AppTypography.textSmRegular.copyWith(color: Colors.white),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -135,9 +129,8 @@ class MessageUploadingPreview extends StatelessWidget {
                         progressPercent > 0
                             ? '${context.s.uploading} $progressPercent%'
                             : context.s.uploading,
-                        style: const TextStyle(
+                        style: AppTypography.textXsRegular.copyWith(
                           color: Colors.white70,
-                          fontSize: 12,
                         ),
                       ),
                     ],

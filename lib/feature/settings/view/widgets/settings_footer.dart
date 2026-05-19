@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -34,11 +35,8 @@ class _SettingsFooterState extends State<SettingsFooter> {
     final isDark = context.theme.brightness == Brightness.dark;
     final linkColor = isDark ? AppColors.grayDark : AppColors.grayLight;
 
-    final linkStyle = TextStyle(
+    final linkStyle = AppTypography.textXsRegular.copyWith(
       color: linkColor,
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      height: 1.3,
       decoration: TextDecoration.none,
     );
 

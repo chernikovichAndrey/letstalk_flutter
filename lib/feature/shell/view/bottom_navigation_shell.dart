@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/shell/domain/navigation_bloc/navigation_bloc.dart';
@@ -80,16 +81,8 @@ class _BottomNavigationShellState extends State<BottomNavigationShell> with Widg
                     type: BottomNavigationBarType.fixed,
                     selectedItemColor: const Color(0xFFC96A3A),
                     unselectedItemColor: const Color(0xFFBEBEBE),
-                    selectedLabelStyle: const TextStyle(
-                      fontSize: 12, 
-                      fontWeight: FontWeight.w500,
-                      height: 1.3,
-                    ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: 12, 
-                      fontWeight: FontWeight.w400,
-                      height: 1.3,
-                    ),
+                    selectedLabelStyle: AppTypography.textXsMedium,
+                    unselectedLabelStyle: AppTypography.textXsRegular,
                     items: [
                       BottomNavigationBarItem(
                         icon: SvgPicture.asset(

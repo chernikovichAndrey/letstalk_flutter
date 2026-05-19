@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class SettingsMenuItem extends StatelessWidget {
@@ -59,23 +60,15 @@ class SettingsMenuItem extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: TextStyle(
+                  style: AppTypography.textMdRegular.copyWith(
                     color: labelColor ?? defaultLabelColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    height: 1.25,
                   ),
                 ),
               ),
               if (value != null) ...[
                 Text(
                   value!,
-                  style: TextStyle(
-                    color: valueColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    height: 1.25,
-                  ),
+                  style: AppTypography.textSmRegular.copyWith(color: valueColor),
                 ),
                 const SizedBox(width: 4),
               ],

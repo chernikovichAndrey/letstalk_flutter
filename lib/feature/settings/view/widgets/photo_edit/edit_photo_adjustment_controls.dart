@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/settings/view/widgets/photo_edit/edit_photo_slider.dart';
 
@@ -33,9 +34,8 @@ class EditPhotoAdjustmentControls extends StatelessWidget {
               children: [
                 Text(
                   context.s.photoEditorAdjustments,
-                  style: TextStyle(
+                  style: AppTypography.textLgMedium.copyWith(
                     color: context.appColors.glassForeground,
-                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -45,9 +45,8 @@ class EditPhotoAdjustmentControls extends StatelessWidget {
                       onPressed: onResetAdjustments,
                       child: Text(
                         context.s.photoEditorReset,
-                        style: TextStyle(
+                        style: AppTypography.textMdRegular.copyWith(
                           color: context.appColors.telegramBlue,
-                          fontSize: 16,
                         ),
                       ),
                     ),

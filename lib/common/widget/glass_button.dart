@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class GlassButton extends StatelessWidget {
@@ -61,10 +62,9 @@ class GlassButton extends StatelessWidget {
                         child: Center(
                           child: Text(
                             label!,
-                            style: TextStyle(
+                            style: AppTypography.textMdSemiBold.copyWith(
                               color: baseColor,
                               fontSize: size * 0.32,
-                              fontWeight: FontWeight.w600,
                               letterSpacing: 0.2,
                             ),
                           ),

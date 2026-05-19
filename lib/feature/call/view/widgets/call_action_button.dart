@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 
 class CallActionButton extends StatelessWidget {
   final String label;
@@ -60,11 +61,8 @@ class CallActionButton extends StatelessWidget {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: AppTypography.textXsRegular.copyWith(
             color: AppColors.messageDark,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-            height: 1.3,
           ),
         ),
       ],

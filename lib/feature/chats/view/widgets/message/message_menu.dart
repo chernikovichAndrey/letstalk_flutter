@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/message_menu_item.dart';
 
@@ -24,79 +26,117 @@ class MessageMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-    final dividerColor = appColors.divider;
+    final isDark = context.theme.brightness == Brightness.dark;
+    final bgColor = isDark
+        ? AppColors.backgroundDark.withValues(alpha: 0.85)
+        : AppColors.white.withValues(alpha: 0.7);
+    final dividerColor = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : const Color(0xFF424242).withValues(alpha: 0.05);
+
+    final items = _buildItems(context);
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        width: 250,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: context.theme.scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            MessageMenuItem(
-                title: context.s.reply,
-                icon: Icons.reply_outlined,
-                onTap: onReply,
-            ),
-            Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
-            if (onCopy != null) ...[
-              MessageMenuItem(
-                title: context.s.copy,
-                icon: Icons.file_copy_outlined,
-                onTap: onCopy!,
-              ),
-              Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
-            ],
-            if (onDownload != null) ...[
-              MessageMenuItem(
-                title: context.s.download,
-                icon: Icons.download_outlined,
-                onTap: onDownload!,
-              ),
-              Divider(
-                height: 1,
-                indent: 12,
-                endIndent: 12,
-                color: dividerColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF232323).withValues(alpha: 0.06),
+                offset: const Offset(0, 3),
+                blurRadius: 7,
               ),
             ],
-            if (isMe) ...[
-              if (onEdit != null) ...[
-                MessageMenuItem(
-                  title: context.s.edit,
-                  icon: Icons.edit_note_outlined,
-                  onTap: onEdit!,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12.5, sigmaY: 12.5),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.05),
+                  ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                Divider(
-                  height: 1,
-                  indent: 12,
-                  endIndent: 12,
-                  color: dividerColor,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: SizedBox(
+                    width: 210,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (int i = 0; i < items.length; i++) ...[
+                          items[i],
+                          if (i < items.length - 1)
+                            Container(height: 1, color: dividerColor),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
-              ]
-            ],
-            MessageMenuItem(
-              title: context.s.forward,
-              icon: Icons.forward_outlined,
-              onTap: onForward,
-            ),
-            Divider(height: 1, indent: 12, endIndent: 12, color: dividerColor),
-            if (isMe)
-              MessageMenuItem(
-                title: context.s.delete,
-                icon: Icons.delete_outline,
-                onTap: onDelete,
-                isDestructive: true,
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildItems(BuildContext context) {
+    final items = <Widget>[];
+
+    items.add(MessageMenuItem(
+      title: context.s.reply,
+      iconAsset: 'assets/icons/message_forward.svg',
+      mirrorIcon: true,
+      onTap: onReply,
+    ));
+
+    if (onCopy != null) {
+      items.add(MessageMenuItem(
+        title: context.s.copy,
+        iconAsset: 'assets/icons/message_copy.svg',
+        onTap: onCopy!,
+      ));
+    }
+
+    if (onDownload != null) {
+      items.add(MessageMenuItem(
+        title: context.s.download,
+        iconAsset: 'assets/icons/message_download.svg',
+        onTap: onDownload!,
+      ));
+    }
+
+    if (onEdit != null) {
+      items.add(MessageMenuItem(
+        title: context.s.edit,
+        iconAsset: 'assets/icons/message_edit.svg',
+        onTap: onEdit!,
+      ));
+    }
+
+    items.add(MessageMenuItem(
+      title: context.s.forward,
+      iconAsset: 'assets/icons/message_forward.svg',
+      onTap: onForward,
+    ));
+
+    if (isMe) {
+      items.add(MessageMenuItem(
+        title: context.s.delete,
+        iconAsset: 'assets/icons/message_delete.svg',
+        isDestructive: true,
+        onTap: onDelete,
+      ));
+    }
+
+    return items;
   }
 }

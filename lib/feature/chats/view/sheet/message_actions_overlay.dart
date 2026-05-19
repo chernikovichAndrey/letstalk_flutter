@@ -212,7 +212,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(color: Colors.black.withOpacity(0.2)),
+                child: Container(color: Colors.black.withValues(alpha: 0.2)),
               ),
             ),
 

@@ -25,7 +25,8 @@ class MessageReplay extends StatelessWidget {
         return IntrinsicWidth(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
+            child: IntrinsicHeight(
+              child: Row(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -82,6 +83,7 @@ class MessageReplay extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
             ),
           ),
         );

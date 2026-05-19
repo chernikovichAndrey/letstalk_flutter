@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lets_talk/common/constants/app_typography.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -25,54 +25,58 @@ class ReplayPreview extends StatelessWidget {
     final content = (message.text != null && message.text!.isNotEmpty)
         ? message.text!
         : message.messageType;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: context.appColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(12),
-        border: Border(
-          left: BorderSide(
-            color: context.appColors.telegramBlue,
-            width: 4,
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+          Container(
+            width: 3,
+            decoration: BoxDecoration(
+              color: AppColors.brand,
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
-        ),
-      ),
-      child: Row(
-        children: [
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   context.s.replyingTo(_memberName()),
-                  style: AppTypography.textXsRegular.copyWith(
-                    color: context.appColors.telegramBlue,
-                    fontWeight: FontWeight.bold,
+                  style: context.text.bodyMedium?.copyWith(
+                    color: AppColors.brand,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   content,
-                  style: context.theme.textTheme.bodyMedium,
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.appColors.glassForeground,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.close, size: 20),
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               context.read<ChatDetailsBloc>().add(
                 ChatDetailsReplyToMessage(null),
               );
             },
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+            child: Icon(
+              Icons.close,
+              size: 24,
+              color: context.appColors.glassForeground,
+            ),
           ),
         ],
       ),
+      ),
     );
   }
-
 }

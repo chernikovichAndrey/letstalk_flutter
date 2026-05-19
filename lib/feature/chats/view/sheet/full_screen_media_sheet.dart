@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lets_talk/app/router/arg/media_perview_args.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/view/widgets/full_screen_media_sheet/image_preview.dart';
@@ -101,6 +100,7 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
     return BlocListener<ChatDetailsBloc, ChatDetailsState>(
       bloc: getIt<ChatDetailsBloc>(),
       listener: (context, state) {
@@ -111,12 +111,27 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
         }
       },
       child: Scaffold(
-        backgroundColor: context.appColors.backgroundColor,
+        backgroundColor: appColors.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: appColors.backgroundColor,
+          elevation: 0,
+          leadingWidth: 56,
+          leading: IconButton(
+            onPressed: context.pop,
+            icon: Icon(
+              Icons.arrow_back,
+              size: 24,
+              color: appColors.glassForeground,
+            ),
+          ),
+          actions: const [SizedBox(width: 56)],
+          centerTitle: true,
+        ),
         body: SafeArea(
           child: Stack(
             children: [
               Positioned(
-                top: 70,
+                top: 0,
                 bottom: 120,
                 left: 0,
                 right: 0,
@@ -125,11 +140,6 @@ class _FullScreenMediaSheetState extends State<FullScreenMediaSheet> {
                     : _isVideo
                         ? VideoPreview(file: _file!)
                         : ImagePreview(file: _file),
-              ),
-              Positioned(
-                top: 8,
-                left: 8,
-                child: GlassButton(icon: Icons.arrow_back, onTap: context.pop),
               ),
               Positioned(
                 left: 8,

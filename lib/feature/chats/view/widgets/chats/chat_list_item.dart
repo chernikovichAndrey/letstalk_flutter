@@ -16,6 +16,7 @@ const double _hSpacing = 8;
 const double _hPadding = 16;
 const double _vGap = 4;
 const double _checkboxGap = 12;
+const double _dividerLeft = _hPadding + _avatarSize + _hSpacing;
 
 class ChatListItem extends StatelessWidget {
   final Chat chat;
@@ -129,9 +130,7 @@ class ChatListItem extends StatelessWidget {
     final titleColor = isDark ? AppColors.white : AppColors.messageDark;
     final subtitleColor = isDark ? AppColors.grayLight : AppColors.grayDark;
     final timeColor = AppColors.grayLight;
-    final dividerColor = isDark
-        ? AppColors.white.withValues(alpha: 0.08)
-        : AppColors.messageLight;
+    final dividerColor = isDark ? AppColors.messageDark : AppColors.messageLight;
 
     final selectedBg = isDark
         ? AppColors.white.withValues(alpha: 0.06)
@@ -141,92 +140,99 @@ class ChatListItem extends StatelessWidget {
       color: isSelectionMode && isSelected ? selectedBg : Colors.transparent,
       child: InkWell(
         onTap: isSelectionMode ? () => onSelect?.call(!isSelected) : onTap,
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: _hPadding,
-            top: _vGap,
-            bottom: _vGap,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (isSelectionMode) ...[
-                ChatSelectionCheckbox(isSelected: isSelected),
-                const SizedBox(width: _checkboxGap),
-              ],
-              CAvatar(
-                imageUrl:
-                    chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
-                name: chat.type == 'group'
-                    ? chat.title
-                    : _getMemberName(context: context),
-                radius: _avatarSize / 2,
-                isSavedMessages: chat.type == 'favorites',
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: _hPadding,
+                top: _vGap,
+                bottom: _vGap,
               ),
-              const SizedBox(width: _hSpacing),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: dividerColor),
-                    ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (isSelectionMode) ...[
+                    ChatSelectionCheckbox(isSelected: isSelected),
+                    const SizedBox(width: _checkboxGap),
+                  ],
+                  CAvatar(
+                    imageUrl:
+                        chat.type == 'group' ? chat.avatar : _getMemberAvatar(),
+                    name: chat.type == 'group'
+                        ? chat.title
+                        : _getMemberName(context: context),
+                    radius: _avatarSize / 2,
+                    isSavedMessages: chat.type == 'favorites',
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: _hPadding),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _chatTitle(context) ?? context.s.noTitle,
-                                style: AppTypography.textMdMedium.copyWith(
-                                  color: titleColor,
+                  const SizedBox(width: _hSpacing),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 6,
+                        bottom: 6,
+                        right: _hPadding,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  _chatTitle(context) ?? context.s.noTitle,
+                                  style: AppTypography.textMdMedium.copyWith(
+                                    color: titleColor,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _formatTime(chat.lastMessageAt, context),
-                              style: AppTypography.textSmRegular.copyWith(
-                                color: timeColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: _LastMessagePreview(
-                                chat: chat,
-                                text: _lastMessagePreview(context),
-                                color: subtitleColor,
-                                isTyping: isTyping,
-                              ),
-                            ),
-                            if (chat.unreadCount > 0) ...[
-                              const SizedBox(width: 4),
-                              ChatListUnreadBadge(
-                                count: chat.unreadCount,
-                                muted: chat.muted,
+                              const SizedBox(width: 8),
+                              Text(
+                                _formatTime(chat.lastMessageAt, context),
+                                style: AppTypography.textSmRegular.copyWith(
+                                  color: timeColor,
+                                ),
                               ),
                             ],
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: _LastMessagePreview(
+                                  chat: chat,
+                                  text: _lastMessagePreview(context),
+                                  color: subtitleColor,
+                                  isTyping: isTyping,
+                                ),
+                              ),
+                              if (chat.unreadCount > 0) ...[
+                                const SizedBox(width: 4),
+                                ChatListUnreadBadge(
+                                  count: chat.unreadCount,
+                                  muted: chat.muted,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              left: _dividerLeft,
+              right: 0,
+              bottom: 0,
+              height: 1,
+              child: ColoredBox(color: dividerColor),
+            ),
+          ],
         ),
       ),
     );

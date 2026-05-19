@@ -4,7 +4,6 @@ import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message/video_controller_cache.dart';
 import 'package:video_player/video_player.dart';
 
@@ -12,11 +11,13 @@ class MessageVideoAttachThumbnail extends StatefulWidget {
   final int messageId;
   final Message message;
   final bool isMe;
+  final BorderRadius borderRadius;
 
   const MessageVideoAttachThumbnail({
     super.key,
     required this.messageId,
     required this.message,
+    required this.borderRadius,
     this.isMe = false,
   });
 
@@ -32,7 +33,6 @@ class _MessageVideoAttachThumbnailState
   bool _hasError = false;
   bool _isVisible = false;
   ScrollController? _scrollController;
-
   bool _initialized = false;
 
   @override
@@ -80,7 +80,6 @@ class _MessageVideoAttachThumbnailState
     final provider = VideoControllerCacheProvider.of(context);
     final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
 
-    // Use already-initialized controller immediately if available.
     final cached = provider.cache.getSync(url);
     if (cached != null && cached.value.isInitialized) {
       if (mounted) {
@@ -93,7 +92,6 @@ class _MessageVideoAttachThumbnailState
       return;
     }
 
-    // Otherwise wait for initialization (first load or still initializing).
     final controller = await provider.cache.getOrCreate(url, token ?? '');
     if (!mounted) return;
 
@@ -122,10 +120,9 @@ class _MessageVideoAttachThumbnailState
 
     final screenHeight = MediaQuery.of(context).size.height;
     final position = renderObject.localToGlobal(Offset.zero);
-    final widgetTop = position.dy;
     final widgetBottom = position.dy + renderObject.size.height;
 
-    final isVisible = widgetTop < screenHeight && widgetBottom > 0;
+    final isVisible = position.dy < screenHeight && widgetBottom > 0;
 
     if (isVisible == _isVisible) return;
     _isVisible = isVisible;
@@ -140,108 +137,118 @@ class _MessageVideoAttachThumbnailState
   @override
   void dispose() {
     _scrollController?.removeListener(_checkVisibility);
-    // Pause but do NOT dispose — controller lives in the cache.
     _controller?.pause();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MessageForward(forwardedFrom: widget.message.forwardedFrom, isMe: widget.isMe),
-        Stack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+
+        Widget videoContent;
+        if (_isProcessing) {
+          videoContent = SizedBox(
+            width: width,
+            height: width * 0.6,
+            child: const ColoredBox(
+              color: Colors.black54,
+              child: Center(child: CircularProgressIndicator(color: Colors.white)),
+            ),
+          );
+        } else if (_hasError) {
+          videoContent = SizedBox(
+            width: width,
+            height: width * 0.6,
+            child: const ColoredBox(
+              color: Colors.black,
+              child: Center(
+                child: Icon(Icons.videocam_off, color: Colors.white70, size: 32),
+              ),
+            ),
+          );
+        } else if (_isInitialized) {
+          final aspectRatio = _controller!.value.aspectRatio;
+          final videoHeight = (width / aspectRatio).clamp(0.0, 400.0);
+          videoContent = SizedBox(
+            width: width,
+            height: videoHeight,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _controller!.value.size.width,
+                height: _controller!.value.size.height,
+                child: VideoPlayer(_controller!),
+              ),
+            ),
+          );
+        } else {
+          videoContent = SizedBox(
+            width: width,
+            height: width * 0.6,
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return ClipRRect(
+          borderRadius: widget.borderRadius,
+          child: Stack(
           alignment: Alignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: _isProcessing
-                  ? Container(
-                      width: 200,
-                      height: 200,
-                      color: Colors.black54,
-                      child: const Center(
-                        child: CircularProgressIndicator(color: Colors.white),
-                      ),
-                    )
-                  : _hasError
-                  ? Container(
-                      width: 200,
-                      height: 200,
-                      color: Colors.black,
-                      child: const Icon(
-                        Icons.videocam_off,
-                        color: Colors.white70,
-                        size: 20,
-                      ),
-                    )
-                  : _isInitialized
-                  ? Container(
-                      constraints: const BoxConstraints(
-                        maxWidth: 200,
-                        maxHeight: 400,
-                      ),
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: SizedBox(
-                          width: _controller!.value.size.width,
-                          height: _controller!.value.size.height,
-                          child: VideoPlayer(_controller!),
-                        ),
-                      ),
-                    )
-                  : const SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-            ),
+            videoContent,
+            if (!_isProcessing && !_hasError)
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.play_arrow, color: Colors.black, size: 24),
+              ),
             BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
               builder: (context, state) {
                 if (state.downloadingMessageId == widget.messageId) {
                   final progress = state.downloadProgress ?? 0.0;
                   final progressPercent = (progress * 100).toInt();
-
-                  return Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
+                  return Positioned.fill(
+                    child: ColoredBox(
                       color: Colors.black.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: 56,
-                            height: 56,
-                            child: CircularProgressIndicator(
-                              value: state.downloadProgress,
-                              color: Colors.white,
-                              strokeWidth: 3,
-                            ),
-                          ),
-                            if (progressPercent > 0)
-                            Text(
-                              '$progressPercent%',
-                              style: AppTypography.textSmRegular.copyWith(
+                      child: Center(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 56,
+                              height: 56,
+                              child: CircularProgressIndicator(
+                                value: state.downloadProgress,
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                                strokeWidth: 3,
                               ),
                             ),
-                        ],
+                            if (progressPercent > 0)
+                              Text(
+                                '$progressPercent%',
+                                style: AppTypography.textSmRegular.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   );
                 }
-                return const SizedBox();
+                return const SizedBox.shrink();
               },
             ),
           ],
         ),
-      ],
+        );
+      },
     );
   }
 }

@@ -34,11 +34,13 @@ class MessageBubble extends StatelessWidget {
     this.isGroupChat = false,
   });
 
+  static const double _outerRadius = 20;
+  static const double _tailRadius = 4;
+
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-
-    Color backgroundColor = isMe
+    final Color backgroundColor = isMe
         ? appColors.messageMeBubble
         : appColors.messageOtherBubble;
 
@@ -46,6 +48,188 @@ class MessageBubble extends StatelessWidget {
     final senderInfo = message.fromName?.isNotEmpty == true
         ? message.fromName!.first
         : null;
+
+    final bool hasMedia = !message.isUploading && (
+      (message.messageType == 'image' && message.media?.thumbnailUrl != null) ||
+      (message.messageType == 'video' && message.media != null)
+    );
+    final bool hasText = message.text?.isNotEmpty == true;
+    final bool isMediaOnly = hasMedia && !hasText;
+
+    // Tight layout: image/video flush with bubble edges (1px gap), no reply/forward above
+    final bool useTightLayout = hasMedia &&
+        message.forwardedFrom == null &&
+        message.replyTo == null;
+
+    final BorderRadius bubbleRadius = isMediaOnly && useTightLayout
+        ? BorderRadius.circular(_outerRadius)
+        : BorderRadius.only(
+            topLeft: const Radius.circular(_outerRadius),
+            topRight: const Radius.circular(_outerRadius),
+            bottomLeft: isMe
+                ? const Radius.circular(_outerRadius)
+                : const Radius.circular(_tailRadius),
+            bottomRight: isMe
+                ? const Radius.circular(_tailRadius)
+                : const Radius.circular(_outerRadius),
+          );
+
+    // Border radius for the media content itself (slightly inset from bubble)
+    final BorderRadius mediaRadius = isMediaOnly
+        ? BorderRadius.circular(_outerRadius)
+        : const BorderRadius.only(
+            topLeft: Radius.circular(_outerRadius),
+            topRight: Radius.circular(_outerRadius),
+          );
+
+    final EdgeInsets bubblePadding = useTightLayout
+        ? (hasText
+            ? const EdgeInsets.fromLTRB(1, 1, 1, 8)
+            : const EdgeInsets.all(1))
+        : const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
+
+    Widget buildInfo({bool onImage = false}) => MessageBubbleInfo(
+          message: message,
+          isMe: isMe,
+          isFavoritesChat: isFavoritesChat,
+          onImage: onImage,
+        );
+
+    Widget buildTextSection() => Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (message.messageType == 'text')
+                  MessageForward(
+                      forwardedFrom: message.forwardedFrom, isMe: isMe),
+                Text.rich(
+                  TextSpan(
+                    style: context.text.bodyMedium?.copyWith(
+                      color: isMe
+                          ? appColors.messageMeText
+                          : appColors.messageOtherText,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: message.text ?? '',
+                        style: context.text.bodyMedium?.copyWith(
+                          letterSpacing: 0,
+                          height: 1,
+                          color: isMe
+                              ? appColors.messageMeText
+                              : appColors.messageOtherText,
+                        ),
+                      ),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.bottom,
+                        child: Opacity(
+                          opacity: 0,
+                          child: Padding(
+                            padding: Platform.isIOS
+                                ? const EdgeInsets.only(left: 8, top: 2)
+                                : const EdgeInsets.only(left: 5),
+                            child: buildInfo(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            buildInfo(),
+          ],
+        );
+
+    Widget buildContent() {
+      if (message.isUploading) {
+        if (message.localFilePath != null) {
+          return MessageUploadingPreview(message: message);
+        }
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        );
+      }
+
+      if (useTightLayout) {
+        final Widget mediaWidget = message.messageType == 'image'
+            ? MessageImageAttachThumbnail(
+                media: message.media!,
+                messageId: message.id,
+                message: message,
+                isMe: isMe,
+                borderRadius: mediaRadius,
+              )
+            : MessageVideoAttachThumbnail(
+                messageId: message.id,
+                message: message,
+                isMe: isMe,
+                borderRadius: mediaRadius,
+              );
+
+        if (isMediaOnly) {
+          return Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              mediaWidget,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8, right: 8),
+                child: buildInfo(onImage: true),
+              ),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            mediaWidget,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: buildTextSection(),
+            ),
+          ],
+        );
+      }
+
+      return Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (message.messageType == 'image' &&
+              message.media?.thumbnailUrl != null)
+            MessageImageAttachThumbnail(
+              media: message.media!,
+              messageId: message.id,
+              message: message,
+              isMe: isMe,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(_outerRadius),
+                topRight: Radius.circular(_outerRadius),
+              ),
+            ),
+          if (message.messageType == 'video' && message.media != null)
+            MessageVideoAttachThumbnail(
+              messageId: message.id,
+              message: message,
+              isMe: isMe,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(_outerRadius),
+                topRight: Radius.circular(_outerRadius),
+              ),
+            ),
+          if (message.messageType == 'document')
+            MessageDocumentAttach(message: message, isMe: isMe),
+          buildTextSection(),
+        ],
+      );
+    }
 
     final messageBubble = GestureDetector(
       onLongPress: () => MessageActionsOverlay.show(
@@ -55,8 +239,9 @@ class MessageBubble extends StatelessWidget {
         isGroupChat: isGroupChat,
         isFavoritesChat: isFavoritesChat,
       ),
-      onTap: () => {
-        if (message.messageType != 'document' && message.messageType != 'text') {
+      onTap: () {
+        if (message.messageType != 'document' &&
+            message.messageType != 'text') {
           context.push(
             Routes.mediaViewer,
             args: MediaViewerArgs(
@@ -64,7 +249,7 @@ class MessageBubble extends StatelessWidget {
               mediaType: message.messageType,
               thumbnailUrl: message.media!.thumbnailUrl,
             ),
-          )
+          );
         }
       },
       child: Container(
@@ -74,114 +259,22 @@ class MessageBubble extends StatelessWidget {
           top: 4,
           bottom: 4,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        constraints: BoxConstraints(maxWidth: context.mediaSize.width * 0.75),
+        constraints:
+            BoxConstraints(maxWidth: context.mediaSize.width * 0.75),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(12),
-            topRight: const Radius.circular(12),
-            bottomLeft: isMe
-                ? const Radius.circular(12)
-                : const Radius.circular(4),
-            bottomRight: isMe
-                ? const Radius.circular(4)
-                : const Radius.circular(12),
-          ),
+          borderRadius: bubbleRadius,
         ),
+        clipBehavior: Clip.antiAlias,
+        padding: bubblePadding,
         child: Column(
-          crossAxisAlignment: isMe
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (message.replyTo != null)
               MessageReplay(replyTo: message.replyTo!, isMe: isMe),
-            if (message.isUploading && message.localFilePath != null)
-              MessageUploadingPreview(message: message)
-            else
-              if (message.isUploading)
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              else
-                ...[
-                  if (message.messageType == 'image' &&
-                      message.media?.thumbnailUrl != null)
-                    MessageImageAttachThumbnail(
-                      media: message.media!,
-                      messageId: message.id,
-                      message: message,
-                      isMe: isMe,
-                    ),
-                  if (message.messageType == 'video' &&
-                      message.media != null)
-                    MessageVideoAttachThumbnail(
-                      messageId: message.id,
-                      message: message,
-                      isMe: isMe,
-                    ),
-                  if (message.messageType == 'document')
-                    MessageDocumentAttach(message: message, isMe: isMe),
-                ],
-
-            Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (message.messageType == 'text')
-                      MessageForward(forwardedFrom: message.forwardedFrom, isMe: isMe),
-                    Text.rich(
-                      TextSpan(
-                        style: context.text.bodyMedium?.copyWith(
-                          color: isMe
-                              ? appColors.messageMeText
-                              : appColors.messageOtherText,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: message.text ?? '',
-                            style: context.text.bodyMedium?.copyWith(
-                              letterSpacing: 0,
-                              height: 1,
-                              color: isMe
-                                  ? appColors.messageMeText
-                                  : appColors.messageOtherText,
-                            ),
-                          ),
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.bottom,
-                            child: Opacity(
-                              opacity: 0,
-                              child: Padding(
-                                padding: Platform.isIOS
-                                    ? const EdgeInsets.only(left: 8, top: 2,)
-                                    : const EdgeInsets.only(left: 5,),
-                                child: MessageBubbleInfo(
-                                  message: message,
-                                  isMe: isMe,
-                                  isFavoritesChat: isFavoritesChat,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                MessageBubbleInfo(
-                  message: message,
-                  isMe: isMe,
-                  isFavoritesChat: isFavoritesChat,
-                ),
-              ],
-            )
+            buildContent(),
           ],
         ),
       ),

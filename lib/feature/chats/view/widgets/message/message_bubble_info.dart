@@ -7,12 +7,14 @@ class MessageBubbleInfo extends StatelessWidget {
   final Message message;
   final bool isMe;
   final bool isFavoritesChat;
+  final bool onImage;
 
   const MessageBubbleInfo({
     super.key,
     required this.message,
     required this.isMe,
     required this.isFavoritesChat,
+    this.onImage = false,
   });
 
   @override
@@ -21,7 +23,11 @@ class MessageBubbleInfo extends StatelessWidget {
     final Color timeColor;
     Color? checkReadColor;
     Color? checkUnreadColor;
-    if (isMe) {
+    if (onImage) {
+      timeColor = Colors.white;
+      checkReadColor = Colors.white;
+      checkUnreadColor = Colors.white;
+    } else if (isMe) {
       checkReadColor = appColors.messageReadIcon;
       checkUnreadColor = appColors.messageMeTime;
       timeColor = message.read ? checkReadColor : checkUnreadColor;

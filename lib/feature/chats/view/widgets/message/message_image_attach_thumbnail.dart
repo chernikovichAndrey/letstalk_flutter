@@ -5,66 +5,59 @@ import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/data/model/message_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/message/message_forward.dart';
 
 class MessageImageAttachThumbnail extends StatelessWidget {
   final Media media;
   final int messageId;
   final Message message;
   final bool isMe;
+  final BorderRadius borderRadius;
 
   const MessageImageAttachThumbnail({
     super.key,
     required this.media,
     required this.messageId,
     required this.message,
+    required this.borderRadius,
     this.isMe = false,
   });
 
-  static const double _maxWidth = 200;
-  static const double _maxHeight = 300;
+  static const double _maxHeight = 400;
 
-  Size _calculateSize() {
+  double _calculateHeight(double availableWidth) {
     final w = media.width;
     final h = media.height;
     if (w == null || h == null || w == 0 || h == 0) {
-      return const Size(_maxWidth, _maxWidth);
+      return availableWidth;
     }
-    final aspectRatio = w / h;
-    double width = w.toDouble();
-    double height = h.toDouble();
-    if (width > _maxWidth) {
-      width = _maxWidth;
-      height = width / aspectRatio;
-    }
-    if (height > _maxHeight) {
-      height = _maxHeight;
-      width = height * aspectRatio;
-    }
-    return Size(width, height);
+    final height = availableWidth / (w / h);
+    return height.clamp(0, _maxHeight);
   }
 
   @override
   Widget build(BuildContext context) {
     final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
-    final size = _calculateSize();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MessageForward(forwardedFrom: message.forwardedFrom, isMe: isMe),
-        Stack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = _calculateHeight(width);
+        return ClipRRect(
+          borderRadius: borderRadius,
+          child: Stack(
           alignment: Alignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                media.thumbnailUrl!,
-                headers: {'Authorization': 'Bearer $token'},
-                width: size.width,
-                height: size.height,
-                fit: BoxFit.fitHeight,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.image, color: Colors.white70, size: 20),
+            Image.network(
+              media.thumbnailUrl!,
+              headers: {'Authorization': 'Bearer $token'},
+              width: width,
+              height: height,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => SizedBox(
+                width: width,
+                height: height,
+                child: const Center(
+                  child: Icon(Icons.image, color: Colors.white70, size: 32),
+                ),
               ),
             ),
             BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
@@ -72,13 +65,11 @@ class MessageImageAttachThumbnail extends StatelessWidget {
                 if (state.downloadingMessageId == messageId) {
                   final progress = state.downloadProgress ?? 0.0;
                   final progressPercent = (progress * 100).toInt();
-
                   return Container(
-                    width: size.width,
-                    height: size.height,
+                    width: width,
+                    height: height,
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
                       child: Stack(
@@ -111,7 +102,8 @@ class MessageImageAttachThumbnail extends StatelessWidget {
             ),
           ],
         ),
-      ],
+        );
+      },
     );
   }
 }

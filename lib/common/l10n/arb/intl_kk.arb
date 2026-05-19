@@ -133,6 +133,7 @@
       }
     }
   },
+  "editMessage": "Хабарды өңдеу",
   "replyingTo": "{name} жауап беру",
   "@replyingTo": {
     "placeholders": {

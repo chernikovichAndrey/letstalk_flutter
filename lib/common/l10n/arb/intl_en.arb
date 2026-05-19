@@ -175,6 +175,7 @@
       }
     }
   },
+  "editMessage": "Edit message",
   "replyingTo": "Replying to {name}",
   "@replyingTo": {
     "placeholders": {

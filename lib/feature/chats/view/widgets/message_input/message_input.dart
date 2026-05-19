@@ -10,6 +10,7 @@ import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/chats/view/widgets/message_input/edit_preview.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/pure_message_input.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/replay_preview.dart';
 
@@ -143,6 +144,7 @@ class _MessageInputState extends State<MessageInput> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (isEditing) EditPreview(message: state.messageToEdit!),
                   if (hasReply) ReplayPreview(message: state.replyMessage!),
                   if (hasAttachment)
                     _buildAttachmentPreview(context, state.attachedMedia!),

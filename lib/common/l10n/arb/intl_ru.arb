@@ -133,6 +133,7 @@
       }
     }
   },
+  "editMessage": "Редактировать сообщение",
   "replyingTo": "В ответ {name}",
   "@replyingTo": {
     "placeholders": {

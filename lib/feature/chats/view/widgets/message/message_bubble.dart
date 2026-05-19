@@ -114,12 +114,14 @@ class MessageBubble extends StatelessWidget {
                       media: message.media!,
                       messageId: message.id,
                       message: message,
+                      isMe: isMe,
                     ),
                   if (message.messageType == 'video' &&
                       message.media != null)
                     MessageVideoAttachThumbnail(
                       messageId: message.id,
                       message: message,
+                      isMe: isMe,
                     ),
                   if (message.messageType == 'document')
                     MessageDocumentAttach(message: message, isMe: isMe),
@@ -133,7 +135,7 @@ class MessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (message.messageType == 'text')
-                      MessageForward(forwardedFrom: message.forwardedFrom),
+                      MessageForward(forwardedFrom: message.forwardedFrom, isMe: isMe),
                     Text.rich(
                       TextSpan(
                         style: context.text.bodyMedium?.copyWith(

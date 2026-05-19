@@ -11,11 +11,13 @@ import 'package:video_player/video_player.dart';
 class MessageVideoAttachThumbnail extends StatefulWidget {
   final int messageId;
   final Message message;
+  final bool isMe;
 
   const MessageVideoAttachThumbnail({
     super.key,
     required this.messageId,
     required this.message,
+    this.isMe = false,
   });
 
   @override
@@ -148,7 +150,7 @@ class _MessageVideoAttachThumbnailState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MessageForward(forwardedFrom: widget.message.forwardedFrom),
+        MessageForward(forwardedFrom: widget.message.forwardedFrom, isMe: widget.isMe),
         Stack(
           alignment: Alignment.center,
           children: [

@@ -11,12 +11,14 @@ class MessageImageAttachThumbnail extends StatelessWidget {
   final Media media;
   final int messageId;
   final Message message;
+  final bool isMe;
 
   const MessageImageAttachThumbnail({
     super.key,
     required this.media,
     required this.messageId,
     required this.message,
+    this.isMe = false,
   });
 
   static const double _maxWidth = 200;
@@ -49,7 +51,7 @@ class MessageImageAttachThumbnail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MessageForward(forwardedFrom: message.forwardedFrom),
+        MessageForward(forwardedFrom: message.forwardedFrom, isMe: isMe),
         Stack(
           alignment: Alignment.center,
           children: [

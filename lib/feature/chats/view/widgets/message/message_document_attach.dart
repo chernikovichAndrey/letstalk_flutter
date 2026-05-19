@@ -74,7 +74,7 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MessageForward(forwardedFrom: widget.message.forwardedFrom),
+              MessageForward(forwardedFrom: widget.message.forwardedFrom, isMe: widget.isMe),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

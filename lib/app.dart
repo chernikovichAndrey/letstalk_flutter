@@ -76,6 +76,12 @@ class _AppState extends State<App> with HandlePushNotification {
                 ],
                 supportedLocales: S.delegate.supportedLocales,
                 locale: localeState.locale,
+                builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.noScaling,
+                  ),
+                  child: child!,
+                ),
                 scrollBehavior: const MaterialScrollBehavior().copyWith(
                   dragDevices: {
                     PointerDeviceKind.touch,

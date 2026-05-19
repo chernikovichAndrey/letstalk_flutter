@@ -18,13 +18,13 @@ class MessageBubbleInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    Color timeColor;
+    final Color timeColor;
     Color? checkReadColor;
     Color? checkUnreadColor;
     if (isMe) {
-      timeColor = appColors.messageMeTime;
       checkReadColor = appColors.messageReadIcon;
       checkUnreadColor = appColors.messageMeTime;
+      timeColor = message.read ? checkReadColor : checkUnreadColor;
     } else {
       timeColor = appColors.messageOtherTime;
     }
@@ -40,7 +40,7 @@ class MessageBubbleInfo extends StatelessWidget {
           Text(
             context.s.edited,
             style: context.text.labelSmall?.copyWith(
-              color: checkReadColor,
+              color: timeColor,
               fontSize: 9,
             ),
           ),
@@ -49,7 +49,7 @@ class MessageBubbleInfo extends StatelessWidget {
         Text(
           time,
           style: context.text.labelSmall?.copyWith(
-            color: checkReadColor,
+            color: timeColor,
             fontSize: 9,
           ),
         ),

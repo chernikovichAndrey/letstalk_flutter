@@ -219,80 +219,53 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
               );
 
               final isGroupChat = state.chat?.type == 'group';
-              final shouldShowAddBanner =
-                  isGroupChat && state.members.length == 1;
 
               final isDark = Theme.of(context).brightness == Brightness.dark;
 
-              return Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset(
-                      isDark
-                          ? 'assets/images/chat_bg_dark.png'
-                          : 'assets/images/chat_bg_light.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            if (state.messages.isEmpty)
-                              const ChatDetailsEmptyMessages()
-                            else
-                              ListView.builder(
-                                reverse: true,
-                                controller: _scrollController,
-                                padding: EdgeInsets.only(
-                                  top:
-                                      context.padding.top +
-                                      60 +
-                                      (shouldShowAddBanner ? 60 : 0),
-                                  bottom: 8,
-                                ),
-                                itemCount: state.hasReachedMax
-                                    ? state.messages.length
-                                    : state.messages.length + 1,
-                                itemBuilder: (context, index) =>
-                                    _renderItem(context, index, state),
+              return ColoredBox(
+                color: isDark
+                    ? const Color(0xFF191919)
+                    : const Color(0xFFFAFAFA),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          if (state.messages.isEmpty)
+                            const ChatDetailsEmptyMessages()
+                          else
+                            ListView.builder(
+                              reverse: true,
+                              controller: _scrollController,
+                              padding: EdgeInsets.only(
+                                top: context.padding.top + 60,
+                                bottom: 8,
                               ),
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              child: ChatDetailsAppBar(
-                                chatTitle: _getChatTitle(state),
-                                memberId: member?.userId,
-                                avatarUrl: state.chat?.type == 'group'
-                                    ? state.chat?.avatar
-                                    : _getChatMemberInfo(state)?.avatar,
-                                isFavorites: state.chat?.type == 'favorites',
-                              ),
+                              itemCount: state.hasReachedMax
+                                  ? state.messages.length
+                                  : state.messages.length + 1,
+                              itemBuilder: (context, index) =>
+                                  _renderItem(context, index, state),
                             ),
-                            if (shouldShowAddBanner)
-                              Positioned(
-                                top: context.padding.top + 66,
-                                left: 0,
-                                right: 0,
-                                child: AddParticipantsBanner(
-                                  onTap: () {
-                                    context.push(Routes.addContactToGroupSheet);
-                                  },
-                                  onClose: () {
-                                    // TODO: Add logic to hide banner
-                                    showWarningToast(context.s.notWorkingNow);
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: ChatDetailsAppBar(
+                              chatTitle: _getChatTitle(state),
+                              memberId: member?.userId,
+                              avatarUrl: state.chat?.type == 'group'
+                                  ? state.chat?.avatar
+                                  : _getChatMemberInfo(state)?.avatar,
+                              isFavorites: state.chat?.type == 'favorites',
+                            ),
+                          ),
+                        ],
                       ),
-                      MessageInput(controller: _scrollController),
-                    ],
-                  ),
-                ],
+                    ),
+                    MessageInput(controller: _scrollController),
+                  ],
+                ),
               );
             },
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -45,9 +46,8 @@ class ReplayPreview extends StatelessWidget {
               children: [
                 Text(
                   context.s.replyingTo(_memberName()),
-                  style: TextStyle(
+                  style: AppTypography.textXsRegular.copyWith(
                     color: context.appColors.telegramBlue,
-                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

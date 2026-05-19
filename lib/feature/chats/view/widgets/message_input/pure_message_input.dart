@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
 class PureMessageInput extends StatelessWidget {
@@ -21,50 +24,73 @@ class PureMessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final inputTextStyle = AppTypography.textMdRegular;
+
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (leftAction != null) ...[leftAction!, const SizedBox(width: 8)],
         Expanded(
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              TextField(
-                focusNode: inputFocus,
-                controller: controller,
-                style: context.text.bodyMedium?.copyWith(
-                  letterSpacing: 0,
-                  height: 1,
-                ),
-                minLines: 1,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText: hintText ?? context.s.messageInputHint,
-                  hintStyle: context.text.bodyMedium?.copyWith(
-                    letterSpacing: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: appColors.inputSecondaryFill,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            padding: const EdgeInsets.only(left: 20, right: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: TextField(
+                    focusNode: inputFocus,
+                    controller: controller,
+                    style: inputTextStyle.copyWith(
+                      color: appColors.glassForeground,
+                    ),
+                    minLines: 1,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hintText: hintText ?? context.s.messageInputHint,
+                      hintStyle: inputTextStyle.copyWith(
+                        color: appColors.hintText,
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                   ),
-                  filled: true,
-                  fillColor: context.appColors.inputSecondaryFill,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  isDense: true,
-                  contentPadding: EdgeInsets.only(
-                    left: 16,
-                    right: showSendButton ? 44 : 16,
-                    top: 14,
-                    bottom: 14,
-                  ),
                 ),
-              ),
-              if (showSendButton)
-                IconButton(
-                  onPressed: onSendMessage,
-                  icon: const Icon(Icons.send),
-                  color: context.appColors.telegramBlue,
-                ),
-            ],
+                if (showSendButton) ...[
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: onSendMessage,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: AppColors.brand,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/icons/send.svg',
+                          width: 20,
+                          height: 20,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
       ],

@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:lets_talk/feature/chats/data/model/media_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
 import 'package:lets_talk/feature/chats/view/widgets/message_input/pure_message_input.dart';
@@ -123,13 +124,18 @@ class _MessageInputState extends State<MessageInput> {
         final hasReply = state.replyMessage != null;
         final canSend = _showSendButton || hasAttachment;
 
-        return ClipRRect(
+        return ClipRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            filter: ImageFilter.blur(sigmaX: 12.5, sigmaY: 12.5),
             child: Container(
-              color: appColors.glassBackground,
+              decoration: BoxDecoration(
+                color: appColors.glassBackground,
+                border: Border(
+                  top: BorderSide(color: appColors.divider, width: 1),
+                ),
+              ),
               padding: EdgeInsets.only(
-                left: 8,
+                left: 16,
                 right: 16,
                 top: 8,
                 bottom: context.padding.bottom + 8,
@@ -148,10 +154,8 @@ class _MessageInputState extends State<MessageInput> {
                         : context.s.messageInputHint,
                     showSendButton: canSend,
                     onSendMessage: () => _onSendMessage(state, isEditing),
-                    leftAction: GlassButton(
-                      size: 45,
-                      iconSize: 30,
-                      icon: isEditing ? Icons.close : Icons.attach_file,
+                    leftAction: _AttachButton(
+                      isEditing: isEditing,
                       onTap: () async {
                         if (isEditing) {
                           context.read<ChatDetailsBloc>().add(
@@ -181,7 +185,6 @@ class _MessageInputState extends State<MessageInput> {
     );
   }
 
-  //TODO: remove in future when parrallel upload will be added
   Widget _buildAttachmentPreview(BuildContext context, Media media) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -195,7 +198,7 @@ class _MessageInputState extends State<MessageInput> {
           Expanded(
             child: Text(
               media.filename,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+              style: AppTypography.textSmRegular.copyWith(color: Colors.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -211,6 +214,42 @@ class _MessageInputState extends State<MessageInput> {
             constraints: const BoxConstraints(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AttachButton extends StatelessWidget {
+  final bool isEditing;
+  final VoidCallback onTap;
+
+  const _AttachButton({required this.isEditing, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: appColors.inputSecondaryFill,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: isEditing
+              ? Icon(Icons.close, size: 22, color: appColors.glassForeground)
+              : SvgPicture.asset(
+                  'assets/icons/paperclip.svg',
+                  width: 22,
+                  height: 22,
+                  colorFilter: ColorFilter.mode(
+                    appColors.glassForeground,
+                    BlendMode.srcIn,
+                  ),
+                ),
+        ),
       ),
     );
   }

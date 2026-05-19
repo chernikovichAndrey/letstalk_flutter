@@ -20,7 +20,7 @@ enum Routes {
   callContacts(path: _Paths.callContacts, type: RouteType.sheet),
   chatContacts(path: _Paths.chatContacts, type: RouteType.sheet),
   callDetails(path: _Paths.callDetails, type: RouteType.sheet),
-  forwardMessage(path: _Paths.forwardMessage, type: RouteType.bottomSheet),
+  forwardMessage(path: _Paths.forwardMessage, type: RouteType.sheet),
   fullScreenMedia(path: _Paths.fullScreenMedia, type: RouteType.sheet),
   mediaViewer(path: _Paths.mediaViewer, type: RouteType.bottomSheet),
   chatAttachSheet(path: _Paths.chatAttachSheet, type: RouteType.bottomSheet),

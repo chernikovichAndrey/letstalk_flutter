@@ -43,9 +43,14 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
   }
 
   @override
+  void activate() {
+    super.activate();
+    getIt<LocalNotificationService>().setCurrentChatId(widget.chatId);
+  }
+
+  @override
   void deactivate() {
     getIt<LocalNotificationService>().setCurrentChatId(null);
-    context.read<ChatDetailsBloc>().add(RefreshStateEvent());
     super.deactivate();
   }
 
@@ -58,6 +63,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
 
   @override
   void dispose() {
+    getIt<ChatDetailsBloc>().add(RefreshStateEvent());
     _scrollController.dispose();
     _videoCache.disposeAll();
     super.dispose();

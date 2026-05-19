@@ -17,6 +17,7 @@ class RemoveChatBottomSheet {
     showModalBottomSheet(
       context: context,
       backgroundColor: context.appColors.secondaryBackground,
+      useSafeArea: true,
       builder: (context) {
         final state = getIt<ChatsBloc>().state as ChatsLoaded;
         final selectedChats = filterChatsByIds(state.chats, state.selectedChatIds);
@@ -24,7 +25,12 @@ class RemoveChatBottomSheet {
 
         return Container(
           color: Colors.transparent,
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.only(
+            left: 16.0,
+            right: 16.0,
+            top: 16.0,
+            bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

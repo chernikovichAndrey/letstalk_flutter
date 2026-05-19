@@ -33,7 +33,12 @@ class WebSocketService with WidgetsBindingObserver {
 
   Timer? _reconnectTimer;
   int _reconnectAttempts = 0;
-  static const int _maxReconnectDelaySec = 30;
+  static const List<Duration> _fastReconnectDelays = [
+    Duration(milliseconds: 200),
+    Duration(milliseconds: 500),
+    Duration(milliseconds: 800),
+  ];
+  static const Duration _maxReconnectDelay = Duration(seconds: 8);
 
   final List<dynamic> _pendingMessages = [];
   static const int _maxPendingMessages = 100;
@@ -186,18 +191,19 @@ class WebSocketService with WidgetsBindingObserver {
     if (_intentionalDisconnect) return;
     if (_reconnectTimer?.isActive ?? false) return;
 
-    final delaySec = min(
-      pow(2, _reconnectAttempts).toInt(),
-      _maxReconnectDelaySec,
-    );
+    final Duration delay;
+    if (_reconnectAttempts < _fastReconnectDelays.length) {
+      delay = _fastReconnectDelays[_reconnectAttempts];
+    } else {
+      final expMs = pow(2, _reconnectAttempts - _fastReconnectDelays.length + 1).toInt() * 1000;
+      delay = Duration(milliseconds: min(expMs, _maxReconnectDelay.inMilliseconds));
+    }
     _reconnectAttempts++;
 
     _logger.i(
-      'Scheduling reconnect in ${delaySec}s (attempt $_reconnectAttempts)',
+      'Scheduling reconnect in ${delay.inMilliseconds}ms (attempt $_reconnectAttempts)',
     );
-    _reconnectTimer = Timer(Duration(seconds: delaySec), () {
-      connect();
-    });
+    _reconnectTimer = Timer(delay, connect);
   }
 
   Future<void> disconnect({

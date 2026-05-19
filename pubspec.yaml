@@ -66,6 +66,7 @@ dev_dependencies:
   intl_utils: ^2.8.12
   build_runner: ^2.10.5
   injectable_generator: ^2.11.1
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true

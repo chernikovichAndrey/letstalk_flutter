@@ -64,7 +64,7 @@
     <uses-permission
         android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS"/>
     <application
-        android:label="LetsTalk"
+        android:label="Ближе"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"

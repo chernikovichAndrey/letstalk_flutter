@@ -161,6 +161,7 @@ class ChatListItem extends StatelessWidget {
                     ? chat.title
                     : _getMemberName(context: context),
                 radius: _avatarSize / 2,
+                isSavedMessages: chat.type == 'favorites',
               ),
               const SizedBox(width: _hSpacing),
               Expanded(

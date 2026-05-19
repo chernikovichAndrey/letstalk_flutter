@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/utils/call_details_string_formatter.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
@@ -15,28 +16,27 @@ class MessageReplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final token = (context.read<AuthBloc>().state as AuthAuthenticated).token;
-
-    final appColors = context.appColors;
-    Color textColor = isMe
-        ? appColors.messageMeText
-        : appColors.messageOtherText;
+    final textColor = isMe
+        ? context.appColors.messageMeText
+        : context.appColors.messageOtherText;
 
     return BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
       builder: (context, state) {
         return IntrinsicWidth(
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isMe
-                  ? Colors.black.withValues(alpha: 0.1)
-                  : Colors.white.withValues(alpha: 0.1),
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-              border: Border(left: BorderSide(color: Colors.white, width: 4)),
-            ),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Container(
+                  width: 3,
+                  decoration: BoxDecoration(
+                    color: AppColors.brand,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 if (replyTo.media != null &&
                     replyTo.media?.thumbnailUrl != null) ...[
                   Image.network(
@@ -51,7 +51,7 @@ class MessageReplay extends StatelessWidget {
                       size: 20,
                     ),
                   ),
-                  SizedBox(width: 6.0),
+                  const SizedBox(width: 6),
                 ],
                 Flexible(
                   fit: FlexFit.loose,
@@ -62,19 +62,19 @@ class MessageReplay extends StatelessWidget {
                         replyTo.fromName?.firstOrNull?.fullName ??
                             replyTo.fromName?.firstOrNull?.firstName ??
                             '',
-                        style: context.text.labelMedium?.copyWith(
-                          color: textColor,
-                          fontWeight: FontWeight.bold,
+                        style: context.text.bodyMedium?.copyWith(
+                          color: AppColors.brand,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
                         (replyTo.media != null && replyTo.textPreview.isEmpty)
                             ? getMessageTypeText(context, replyTo.media!.type)
                             : replyTo.textPreview,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: context.text.bodySmall?.copyWith(
+                        style: context.text.bodyMedium?.copyWith(
                           color: textColor,
                         ),
                       ),

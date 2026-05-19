@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/service/custom_cache_manager.dart';
+import 'package:lets_talk/common/widget/saved_messages_avatar.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 
@@ -12,6 +14,7 @@ class CAvatar extends StatelessWidget {
   final double radius;
   final VoidCallback? onTap;
   final bool isLoading;
+  final bool isSavedMessages;
 
   const CAvatar({
     super.key,
@@ -20,6 +23,7 @@ class CAvatar extends StatelessWidget {
     this.radius = 24,
     this.onTap,
     this.isLoading = false,
+    this.isSavedMessages = false,
   });
 
   String _getInitials(String? name) {
@@ -34,28 +38,17 @@ class CAvatar extends StatelessWidget {
     return name[0].toUpperCase();
   }
 
-  Color _getBackgroundColor(String? name) {
-    if (name == null || name.isEmpty) return Colors.blue;
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.red,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.pink,
-    ];
-    return colors[name.hashCode.abs() % colors.length];
-  }
-
   String _getAnimalAvatar() {
     return 'assets/images/animals/panda.svg';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isSavedMessages) {
+      return SavedMessagesAvatar(radius: radius);
+    }
+
     final initials = _getInitials(name);
-    final backgroundColor = _getBackgroundColor(name);
     final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
     final hasName = name != null && name!.isNotEmpty && name![0] != '+';
 
@@ -87,13 +80,13 @@ class CAvatar extends StatelessWidget {
         ),
         errorWidget: (context, url, error) => CircleAvatar(
           radius: radius,
-          backgroundColor: backgroundColor,
+          backgroundColor: AppColors.orangeLight,
           child: Text(
             initials,
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.brand,
               fontSize: radius * 0.8,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
@@ -101,13 +94,13 @@ class CAvatar extends StatelessWidget {
     } else if (hasName) {
       avatar = CircleAvatar(
         radius: radius,
-        backgroundColor: backgroundColor,
+        backgroundColor: AppColors.orangeLight,
         child: Text(
           initials,
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.brand,
             fontSize: radius * 0.8,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
       );

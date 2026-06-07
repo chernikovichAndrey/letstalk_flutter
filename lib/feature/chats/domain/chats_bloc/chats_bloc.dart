@@ -343,9 +343,10 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     if (event.type == RemoveType.all) {
       final chat = currentState.chats.firstWhere((chat) => chat.id == event.chatId);
 
-      if (chat.type == 'group' &&
-          chat.role == 'admin' &&
-          chat.memberInfo != null) {
+      final canRemoveOthers = chat.type == 'private' ||
+          (chat.type == 'group' && chat.role == 'admin');
+
+      if (canRemoveOthers && chat.memberInfo != null) {
         await Future.wait(
           chat.memberInfo!
               .where((member) => member.id != _currentUser!.id)

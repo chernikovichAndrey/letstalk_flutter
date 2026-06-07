@@ -6,6 +6,14 @@ import '../../feature/contacts/data/model/contact_model.dart';
 class PhoneContactsService {
   PhoneContactsService();
 
+  void addListener(void Function() listener) {
+    fc.FlutterContacts.addListener(listener);
+  }
+
+  void removeListener(void Function() listener) {
+    fc.FlutterContacts.removeListener(listener);
+  }
+
   Future<bool> requestPermission() async {
     return await fc.FlutterContacts.requestPermission();
   }

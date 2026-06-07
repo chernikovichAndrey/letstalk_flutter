@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/phone_contacts_service.dart';
@@ -11,7 +12,7 @@ part 'contacts_event.dart';
 part 'contacts_state.dart';
 
 @singleton
-class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
+class ContactsBloc extends Bloc<ContactsEvent, ContactsState> with WidgetsBindingObserver {
   final ContactsRepository _contactsRepository;
   final ChatsRepository _chatsRepository;
   final PhoneContactsService _phoneContactsService;
@@ -30,6 +31,27 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     on<ContactsDeleteSelected>(_onDeleteSelected);
     on<ContactsSyncPhoneContacts>(_onSyncPhoneContacts);
     on<ContactsCreateChat>(_onCreateChat);
+
+    _phoneContactsService.addListener(_onPhoneContactsChanged);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _onPhoneContactsChanged() {
+    add(ContactsSyncPhoneContacts());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      add(ContactsSyncPhoneContacts());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _phoneContactsService.removeListener(_onPhoneContactsChanged);
+    WidgetsBinding.instance.removeObserver(this);
+    return super.close();
   }
 
   Future<void> _onLoad(ContactsLoad event, Emitter<ContactsState> emit) async {
@@ -73,6 +95,11 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     }
 
     try {
+      final phoneContacts = await _phoneContactsService.getPhoneContacts();
+      if (phoneContacts.isNotEmpty) {
+        await _contactsRepository.uploadPhoneContacts(phoneContacts);
+      }
+
       final contacts = await _contactsRepository.getContacts();
       if (currentQuery.isNotEmpty) {
         final query = currentQuery.toLowerCase();

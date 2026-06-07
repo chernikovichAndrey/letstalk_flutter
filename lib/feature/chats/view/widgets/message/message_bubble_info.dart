@@ -39,7 +39,10 @@ class MessageBubbleInfo extends StatelessWidget {
     final String time = createdAt != null
         ? timeFormat.format(createdAt.toLocal())
         : '';
-    return Row(
+    final List<Shadow>? textShadows = onImage
+        ? const [Shadow(color: Colors.black54, blurRadius: 2)]
+        : null;
+    final row = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (message.isEdited) ...[
@@ -48,6 +51,7 @@ class MessageBubbleInfo extends StatelessWidget {
             style: context.text.labelSmall?.copyWith(
               color: timeColor,
               fontSize: 9,
+              shadows: textShadows,
             ),
           ),
           const SizedBox(width: 4),
@@ -57,6 +61,7 @@ class MessageBubbleInfo extends StatelessWidget {
           style: context.text.labelSmall?.copyWith(
             color: timeColor,
             fontSize: 9,
+            shadows: textShadows,
           ),
         ),
         if (isMe && !isFavoritesChat) ...[
@@ -65,9 +70,19 @@ class MessageBubbleInfo extends StatelessWidget {
             message.read ? Icons.done_all : Icons.done,
             size: 14,
             color: message.read ? checkReadColor : checkUnreadColor,
+            shadows: textShadows,
           ),
         ],
       ],
+    );
+    if (!onImage) return row;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: row,
     );
   }
 }

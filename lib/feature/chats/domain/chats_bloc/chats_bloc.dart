@@ -24,6 +24,8 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   StreamSubscription? _wsSubscription;
   StreamSubscription? _profileSubscription;
   UserModel? _currentUser;
+  final Map<String, Timer> _typingTimers = {};
+  static const Duration _typingTimeout = Duration(seconds: 6);
 
   late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
     'unread_count': _handleUnreadCount,
@@ -114,6 +116,13 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         .unreadedMessages
         .firstWhere((unreadMessages) => unreadMessages.chatId == msg.chatId)
         .unread;
+    add(
+      ChatTypingUpdated(
+        chatId: msg.chatId,
+        userId: msg.fromUserId,
+        isTyping: false,
+      ),
+    );
     add(
       ChatUpdated(
         chatId: msg.chatId,
@@ -213,6 +222,20 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     ChatTypingUpdated event,
     Emitter<ChatsState> emit,
   ) {
+    final timerKey = '${event.chatId}:${event.userId}';
+    if (event.isTyping) {
+      _typingTimers[timerKey]?.cancel();
+      _typingTimers[timerKey] = Timer(_typingTimeout, () {
+        add(ChatTypingUpdated(
+          chatId: event.chatId,
+          userId: event.userId,
+          isTyping: false,
+        ));
+      });
+    } else {
+      _typingTimers.remove(timerKey)?.cancel();
+    }
+
     final currentState = state;
     if (currentState is ChatsLoaded) {
       final newTypingUsers = Map<int, Set<int>>.from(currentState.typingUsers);
@@ -400,6 +423,10 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
 
   @override
   Future<void> close() {
+    for (final timer in _typingTimers.values) {
+      timer.cancel();
+    }
+    _typingTimers.clear();
     _wsSubscription?.cancel();
     _profileSubscription?.cancel();
     return super.close();

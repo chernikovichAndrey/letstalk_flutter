@@ -30,7 +30,9 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
   final WebSocketService _wsService;
   final MessagesCacheService _cacheService;
   StreamSubscription? _wsSubscription;
+  final Map<int, Timer> _typingTimers = {};
   static const int _limit = 20;
+  static const Duration _typingTimeout = Duration(seconds: 6);
 
   late final Map<String, Function(Map<String, dynamic>)> _messageHandlers = {
     'new_message': _handleNewMessage,
@@ -493,22 +495,28 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     ChatDetailsUserTyping event,
     Emitter<ChatDetailsState> emit,
   ) async {
+    final typingIds = Set<int>.from(state.typingUserIds);
     if (event.isTyping) {
-      emit(
-        state.copyWith(
-          typingUserIds: {event.userId},
-        )
-      );
+      typingIds.add(event.userId);
+      _restartTypingTimeout(event.userId);
     } else {
-      final typingIds = state.typingUserIds;
       typingIds.remove(event.userId);
-      emit(
-        state.copyWith(
-          typingUserIds: typingIds,
-        )
-      );
+      _typingTimers.remove(event.userId)?.cancel();
     }
+    emit(state.copyWith(typingUserIds: typingIds));
+  }
 
+  void _restartTypingTimeout(int userId) {
+    _typingTimers[userId]?.cancel();
+    _typingTimers[userId] = Timer(_typingTimeout, () {
+      add(ChatDetailsUserTyping(userId, false));
+    });
+  }
+
+  Set<int> _clearTyping(int userId) {
+    if (!state.typingUserIds.contains(userId)) return state.typingUserIds;
+    _typingTimers.remove(userId)?.cancel();
+    return Set<int>.from(state.typingUserIds)..remove(userId);
   }
 
   void _onErrorReceived(
@@ -528,6 +536,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
     Emitter<ChatDetailsState> emit,
   ) {
     if (state.chat?.id == event.message.chatId) {
+      final typingUserIds = _clearTyping(event.message.fromUserId);
       if (event.tempMessageId != null) {
         // Replace temp message with real one
         final messages = state.messages.map((m) {
@@ -541,14 +550,14 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           event.message,
         );
         
-        emit(state.copyWith(messages: messages));
+        emit(state.copyWith(messages: messages, typingUserIds: typingUserIds));
       } else {
         final messages = [event.message, ...state.messages];
         
         // Update cache
         _cacheService.addMessage(event.message.chatId, event.message);
         
-        emit(state.copyWith(messages: messages));
+        emit(state.copyWith(messages: messages, typingUserIds: typingUserIds));
       }
     }
   }
@@ -570,6 +579,9 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         // New flow: create temp message and upload in background
         tempMessageId = 'temp_${DateTime.now().millisecondsSinceEpoch}_$chatId';
         final fileType = _getFileType(event.file!.path);
+
+        // Notify peers that media is being sent (shown while uploading)
+        await _chatDetailsRepository.sendTyping(chatId, true);
         
         // Create temporary message
         final tempMessage = Message(
@@ -646,6 +658,9 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         );
       } else {
         // Old flow for text or already uploaded media
+        if (hasAttachedMedia) {
+          await _chatDetailsRepository.sendTyping(chatId, true);
+        }
         await _chatDetailsRepository.sendMessage(
           chatId,
           event.text,
@@ -936,6 +951,10 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
 
   @override
   Future<void> close() {
+    for (final timer in _typingTimers.values) {
+      timer.cancel();
+    }
+    _typingTimers.clear();
     _wsSubscription?.cancel();
     return super.close();
   }

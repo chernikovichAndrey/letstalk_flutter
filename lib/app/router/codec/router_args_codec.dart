@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/arg/forward_message_args.dart';
-import 'package:lets_talk/app/router/arg/member_info_args.dart';
-import 'package:lets_talk/app/router/arg/profile_edit_photo_args.dart';
 import 'package:lets_talk/app/router/arg/media_perview_args.dart';
 import 'package:lets_talk/app/router/arg/media_viewer_args.dart';
+import 'package:lets_talk/app/router/arg/member_info_args.dart';
+import 'package:lets_talk/app/router/arg/profile_edit_photo_args.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 
 class RouterArgsCodec extends Codec<Object?, Object?> {
@@ -26,10 +27,7 @@ class _RouterArgsEncoder extends Converter<Object?, Object?> {
     if (input == null) return null;
 
     if (input is ChatDetailsArgs) {
-      return {
-        '_type': 'ChatDetailsArgs',
-        'chatId': input.chatId,
-      };
+      return {'_type': 'ChatDetailsArgs', 'chatId': input.chatId};
     }
 
     if (input is MemberInfoArgs) {
@@ -55,17 +53,11 @@ class _RouterArgsEncoder extends Converter<Object?, Object?> {
     }
 
     if (input is ProfileEditPhotoArgs) {
-      return {
-        '_type': 'ProfileEditPhotoArgs',
-        'filePath': input.file.path,
-      };
+      return {'_type': 'ProfileEditPhotoArgs', 'filePath': input.file.path};
     }
 
     if (input is MediaPreviewArgs) {
-      return {
-        '_type': 'MediaPreviewArgs',
-        'filePath': input.file.path
-      };
+      return {'_type': 'MediaPreviewArgs', 'filePath': input.file.path};
     }
 
     if (input is MediaViewerArgs) {
@@ -94,16 +86,12 @@ class _RouterArgsDecoder extends Converter<Object?, Object?> {
 
     switch (type) {
       case 'ChatDetailsArgs':
-        return ChatDetailsArgs(
-          chatId: input['chatId'] as int,
-        );
+        return ChatDetailsArgs(chatId: input['chatId'] as int);
 
       case 'MemberInfoArgs':
         final memberInfoMap = input['memberInfo'] as Map<String, dynamic>?;
         if (memberInfoMap == null) return null;
-        return MemberInfoArgs(
-          memberInfo: MemberInfo.fromJson(memberInfoMap),
-        );
+        return MemberInfoArgs(memberInfo: MemberInfo.fromJson(memberInfoMap));
 
       case 'ForwardMessageArgs':
         return ForwardMessageArgs(
@@ -114,16 +102,12 @@ class _RouterArgsDecoder extends Converter<Object?, Object?> {
       case 'ProfileEditPhotoArgs':
         final filePath = input['filePath'] as String?;
         if (filePath == null) return null;
-        return ProfileEditPhotoArgs(
-          file: File(filePath),
-        );
+        return ProfileEditPhotoArgs(file: File(filePath));
 
       case 'MediaPreviewArgs':
         final filePath = input['filePath'] as String?;
         if (filePath == null) return null;
-        return MediaPreviewArgs(
-          file: File(filePath),
-        );
+        return MediaPreviewArgs(file: File(filePath));
 
       case 'MediaViewerArgs':
         return MediaViewerArgs(

@@ -27,8 +27,15 @@ class MessageActionsOverlay extends StatefulWidget {
     this.isGroupChat = false,
   });
 
-  static void show(BuildContext context, Message message, bool isMe, {bool isGroupChat = false, bool isFavoritesChat = false}) {
-    final videoProvider = context.dependOnInheritedWidgetOfExactType<VideoControllerCacheProvider>();
+  static void show(
+    BuildContext context,
+    Message message,
+    bool isMe, {
+    bool isGroupChat = false,
+    bool isFavoritesChat = false,
+  }) {
+    final videoProvider = context
+        .dependOnInheritedWidgetOfExactType<VideoControllerCacheProvider>();
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
@@ -81,9 +88,10 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
     });
 
     setState(() {
-      _isCopyVisible = widget.message.text != null && widget.message.text!.isNotEmpty;
-      _isDownloadVisible = widget.message.messageType != 'text' &&
-          widget.message.media != null;
+      _isCopyVisible =
+          widget.message.text != null && widget.message.text!.isNotEmpty;
+      _isDownloadVisible =
+          widget.message.messageType != 'text' && widget.message.media != null;
     });
   }
 
@@ -107,14 +115,9 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
   }
 
   Future<void> _onCopyMessage() async {
-    await Clipboard.setData(
-      ClipboardData(
-        text: widget.message.text ?? '',
-      ),
-    );
-    if (context.mounted) {
-      context.pop();
-    }
+    await Clipboard.setData(ClipboardData(text: widget.message.text ?? ''));
+    if (!mounted) return;
+    context.pop();
   }
 
   void _onEditMessage() {
@@ -246,7 +249,9 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                               isMe: widget.isMe,
                               onCopy: _isCopyVisible ? _onCopyMessage : null,
                               onReply: _onReply,
-                              onEdit: _canEdit(widget.message) ? _onEditMessage : null,
+                              onEdit: _canEdit(widget.message)
+                                  ? _onEditMessage
+                                  : null,
                               onForward: _onForwardMessage,
                               onDelete: _onDeleteMessage,
                               onDownload: _isDownloadVisible

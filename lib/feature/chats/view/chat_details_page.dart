@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:lets_talk/app/router/routes.dart';
-import 'package:lets_talk/common/extension/build_context_router_ext.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/extension/list_ext.dart';
 import 'package:lets_talk/common/service/local_notification_service.dart';
@@ -11,7 +9,6 @@ import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/chats/data/model/chat_model.dart';
 import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
-import 'package:lets_talk/feature/chats/view/widgets/chat_details/add_participants_banner.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_app_bar.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_date_seporator.dart';
 import 'package:lets_talk/feature/chats/view/widgets/chat_details/chat_details_empty_messages.dart';
@@ -175,10 +172,12 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
     if (chat.memberInfo == null) return '';
     final member = _getChatMemberInfo(state);
     if (member == null) return '';
-    if (member.fullName != null && member.fullName!.isNotEmpty)
+    if (member.fullName != null && member.fullName!.isNotEmpty) {
       return member.fullName!;
-    if (member.firstName != null && member.firstName!.isNotEmpty)
+    }
+    if (member.firstName != null && member.firstName!.isNotEmpty) {
       return member.firstName!;
+    }
     if (member.phone != null && member.phone!.isNotEmpty) return member.phone!;
     return '';
   }
@@ -223,8 +222,6 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
               final member = state.members.firstWhereOrNull(
                 (member) => member.userId != state.currentUser?.id,
               );
-
-              final isGroupChat = state.chat?.type == 'group';
 
               final isDark = Theme.of(context).brightness == Brightness.dark;
 

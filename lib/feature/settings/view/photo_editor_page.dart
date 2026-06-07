@@ -13,7 +13,6 @@ import 'package:lets_talk/feature/settings/view/widgets/photo_edit/edit_photo_im
 import 'package:path_provider/path_provider.dart';
 
 class PhotoEditorPage extends StatefulWidget {
-
   const PhotoEditorPage({super.key});
 
   @override
@@ -25,22 +24,21 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   img.Image? _originalImage;
   bool _isLoading = true;
   bool _isSaving = false;
-  
+
   int _rotation = 0; // 0, 90, 180, 270
   bool _flipHorizontal = false;
-  bool _flipVertical = false;
-  
+
   final ValueNotifier<Offset> _imageOffsetNotifier = ValueNotifier(Offset.zero);
   final ValueNotifier<double> _scaleNotifier = ValueNotifier(1.0);
   double _baseScale = 1.0;
-  
+
   bool _isAdjusting = false;
   final ValueNotifier<double> _brightnessNotifier = ValueNotifier(1.0);
   final ValueNotifier<double> _contrastNotifier = ValueNotifier(1.0);
   final ValueNotifier<double> _saturationNotifier = ValueNotifier(1.0);
-  
+
   Uint8List? _cachedBaseImageBytes;
-  
+
   @override
   void dispose() {
     _imageOffsetNotifier.dispose();
@@ -61,11 +59,14 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     final imageFile = context.getArgsOrNull<ProfileEditPhotoArgs>()!.file;
     final bytes = await imageFile.readAsBytes();
     _originalImage = img.decodeImage(bytes);
-    _image = img.copyResize(_originalImage!,
+    _image = img.copyResize(
+      _originalImage!,
       width: _originalImage!.width,
       height: _originalImage!.height,
     );
-    _cachedBaseImageBytes = Uint8List.fromList(img.encodeJpg(_image!, quality: 90));
+    _cachedBaseImageBytes = Uint8List.fromList(
+      img.encodeJpg(_image!, quality: 90),
+    );
     setState(() => _isLoading = false);
   }
 
@@ -75,53 +76,70 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     final brightness = _brightnessNotifier.value;
     final contrast = _contrastNotifier.value;
     final saturation = _saturationNotifier.value;
-    
-    var editedImage = img.copyResize(_originalImage!, width: _originalImage!.width);
-    
+
+    var editedImage = img.copyResize(
+      _originalImage!,
+      width: _originalImage!.width,
+    );
+
     if (_rotation == 90) editedImage = img.copyRotate(editedImage, angle: 90);
     if (_rotation == 180) editedImage = img.copyRotate(editedImage, angle: 180);
     if (_rotation == 270) editedImage = img.copyRotate(editedImage, angle: 270);
-    
+
     if (_flipHorizontal) editedImage = img.flipHorizontal(editedImage);
-    if (_flipVertical) editedImage = img.flipVertical(editedImage);
-    
     if (brightness != 1.0) {
-      editedImage = img.adjustColor(editedImage, brightness: (brightness - 1.0) * 128);
+      editedImage = img.adjustColor(
+        editedImage,
+        brightness: (brightness - 1.0) * 128,
+      );
     }
     if (contrast != 1.0) {
-      editedImage = img.adjustColor(editedImage, contrast: (contrast - 1.0) * 128);
+      editedImage = img.adjustColor(
+        editedImage,
+        contrast: (contrast - 1.0) * 128,
+      );
     }
     if (saturation != 1.0) {
-      editedImage = img.adjustColor(editedImage, saturation: (saturation - 1.0) * 128);
+      editedImage = img.adjustColor(
+        editedImage,
+        saturation: (saturation - 1.0) * 128,
+      );
     }
-    
+
     final screenSize = MediaQuery.of(context).size;
     final appBarHeight = kToolbarHeight + MediaQuery.of(context).padding.top;
     final bottomBarHeight = 140.0; // approximate height of bottom bar
     final previewHeight = screenSize.height - appBarHeight - bottomBarHeight;
     final previewWidth = screenSize.width;
-    
-    final circleRadiusOnScreen = ((previewWidth < previewHeight ? previewWidth : previewHeight) / 2.0) * 0.8;
-    
+
+    final circleRadiusOnScreen =
+        ((previewWidth < previewHeight ? previewWidth : previewHeight) / 2.0) *
+        0.8;
+
     final previewImageAspect = _image!.width / _image!.height;
     final screenAspect = previewWidth / previewHeight;
     final boxFitScale = screenAspect > previewImageAspect
-        ? previewHeight / _image!.height  // fit by height (image is taller)
-        : previewWidth / _image!.width;   // fit by width (image is wider)
-    
+        ? previewHeight /
+              _image!
+                  .height // fit by height (image is taller)
+        : previewWidth / _image!.width; // fit by width (image is wider)
+
     final scaleFactor = editedImage.width / _image!.width;
-    
-    final radius = (circleRadiusOnScreen / boxFitScale / scale * scaleFactor).round();
-    
-    final offsetInOriginalX = (imageOffset.dx / boxFitScale / scale) * scaleFactor;
-    final offsetInOriginalY = (imageOffset.dy / boxFitScale / scale) * scaleFactor;
-    
+
+    final radius = (circleRadiusOnScreen / boxFitScale / scale * scaleFactor)
+        .round();
+
+    final offsetInOriginalX =
+        (imageOffset.dx / boxFitScale / scale) * scaleFactor;
+    final offsetInOriginalY =
+        (imageOffset.dy / boxFitScale / scale) * scaleFactor;
+
     final centerX = (editedImage.width / 2.0 - offsetInOriginalX).round();
     final centerY = (editedImage.height / 2.0 - offsetInOriginalY).round();
-    
+
     final diameter = radius * 2;
     final circularImage = img.Image(width: diameter, height: diameter);
-    
+
     for (var y = 0; y < diameter; y++) {
       for (var x = 0; x < diameter; x++) {
         final dx = x - radius;
@@ -129,18 +147,22 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         if (dx * dx + dy * dy <= radius * radius) {
           final srcX = centerX - radius + x;
           final srcY = centerY - radius + y;
-          if (srcX >= 0 && srcX < editedImage.width && 
-              srcY >= 0 && srcY < editedImage.height) {
+          if (srcX >= 0 &&
+              srcX < editedImage.width &&
+              srcY >= 0 &&
+              srcY < editedImage.height) {
             circularImage.setPixel(x, y, editedImage.getPixel(srcX, srcY));
           }
         }
       }
     }
-    
+
     final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.png');
+    final file = File(
+      '${tempDir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}.png',
+    );
     await file.writeAsBytes(img.encodePng(circularImage));
-    
+
     return file;
   }
 
@@ -195,7 +217,8 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isImageNotReady = _isLoading || _image == null || _cachedBaseImageBytes == null;
+    final isImageNotReady =
+        _isLoading || _image == null || _cachedBaseImageBytes == null;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -206,24 +229,24 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                 child: isImageNotReady
                     ? const Center(child: CircularProgressIndicator())
                     : EditPhotoImagePreview(
-                  rotationRadians: _rotation * 3.14159 / 180,
-                  baseScale: _baseScale,
-                  cachedBaseImageBytes: _cachedBaseImageBytes,
-                  scaleNotifier: _scaleNotifier,
-                  imageOffsetNotifier: _imageOffsetNotifier,
-                  brightnessNotifier: _brightnessNotifier,
-                  contrastNotifier: _contrastNotifier,
-                  saturationNotifier: _saturationNotifier,
-                  flipHorizontal: _flipHorizontal,
-                  flipVertical: _flipVertical,
-                  onScaleStart: (details) {
-                    _baseScale = _scaleNotifier.value;
-                  },
-                  onScaleUpdate: (details) {
-                    _scaleNotifier.value = (_baseScale * details.scale).clamp(0.5, 3.0);
-                    _imageOffsetNotifier.value += details.focalPointDelta;
-                  },
-                ),
+                        rotationRadians: _rotation * 3.14159 / 180,
+                        baseScale: _baseScale,
+                        cachedBaseImageBytes: _cachedBaseImageBytes,
+                        scaleNotifier: _scaleNotifier,
+                        imageOffsetNotifier: _imageOffsetNotifier,
+                        brightnessNotifier: _brightnessNotifier,
+                        contrastNotifier: _contrastNotifier,
+                        saturationNotifier: _saturationNotifier,
+                        flipHorizontal: _flipHorizontal,
+                        onScaleStart: (details) {
+                          _baseScale = _scaleNotifier.value;
+                        },
+                        onScaleUpdate: (details) {
+                          _scaleNotifier.value = (_baseScale * details.scale)
+                              .clamp(0.5, 3.0);
+                          _imageOffsetNotifier.value += details.focalPointDelta;
+                        },
+                      ),
               ),
               if (!_isAdjusting)
                 EditPhotoBottomBar(
@@ -238,7 +261,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
               else
                 EditPhotoAdjustmentControls(
                   onResetAdjustments: _resetAdjustments,
-                  onBack: () => setState(() { _isAdjusting = false; }),
+                  onBack: () => setState(() {
+                    _isAdjusting = false;
+                  }),
                   brightnessNotifier: _brightnessNotifier,
                   contrastNotifier: _contrastNotifier,
                   saturationNotifier: _saturationNotifier,
@@ -248,9 +273,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           if (_isSaving)
             Container(
               color: Colors.black.withValues(alpha: 0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),

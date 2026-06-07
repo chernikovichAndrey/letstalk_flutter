@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/constants/api_constants.dart';
 import 'package:lets_talk/common/service/api_service.dart';
-import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:logger/logger.dart';
 
 @singleton
@@ -27,7 +25,7 @@ class CallKitService {
       StreamController<Map<String, dynamic>>.broadcast();
 
   final StreamController<Map<String, dynamic>> _initCallController =
-  StreamController<Map<String, dynamic>>.broadcast();
+      StreamController<Map<String, dynamic>>.broadcast();
 
   StreamSubscription? _eventSubscription;
 
@@ -70,7 +68,9 @@ class CallKitService {
             if (callMap['isAccepted'] == true && _pendingAcceptData == null) {
               final extra = _extractExtra(callMap);
               _pendingAcceptData = extra;
-              _logger.i('Recovered accepted call from activeCalls: ${callMap['id']}');
+              _logger.i(
+                'Recovered accepted call from activeCalls: ${callMap['id']}',
+              );
               break;
             }
           }
@@ -78,7 +78,6 @@ class CallKitService {
       }
     }
   }
-
 
   Future<void> showIncomingCall(CallKitParams params) async {
     try {
@@ -170,7 +169,11 @@ class CallKitService {
 
       _logger.i('VoIP token sent to server successfully');
     } catch (e, stackTrace) {
-      _logger.e('Failed to send VoIP token to server', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Failed to send VoIP token to server',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 

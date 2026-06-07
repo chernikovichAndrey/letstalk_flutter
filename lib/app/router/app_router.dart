@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/arg/chat_details_args.dart';
 import 'package:lets_talk/app/router/c_page.dart';
-import 'package:lets_talk/app/router/codec/RouterArgsCodec.dart';
+import 'package:lets_talk/app/router/codec/router_args_codec.dart';
 import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/extension/routes_ext.dart';
 import 'package:lets_talk/feature/chats/view/chat_details_page_scope.dart';
@@ -49,31 +49,33 @@ class AppRouter {
               StatefulShellBranch(routes: [buildRoute(Routes.contacts)]),
               StatefulShellBranch(routes: [buildRoute(Routes.callsHistory)]),
               StatefulShellBranch(
-                  routes: [
-                    GoRoute(
-                      path: Routes.chats.path,
-                      pageBuilder: (final _, final state) =>
-                          buildPage(Routes.chats, state),
-                      routes: [
-                        GoRoute(
-                          path: Routes.chatDetails.path,
-                          parentNavigatorKey: navigatorKey,
-                          pageBuilder: (context, state) {
-                            final chatId = (state.extra as ChatDetailsArgs?)?.chatId ?? 0;
-                            return CPage(
-                              type: Routes.chatDetails.type,
-                              key: state.pageKey,
-                              child: ChatDetailsPageScope(chatId: chatId),
-                            );
-                          },
-                        )
-                      ],
-                    )
-                  ]),
+                routes: [
+                  GoRoute(
+                    path: Routes.chats.path,
+                    pageBuilder: (final _, final state) =>
+                        buildPage(Routes.chats, state),
+                    routes: [
+                      GoRoute(
+                        path: Routes.chatDetails.path,
+                        parentNavigatorKey: navigatorKey,
+                        pageBuilder: (context, state) {
+                          final chatId =
+                              (state.extra as ChatDetailsArgs?)?.chatId ?? 0;
+                          return CPage(
+                            type: Routes.chatDetails.type,
+                            key: state.pageKey,
+                            child: ChatDetailsPageScope(chatId: chatId),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
               StatefulShellBranch(routes: [buildRoute(Routes.settings)]),
             ],
           ),
-        ]
+        ],
       ),
 
       buildRoute(Routes.call),
@@ -98,11 +100,7 @@ class AppRouter {
   }
 
   Page buildPage(Routes e, GoRouterState state) {
-    return CPage(
-      type: e.type,
-      key: state.pageKey,
-      child: e.widget,
-    );
+    return CPage(type: e.type, key: state.pageKey, child: e.widget);
   }
 
   void dispose() {

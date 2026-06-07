@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lets_talk/app/router/arg/router_args.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
-import 'package:lets_talk/common/l10n/generated/l10n.dart';
 
 class DialogArgs extends RouterArgs {
   const DialogArgs._({

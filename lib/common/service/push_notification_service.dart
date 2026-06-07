@@ -14,22 +14,21 @@ import 'package:lets_talk/common/service/api_service.dart';
 import 'package:lets_talk/common/service/local_notification_service.dart';
 import 'package:lets_talk/feature/call/domain/model/signaling_event.dart';
 import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   if (message.data['type'] == 'incoming_call' && !Platform.isIOS) {
-    final callerInfo = CallerInfo.fromJson(jsonDecode(message.data['caller_info']));
+    final callerInfo = CallerInfo.fromJson(
+      jsonDecode(message.data['caller_info']),
+    );
     final params = CallKitParams(
       id: message.data['call_id'],
       nameCaller: message.data['caller_name'] ?? 'Unknown',
       appName: 'Lets Talk',
       type: message.data['call_type'] == 'video' ? 1 : 0,
       avatar: callerInfo.avatar,
-      missedCallNotification: NotificationParams(
-        showNotification: false,
-      ),
+      missedCallNotification: NotificationParams(showNotification: false),
 
       extra: Map<String, dynamic>.from(message.data),
       ios: const IOSParams(iconName: null),
@@ -48,23 +47,21 @@ class PushNotificationService {
   final ApiService _apiService;
   final LocalNotificationService _localNotificationService;
   final Logger _logger = Logger();
-  
+
   final StreamController<RemoteMessage> _messageStreamController =
       StreamController<RemoteMessage>.broadcast();
-  
+
   final StreamController<RemoteMessage> _notificationTapStreamController =
       StreamController<RemoteMessage>.broadcast();
 
   String? _fcmToken;
   RemoteMessage? _initialMessage;
 
-  PushNotificationService(
-    this._apiService,
-    this._localNotificationService,
-  );
+  PushNotificationService(this._apiService, this._localNotificationService);
 
   Stream<RemoteMessage> get onMessage => _messageStreamController.stream;
-  Stream<RemoteMessage> get onNotificationTap => _notificationTapStreamController.stream;
+  Stream<RemoteMessage> get onNotificationTap =>
+      _notificationTapStreamController.stream;
   String? get fcmToken => _fcmToken;
   RemoteMessage? get initialMessage => _initialMessage;
 
@@ -108,10 +105,10 @@ class PushNotificationService {
         _logger.d('Title: ${message.notification?.title}');
         _logger.d('Body: ${message.notification?.body}');
         _logger.d('Data: ${message.data}');
-        
+
         // Show local notification if chat is not currently open
         _handleForegroundMessage(message);
-        
+
         _messageStreamController.add(message);
       });
 
@@ -134,7 +131,11 @@ class PushNotificationService {
 
       _logger.i('Push notification service initialized successfully');
     } catch (e, stackTrace) {
-      _logger.e('Failed to initialize push notifications', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Failed to initialize push notifications',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -153,7 +154,11 @@ class PushNotificationService {
       _logger.i('Permission status: ${settings.authorizationStatus}');
       return settings;
     } catch (e, stackTrace) {
-      _logger.e('Failed to request permissions', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Failed to request permissions',
+        error: e,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
   }
@@ -164,7 +169,11 @@ class PushNotificationService {
       await _messaging.subscribeToTopic(topic);
       _logger.i('Successfully subscribed to topic: $topic');
     } catch (e, stackTrace) {
-      _logger.e('Failed to subscribe to topic: $topic', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Failed to subscribe to topic: $topic',
+        error: e,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
   }
@@ -175,7 +184,11 @@ class PushNotificationService {
       await _messaging.unsubscribeFromTopic(topic);
       _logger.i('Successfully unsubscribed from topic: $topic');
     } catch (e, stackTrace) {
-      _logger.e('Failed to unsubscribe from topic: $topic', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Failed to unsubscribe from topic: $topic',
+        error: e,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
   }
@@ -200,9 +213,9 @@ class PushNotificationService {
     final chatIdStr = data['chat_id'] ?? data['id'];
 
     _handleCallEvents(message);
-    
+
     _logger.d('Extracted chat_id string: $chatIdStr');
-    
+
     if (chatIdStr == null) {
       _logger.w('No chat_id in push notification data');
       return;
@@ -219,15 +232,18 @@ class PushNotificationService {
     // Check if this message is for a different chat
     final currentChatId = _localNotificationService.currentChatId;
     _logger.i('Current chat_id: $currentChatId');
-    
+
     if (currentChatId != chatId) {
-      _logger.i('Chat IDs differ - showing local notification for chat $chatId (current: $currentChatId)');
-      
-      final title = message.notification?.title ?? data['title'] ?? 'New message';
+      _logger.i(
+        'Chat IDs differ - showing local notification for chat $chatId (current: $currentChatId)',
+      );
+
+      final title =
+          message.notification?.title ?? data['title'] ?? 'New message';
       final body = message.notification?.body ?? data['body'] ?? '';
-      
+
       _logger.i('Notification title: $title, body: $body');
-      
+
       _localNotificationService.showMessageNotification(
         chatId: chatId,
         title: title,
@@ -242,34 +258,35 @@ class PushNotificationService {
     try {
       final platform = Platform.isIOS ? 'ios' : 'android';
       _logger.i('Sending FCM token to server (platform: $platform)');
-      
+
       await _apiService.post(
         ApiConstants.updateFcmToken,
-        data: {
-          'fcm_token': token,
-          'platform': platform,
-        },
+        data: {'fcm_token': token, 'platform': platform},
       );
-      
+
       _logger.i('FCM token sent to server successfully');
     } catch (e, stackTrace) {
-      _logger.e('Failed to send FCM token to server', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Failed to send FCM token to server',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
   void _handleCallEvents(RemoteMessage message) async {
     final data = message.data;
     if (data['type'] == 'incoming_call' && Platform.isAndroid) {
-      final callerInfo = CallerInfo.fromJson(jsonDecode(message.data['caller_info']));
+      final callerInfo = CallerInfo.fromJson(
+        jsonDecode(message.data['caller_info']),
+      );
       final params = CallKitParams(
         id: message.data['call_id'],
         nameCaller: message.data['caller_name'] ?? 'Unknown',
         appName: 'Lets Talk',
         type: message.data['call_type'] == 'video' ? 1 : 0,
         avatar: callerInfo.avatar,
-        missedCallNotification: NotificationParams(
-          showNotification: false,
-        ),
+        missedCallNotification: NotificationParams(showNotification: false),
 
         extra: Map<String, dynamic>.from(message.data),
         ios: const IOSParams(iconName: null),

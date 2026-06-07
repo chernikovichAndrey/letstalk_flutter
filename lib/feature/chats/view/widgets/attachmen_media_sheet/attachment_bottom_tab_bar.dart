@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 
@@ -10,10 +9,7 @@ class AttachmentBottomTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(
-        bottom: context.padding.bottom + 16,
-        top: 16,
-      ),
+      padding: EdgeInsets.only(bottom: context.padding.bottom + 16, top: 16),
       child: Center(
         child: Container(
           width: 250,

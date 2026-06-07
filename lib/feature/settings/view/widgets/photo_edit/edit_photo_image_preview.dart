@@ -14,7 +14,6 @@ class EditPhotoImagePreview extends StatelessWidget {
   final GestureScaleStartCallback onScaleStart;
   final GestureScaleUpdateCallback onScaleUpdate;
   final bool flipHorizontal;
-  final bool flipVertical;
 
   const EditPhotoImagePreview({
     super.key,
@@ -29,7 +28,6 @@ class EditPhotoImagePreview extends StatelessWidget {
     required this.onScaleStart,
     required this.onScaleUpdate,
     required this.flipHorizontal,
-    required this.flipVertical,
   });
 
   ColorFilter _createColorFilter(
@@ -42,10 +40,26 @@ class EditPhotoImagePreview extends StatelessWidget {
     final s = saturation;
 
     return ColorFilter.matrix([
-      c * s, 0, 0, 0, b * 255,
-      0, c * s, 0, 0, b * 255,
-      0, 0, c * s, 0, b * 255,
-      0, 0, 0, 1, 0,
+      c * s,
+      0,
+      0,
+      0,
+      b * 255,
+      0,
+      c * s,
+      0,
+      0,
+      b * 255,
+      0,
+      0,
+      c * s,
+      0,
+      b * 255,
+      0,
+      0,
+      0,
+      1,
+      0,
     ]);
   }
 
@@ -80,12 +94,18 @@ class EditPhotoImagePreview extends StatelessWidget {
                                         return Transform(
                                           alignment: Alignment.center,
                                           transform: Matrix4.identity()
-                                            ..translate(offset.dx, offset.dy)
-                                            ..scale(scale)
+                                            ..translateByDouble(
+                                              offset.dx,
+                                              offset.dy,
+                                              0,
+                                              1,
+                                            )
+                                            ..scaleByDouble(scale, scale, 1, 1)
                                             ..rotateZ(rotationRadians)
-                                            ..scale(
+                                            ..scaleByDouble(
                                               flipHorizontal ? -1.0 : 1.0,
-                                              flipVertical ? -1.0 : 1.0,
+                                              1.0,
+                                              1.0,
                                               1.0,
                                             ),
                                           child: ColorFiltered(

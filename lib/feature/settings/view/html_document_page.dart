@@ -8,10 +8,7 @@ import 'package:lets_talk/common/widget/glass_app_bar_background.dart';
 import 'package:lets_talk/common/widget/glass_button.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-enum LegalDocumentType {
-  privacyPolicy,
-  termsOfService,
-}
+enum LegalDocumentType { privacyPolicy, termsOfService }
 
 class HtmlDocumentPage extends StatefulWidget {
   final String locale;
@@ -74,13 +71,6 @@ class _HtmlDocumentPageState extends State<HtmlDocumentPage> {
     }
   }
 
-  String _getTitle() {
-    return switch (widget.documentType) {
-      LegalDocumentType.privacyPolicy => context.s.privacyPolicy,
-      LegalDocumentType.termsOfService => context.s.termsOfService,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,16 +95,11 @@ class _HtmlDocumentPageState extends State<HtmlDocumentPage> {
                     SafeArea(
                       bottom: false,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            GlassButton(
-                              icon: Icons.close,
-                              onTap: context.pop,
-                            ),
+                            GlassButton(icon: Icons.close, onTap: context.pop),
                           ],
                         ),
                       ),

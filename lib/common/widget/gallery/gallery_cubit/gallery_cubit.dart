@@ -22,26 +22,18 @@ class GalleryCubit extends Cubit<GalleryState> {
           type: RequestType.common,
           filterOption: FilterOptionGroup(
             orders: [
-              const OrderOption(
-                type: OrderOptionType.createDate,
-                asc: false,
-              ),
+              const OrderOption(type: OrderOptionType.createDate, asc: false),
             ],
           ),
         );
         if (paths.isNotEmpty) {
           _currentPath = paths[0];
           _page = 0;
-          
-          final List<AssetEntity> entities = await _currentPath!.getAssetListPaged(
-            page: _page,
-            size: _size,
-          );
-          
-          emit(GalleryLoaded(
-            entities,
-            hasReachedMax: entities.length < _size,
-          ));
+
+          final List<AssetEntity> entities = await _currentPath!
+              .getAssetListPaged(page: _page, size: _size);
+
+          emit(GalleryLoaded(entities, hasReachedMax: entities.length < _size));
         } else {
           emit(const GalleryLoaded([], hasReachedMax: true));
         }
@@ -49,7 +41,6 @@ class GalleryCubit extends Cubit<GalleryState> {
         emit(GalleryPermissionDenied());
       }
     } catch (e) {
-      print(e);
       emit(GalleryError(e.toString()));
     }
   }
@@ -57,7 +48,7 @@ class GalleryCubit extends Cubit<GalleryState> {
   Future<void> loadMoreImages() async {
     if (state is! GalleryLoaded) return;
     if (_isFetchingMore) return;
-    
+
     final currentState = state as GalleryLoaded;
     if (currentState.hasReachedMax) return;
     if (_currentPath == null) return;
@@ -66,24 +57,21 @@ class GalleryCubit extends Cubit<GalleryState> {
 
     try {
       final nextPage = _page + 1;
-      final List<AssetEntity> newEntities = await _currentPath!.getAssetListPaged(
-        page: nextPage,
-        size: _size,
-      );
+      final List<AssetEntity> newEntities = await _currentPath!
+          .getAssetListPaged(page: nextPage, size: _size);
 
       _page = nextPage;
       _isFetchingMore = false;
 
       if (newEntities.isEmpty) {
-        emit(GalleryLoaded(
-          currentState.images,
-          hasReachedMax: true,
-        ));
+        emit(GalleryLoaded(currentState.images, hasReachedMax: true));
       } else {
-        emit(GalleryLoaded(
-          currentState.images + newEntities,
-          hasReachedMax: newEntities.length < _size,
-        ));
+        emit(
+          GalleryLoaded(
+            currentState.images + newEntities,
+            hasReachedMax: newEntities.length < _size,
+          ),
+        );
       }
     } catch (e) {
       _isFetchingMore = false;

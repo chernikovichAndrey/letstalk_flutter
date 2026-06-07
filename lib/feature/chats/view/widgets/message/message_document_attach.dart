@@ -59,8 +59,8 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
         ? appColors.messageMeText
         : appColors.messageOtherText;
     final iconBgColor = widget.isMe
-        ? Colors.white.withOpacity(0.2)
-        : appColors.telegramBlue.withOpacity(0.1);
+        ? Colors.white.withValues(alpha: 0.2)
+        : appColors.telegramBlue.withValues(alpha: 0.1);
     final iconColor = widget.isMe ? Colors.white : appColors.telegramBlue;
 
     return BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
@@ -74,7 +74,10 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MessageForward(forwardedFrom: widget.message.forwardedFrom, isMe: widget.isMe),
+              MessageForward(
+                forwardedFrom: widget.message.forwardedFrom,
+                isMe: widget.isMe,
+              ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -130,7 +133,7 @@ class _MessageDocumentAttachState extends State<MessageDocumentAttach> {
                               ? '$progressPercent% • ${_formatBytes(media.size, 1)}'
                               : _formatBytes(media.size, 1),
                           style: context.text.bodySmall?.copyWith(
-                            color: textColor.withOpacity(0.7),
+                            color: textColor.withValues(alpha: 0.7),
                             fontSize: 12,
                           ),
                         ),

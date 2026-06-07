@@ -9,7 +9,6 @@ import 'package:injectable/injectable.dart';
 import 'package:lets_talk/app/environment/environment.dart';
 import 'package:lets_talk/di/injection.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
-import 'package:lets_talk/feature/auth/domain/repository/auth_repository.dart';
 import 'package:lets_talk/feature/shell/connectivity/domain/bloc/connectivity_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:web_socket_channel/io.dart';
@@ -59,8 +58,9 @@ class WebSocketService with WidgetsBindingObserver {
 
     _connectivitySubscription = _connectivityBloc.stream.listen((state) {
       if (state is ConnectivitySuccess) {
-        final hasConnection =
-            state.results.any((result) => result != ConnectivityResult.none);
+        final hasConnection = state.results.any(
+          (result) => result != ConnectivityResult.none,
+        );
 
         if (hasConnection && _channel == null && !_intentionalDisconnect) {
           _logger.i('Network restored, reconnecting WebSocket...');
@@ -195,8 +195,12 @@ class WebSocketService with WidgetsBindingObserver {
     if (_reconnectAttempts < _fastReconnectDelays.length) {
       delay = _fastReconnectDelays[_reconnectAttempts];
     } else {
-      final expMs = pow(2, _reconnectAttempts - _fastReconnectDelays.length + 1).toInt() * 1000;
-      delay = Duration(milliseconds: min(expMs, _maxReconnectDelay.inMilliseconds));
+      final expMs =
+          pow(2, _reconnectAttempts - _fastReconnectDelays.length + 1).toInt() *
+          1000;
+      delay = Duration(
+        milliseconds: min(expMs, _maxReconnectDelay.inMilliseconds),
+      );
     }
     _reconnectAttempts++;
 
@@ -206,10 +210,7 @@ class WebSocketService with WidgetsBindingObserver {
     _reconnectTimer = Timer(delay, connect);
   }
 
-  Future<void> disconnect({
-    int? closeCode,
-    String? closeReason,
-  }) async {
+  Future<void> disconnect({int? closeCode, String? closeReason}) async {
     _intentionalDisconnect = true;
     _reconnectTimer?.cancel();
 
@@ -219,10 +220,7 @@ class WebSocketService with WidgetsBindingObserver {
       await _socketSubscription?.cancel();
       _socketSubscription = null;
 
-      await ch!.sink.close(
-        closeCode ?? status.goingAway,
-        closeReason,
-      );
+      await ch!.sink.close(closeCode ?? status.goingAway, closeReason);
       _logger.i('WebSocket disconnected');
     }
   }
@@ -276,13 +274,13 @@ class WebSocketService with WidgetsBindingObserver {
   }
 
   void sendMessage(
-      int chatId,
-      String text, {
-        String? messageType,
-        int? mediaId,
-        int? replyToMessageId,
-        String? tempMessageId,
-      }) {
+    int chatId,
+    String text, {
+    String? messageType,
+    int? mediaId,
+    int? replyToMessageId,
+    String? tempMessageId,
+  }) {
     final Map<String, dynamic> data = {
       'type': 'message',
       'chat_id': chatId,
@@ -304,11 +302,7 @@ class WebSocketService with WidgetsBindingObserver {
   }
 
   void sendTyping(int chatId, bool isTyping) {
-    send({
-      "type": "typing",
-      "chat_id": chatId,
-      "is_typing": isTyping,
-    });
+    send({"type": "typing", "chat_id": chatId, "is_typing": isTyping});
   }
 
   void forwardMessage(int messageId, int targetChatId) {
@@ -320,19 +314,12 @@ class WebSocketService with WidgetsBindingObserver {
   }
 
   void authenticate(String token) {
-    send({
-      'type': 'auth',
-      'token': token,
-    });
+    send({'type': 'auth', 'token': token});
     _flushPendingMessages();
   }
 
   void readMessage(int chatId, int messageId) {
-    send({
-      "type": "read_message",
-      "chat_id": chatId,
-      "message_id": messageId
-    });
+    send({"type": "read_message", "chat_id": chatId, "message_id": messageId});
   }
 
   void editMessage(int messageId, String newText) {

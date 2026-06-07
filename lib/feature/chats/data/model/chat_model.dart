@@ -48,7 +48,9 @@ class Chat {
       memberInfo: (json['member_info'] as List<dynamic>?)
           ?.map((e) => MemberInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      muted: (json['mute'] as Map<String, dynamic>?)?['is_muted'] as bool? ?? false,
+      muted:
+          (json['mute'] as Map<String, dynamic>?)?['is_muted'] as bool? ??
+          false,
     );
   }
 
@@ -146,15 +148,13 @@ class ChatsResponse {
   final String status;
   final List<Chat> chats;
 
-  ChatsResponse({
-    required this.status,
-    required this.chats,
-  });
+  ChatsResponse({required this.status, required this.chats});
 
   factory ChatsResponse.fromJson(Map<String, dynamic> json) {
     return ChatsResponse(
       status: json['status'] as String? ?? '',
-      chats: (json['chats'] as List<dynamic>?)
+      chats:
+          (json['chats'] as List<dynamic>?)
               ?.map((e) => Chat.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -166,15 +166,13 @@ class ChatDetailsResponse {
   final Chat chat;
   final List<ChatMember> members;
 
-  ChatDetailsResponse({
-    required this.chat,
-    required this.members,
-  });
+  ChatDetailsResponse({required this.chat, required this.members});
 
   factory ChatDetailsResponse.fromJson(Map<String, dynamic> json) {
     return ChatDetailsResponse(
       chat: Chat.fromJson(json['chat'] as Map<String, dynamic>),
-      members: (json['members'] as List<dynamic>?)
+      members:
+          (json['members'] as List<dynamic>?)
               ?.map((e) => ChatMember.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -206,10 +204,7 @@ class UnreadMessage {
   final int chatId;
   final int unread;
 
-  UnreadMessage({
-    required this.chatId,
-    required this.unread,
-  });
+  UnreadMessage({required this.chatId, required this.unread});
 
   factory UnreadMessage.fromJson(Map<String, dynamic> json) {
     return UnreadMessage(
@@ -219,26 +214,20 @@ class UnreadMessage {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'chat_id': chatId,
-      'unreaded': unread,
-    };
+    return {'chat_id': chatId, 'unreaded': unread};
   }
 }
 
 class UnreadMessagesResponse {
   final List<UnreadMessage> unreadedMessages;
 
-  UnreadMessagesResponse({
-    required this.unreadedMessages,
-  });
+  UnreadMessagesResponse({required this.unreadedMessages});
 
   factory UnreadMessagesResponse.fromJson(List<dynamic> json) {
     return UnreadMessagesResponse(
       unreadedMessages: json
-              .map((e) => UnreadMessage.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
+          .map((e) => UnreadMessage.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

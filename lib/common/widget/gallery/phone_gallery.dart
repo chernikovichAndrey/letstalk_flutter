@@ -81,9 +81,7 @@ class _GalleryContentState extends State<_GalleryContent> {
   Future<void> openCamera() async {
     final ImagePicker picker = ImagePicker();
     try {
-      final XFile? photo = await picker.pickImage(
-        source: ImageSource.camera,
-      );
+      final XFile? photo = await picker.pickImage(source: ImageSource.camera);
       if (photo != null && mounted) {
         widget.onGetMediaFile(File(photo.path));
       }
@@ -121,8 +119,7 @@ class _GalleryContentState extends State<_GalleryContent> {
           return Center(child: Text('Error: ${state.message}'));
         }
 
-        final images =
-            state is GalleryLoaded ? state.images : <AssetEntity>[];
+        final images = state is GalleryLoaded ? state.images : <AssetEntity>[];
 
         return CustomScrollView(
           controller: _scrollController,
@@ -159,13 +156,17 @@ class _GalleryContentState extends State<_GalleryContent> {
                     asset: asset,
                     onTapAsset: (asset) async {
                       final file = await asset.file;
-                      if (file != null && mounted) {
-                        if (_checkFileSizeLimit(file, asset.type)) {
-                          widget.onGetMediaFile(file);
-                        } else {
-                          final limit = _fileSizeLimits[asset.type] ?? (50 * 1024 * 1024);
-                          showErrorToast(context.s.fileSizeLimitExceeded(limit ~/ (1024 * 1024)));
-                        }
+                      if (file == null || !context.mounted) return;
+                      if (_checkFileSizeLimit(file, asset.type)) {
+                        widget.onGetMediaFile(file);
+                      } else {
+                        final limit =
+                            _fileSizeLimits[asset.type] ?? (50 * 1024 * 1024);
+                        showErrorToast(
+                          context.s.fileSizeLimitExceeded(
+                            limit ~/ (1024 * 1024),
+                          ),
+                        );
                       }
                     },
                   );
@@ -176,8 +177,7 @@ class _GalleryContentState extends State<_GalleryContent> {
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
                 sliver: SliverGrid(
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 2,
                     mainAxisSpacing: 2,
@@ -188,13 +188,17 @@ class _GalleryContentState extends State<_GalleryContent> {
                       asset: asset,
                       onTapAsset: (asset) async {
                         final file = await asset.file;
-                        if (file != null && mounted) {
-                          if (_checkFileSizeLimit(file, asset.type)) {
-                            widget.onGetMediaFile(file);
-                          } else {
-                            final limit = _fileSizeLimits[asset.type] ?? (50 * 1024 * 1024);
-                            showErrorToast(context.s.fileSizeLimitExceeded(limit ~/ (1024 * 1024)));
-                          }
+                        if (file == null || !context.mounted) return;
+                        if (_checkFileSizeLimit(file, asset.type)) {
+                          widget.onGetMediaFile(file);
+                        } else {
+                          final limit =
+                              _fileSizeLimits[asset.type] ?? (50 * 1024 * 1024);
+                          showErrorToast(
+                            context.s.fileSizeLimitExceeded(
+                              limit ~/ (1024 * 1024),
+                            ),
+                          );
                         }
                       },
                     );

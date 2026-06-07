@@ -1,7 +1,7 @@
 name: lets_talk
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+11
+version: 1.0.0+12
 
 environment:
   sdk: ^3.9.2
@@ -58,6 +58,7 @@ dependencies:
   flutter_video_caching: ^1.1.1
   google_fonts: ^8.0.2
   flutter_callkit_incoming: ^3.0.0
+  flutter_cache_manager: ^3.4.1
 
 dev_dependencies:
   flutter_test:

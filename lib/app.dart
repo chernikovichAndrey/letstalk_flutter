@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lets_talk/app/config/app_theme.dart';
@@ -76,11 +77,14 @@ class _AppState extends State<App> with HandlePushNotification {
                 ],
                 supportedLocales: S.delegate.supportedLocales,
                 locale: localeState.locale,
-                builder: (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(
-                    textScaler: TextScaler.noScaling,
+                builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: _overlayStyle(context, themeState.mode),
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.noScaling,
+                    ),
+                    child: child!,
                   ),
-                  child: child!,
                 ),
                 scrollBehavior: const MaterialScrollBehavior().copyWith(
                   dragDevices: {
@@ -95,6 +99,21 @@ class _AppState extends State<App> with HandlePushNotification {
           );
         },
       ),
+    );
+  }
+
+  SystemUiOverlayStyle _overlayStyle(BuildContext context, ThemeMode mode) {
+    final isDark = switch (mode) {
+      ThemeMode.dark => true,
+      ThemeMode.light => false,
+      ThemeMode.system =>
+        MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+    };
+
+    return SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
     );
   }
 

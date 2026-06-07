@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lets_talk/app/config/app_colors_extension.dart';
 import 'package:lets_talk/app/config/app_gradients_extension.dart';
@@ -19,6 +20,11 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.backgroundLight,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+        ),
       ),
       textTheme: _textTheme,
       extensions: [
@@ -74,6 +80,11 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.backgroundDark,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
+        ),
       ),
       textTheme: _textTheme,
       extensions: [

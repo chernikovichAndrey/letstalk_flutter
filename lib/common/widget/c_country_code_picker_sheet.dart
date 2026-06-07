@@ -80,6 +80,30 @@ class _CCountryCodePickerSheetState extends State<CCountryCodePickerSheet> {
     for (final element in _all) {
       element.localize(context);
     }
+    
+    int compareCountries(CountryCode a, CountryCode b) {
+      final aCode = a.code?.toUpperCase();
+      final bCode = b.code?.toUpperCase();
+      
+      int getWeight(String? code) {
+        if (code == 'RU') return 0;
+        if (code == 'KZ') return 1;
+        return 2;
+      }
+
+      final aWeight = getWeight(aCode);
+      final bWeight = getWeight(bCode);
+
+      if (aWeight != bWeight) {
+        return aWeight.compareTo(bWeight);
+      }
+
+      return a.toCountryStringOnly().compareTo(b.toCountryStringOnly());
+    }
+
+    _all.sort(compareCountries);
+    _favorites.sort(compareCountries);
+
     _localized = true;
   }
 
@@ -90,7 +114,11 @@ class _CCountryCodePickerSheetState extends State<CCountryCodePickerSheet> {
   }
 
   List<CountryCode> get _filtered {
-    if (_query.isEmpty) return _all;
+    if (_query.isEmpty) {
+      if (_favorites.isEmpty) return _all;
+      final favCodes = _favorites.map((e) => e.code).toSet();
+      return _all.where((c) => !favCodes.contains(c.code)).toList();
+    }
     final lower = _query.toLowerCase();
     return _all.where((c) {
       final name = c.name?.toLowerCase() ?? '';

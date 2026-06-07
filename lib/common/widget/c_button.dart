@@ -165,9 +165,21 @@ class CButton extends StatelessWidget {
       ],
     );
 
-    return SizedBox(
+    return Container(
       width: width ?? (expand ? double.infinity : null),
       height: height,
+      decoration: BoxDecoration(
+        borderRadius: radius,
+        boxShadow: variant == CButtonVariant.ghost
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color(0x1A000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 6),
+                ),
+              ],
+      ),
       child: Material(
         color: resolvedBackground,
         borderRadius: radius,

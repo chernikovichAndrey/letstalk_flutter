@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lets_talk/common/service/phone_contacts_service.dart';
 import 'package:lets_talk/feature/contacts/data/model/contact_model.dart';
 import 'package:lets_talk/feature/contacts/domain/repository/add_contact_repository.dart';
 
@@ -11,8 +12,12 @@ part 'add_contact_state.dart';
 @injectable
 class AddContactBloc extends Bloc<AddContactEvent, AddContactState> {
   final AddContactRepository _addContactRepository;
+  final PhoneContactsService _phoneContactsService;
 
-  AddContactBloc(this._addContactRepository) : super(AddContactInitial()) {
+  AddContactBloc(
+    this._addContactRepository,
+    this._phoneContactsService,
+  ) : super(AddContactInitial()) {
     on<AddContactSubmitted>(_onSubmitted);
   }
 
@@ -23,6 +28,7 @@ class AddContactBloc extends Bloc<AddContactEvent, AddContactState> {
     emit(AddContactInProgress());
     try {
       await _addContactRepository.addContacts(event.contact);
+      await _phoneContactsService.removeFromExclusionList(event.contact.phone);
       emit(AddContactSuccess());
     } catch (e) {
       emit(AddContactError(e.toString()));

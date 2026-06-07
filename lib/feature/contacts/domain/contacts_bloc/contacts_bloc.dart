@@ -181,10 +181,15 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> with WidgetsBindin
     final state = this.state;
     if (state is ContactsLoaded && state.selectedContactIds.isNotEmpty) {
       final selectedIds = state.selectedContactIds.toList();
+      final contactsToDelete = state.allContacts
+          .where((c) => c.id != null && selectedIds.contains(c.id))
+          .toList();
+      
       emit(ContactsActionInProgress());
       try {
-        for (final id in selectedIds) {
-          await _contactsRepository.deleteContacts(id);
+        for (final contact in contactsToDelete) {
+          await _contactsRepository.deleteContacts(contact.id!);
+          await _phoneContactsService.addToExclusionList(contact.phone);
         } // After deletion, reload contacts and exit selection mode
         final contacts = await _contactsRepository.getContacts();
         emit(ContactsLoaded(contacts));

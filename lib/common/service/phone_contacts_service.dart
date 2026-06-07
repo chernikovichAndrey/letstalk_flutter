@@ -1,9 +1,12 @@
 import 'package:injectable/injectable.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../feature/contacts/data/model/contact_model.dart';
 
 @singleton
 class PhoneContactsService {
+  static const _deletedContactsKey = 'deleted_phone_contacts';
+
   PhoneContactsService();
 
   void addListener(void Function() listener) {
@@ -18,6 +21,34 @@ class PhoneContactsService {
     return await fc.FlutterContacts.requestPermission();
   }
 
+  String _normalizePhone(String phone) {
+    return phone.replaceAll(RegExp(r'[^\d+]'), '');
+  }
+
+  Future<void> addToExclusionList(String phone) async {
+    final prefs = await SharedPreferences.getInstance();
+    final normalized = _normalizePhone(phone);
+    if (normalized.isEmpty) return;
+    
+    final list = prefs.getStringList(_deletedContactsKey) ?? [];
+    if (!list.contains(normalized)) {
+      list.add(normalized);
+      await prefs.setStringList(_deletedContactsKey, list);
+    }
+  }
+
+  Future<void> removeFromExclusionList(String phone) async {
+    final prefs = await SharedPreferences.getInstance();
+    final normalized = _normalizePhone(phone);
+    if (normalized.isEmpty) return;
+    
+    final list = prefs.getStringList(_deletedContactsKey) ?? [];
+    if (list.contains(normalized)) {
+      list.remove(normalized);
+      await prefs.setStringList(_deletedContactsKey, list);
+    }
+  }
+
   Future<List<Contact>> getPhoneContacts() async {
     if (!await fc.FlutterContacts.requestPermission()) {
       return [];
@@ -28,8 +59,16 @@ class PhoneContactsService {
       withPhoto: false,
     );
 
+    final prefs = await SharedPreferences.getInstance();
+    final excludedList = prefs.getStringList(_deletedContactsKey) ?? [];
+    final excludedSet = excludedList.toSet();
+
     return contacts
-        .where((c) => c.phones.isNotEmpty)
+        .where((c) {
+          if (c.phones.isEmpty) return false;
+          final normalized = _normalizePhone(c.phones.first.number);
+          return !excludedSet.contains(normalized);
+        })
         .map((c) => _mapToContact(c))
         .toList();
   }

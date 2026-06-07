@@ -36,6 +36,16 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       getIt<LocalNotificationService>().cancelNotification(widget.chatId);
+      _reloadAndScrollToBottom();
+    }
+  }
+
+  void _reloadAndScrollToBottom() {
+    final user = getIt<ProfileBloc>().state.user;
+    if (user == null) return;
+    getIt<ChatDetailsBloc>().add(ChatDetailsLoad(widget.chatId, user));
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0);
     }
   }
 
@@ -54,12 +64,14 @@ class _ChatDetailsPageState extends State<ChatDetailsPage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     getIt<LocalNotificationService>().setCurrentChatId(widget.chatId);
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     getIt<ChatDetailsBloc>().add(RefreshStateEvent());
     _scrollController.dispose();
     _videoCache.disposeAll();

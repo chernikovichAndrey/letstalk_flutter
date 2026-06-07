@@ -9,6 +9,8 @@ import 'package:lets_talk/app/router/routes.dart';
 import 'package:lets_talk/common/service/local_notification_service.dart';
 import 'package:lets_talk/common/service/push_notification_service.dart';
 import 'package:lets_talk/di/injection.dart';
+import 'package:lets_talk/feature/chats/domain/chat_details_bloc/chat_details_bloc.dart';
+import 'package:lets_talk/feature/settings/domain/profile_bloc/profile_bloc.dart';
 
 mixin HandlePushNotification {
   late final AppRouter router;
@@ -61,6 +63,10 @@ mixin HandlePushNotification {
           '${Routes.chats.path}/${Routes.chatDetails.path}',
           extra: ChatDetailsArgs(chatId: chatId),
         );
+        final user = getIt<ProfileBloc>().state.user;
+        if (user != null) {
+          getIt<ChatDetailsBloc>().add(ChatDetailsLoad(chatId, user));
+        }
       }
     }
   }

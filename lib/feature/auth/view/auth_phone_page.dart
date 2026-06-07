@@ -76,8 +76,12 @@ class _AuthPhonePageState extends State<AuthPhonePage> {
         isDark ? AppColors.messageLight : AppColors.backgroundDark;
 
     return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (prev, curr) => prev is! AuthCodeSent && curr is AuthCodeSent,
-      listener: (context, state) => context.push(Routes.authCode.path),
+      listenWhen: (prev, curr) => curr is AuthCodeSent,
+      listener: (context, state) {
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          context.push(Routes.authCode.path);
+        }
+      },
       child: Scaffold(
         body: SafeArea(
           child: Padding(

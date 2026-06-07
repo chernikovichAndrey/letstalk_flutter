@@ -197,16 +197,6 @@ class _MessageVideoAttachThumbnailState
           alignment: Alignment.center,
           children: [
             videoContent,
-            if (!_isProcessing && !_hasError)
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.85),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.play_arrow, color: Colors.black, size: 24),
-              ),
             BlocBuilder<ChatDetailsBloc, ChatDetailsState>(
               builder: (context, state) {
                 if (state.downloadingMessageId == widget.messageId) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_video_caching/flutter_video_caching.dart';
@@ -33,10 +35,7 @@ class _NetworkVideoViewerState extends State<NetworkVideoViewer> {
         Uri.parse(widget.videoUrl ?? ''),
         httpHeaders: {'Authorization': 'Bearer $token'},
       );
-      VideoCaching.precache(
-        widget.videoUrl ?? '',
-        headers: {'Authorization': 'Bearer $token'},
-      );
+      unawaited(_precache(token));
 
       await _controller.initialize();
       _controller.setLooping(true);
@@ -52,6 +51,17 @@ class _NetworkVideoViewerState extends State<NetworkVideoViewer> {
           _hasError = true;
         });
       }
+    }
+  }
+
+  Future<void> _precache(String? token) async {
+    try {
+      await VideoCaching.precache(
+        widget.videoUrl ?? '',
+        headers: {'Authorization': 'Bearer $token'},
+      );
+    } catch (_) {
+      // Precache is a best-effort optimization; playback uses networkUrl.
     }
   }
 

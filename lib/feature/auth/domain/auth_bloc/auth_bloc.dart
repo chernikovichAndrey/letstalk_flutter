@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/push_notification_service.dart';
@@ -16,31 +16,34 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
   final PushNotificationService pushNotificationService;
-  
-  AuthBloc(this.authRepository, this.pushNotificationService) : super(AuthInitial()) {
+
+  AuthBloc(this.authRepository, this.pushNotificationService)
+    : super(AuthInitial()) {
     on<AuthCheckStatus>((event, emit) async {
-       try {
-         final token = await authRepository.getToken();
-         if (token != null) {
-           emit(AuthAuthenticated(token: token));
-           await _onSendToken();
-         } else {
-           emit(AuthUnauthenticated());
-         }
-       } catch (e) {
-         emit(AuthUnauthenticated());
-       } finally {
-         FlutterNativeSplash.remove();
-       }
+      try {
+        final token = await authRepository.getToken();
+        if (token != null) {
+          emit(AuthAuthenticated(token: token));
+          await _onSendToken();
+        } else {
+          emit(AuthUnauthenticated());
+        }
+      } catch (e) {
+        emit(AuthUnauthenticated());
+      } finally {
+        FlutterNativeSplash.remove();
+      }
     });
 
     on<AuthSendCode>((event, emit) async {
       try {
         await authRepository.sendPhone(event.countryCode, event.phoneNumber);
-        emit(AuthCodeSent(
-          countryCode: event.countryCode,
-          phoneNumber: event.phoneNumber,
-        ));
+        emit(
+          AuthCodeSent(
+            countryCode: event.countryCode,
+            phoneNumber: event.phoneNumber,
+          ),
+        );
       } catch (e) {
         emit(AuthError(e.toString()));
         emit(AuthUnauthenticated());
@@ -51,8 +54,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final currentState = state;
       if (currentState is AuthCodeSent) {
         try {
-          final token = await authRepository.verifyCode(currentState.phone, event.code);
-          emit(AuthProfileSetupRequired(token: token));
+          final result = await authRepository.verifyCode(
+            currentState.phone,
+            event.code,
+          );
+          if (result.isNewUser) {
+            emit(AuthProfileSetupRequired(token: result.token));
+          } else {
+            emit(AuthAuthenticated(token: result.token));
+            await _onSendToken();
+          }
         } catch (e) {
           emit(AuthError(e.toString()));
           emit(currentState);

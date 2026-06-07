@@ -30,7 +30,7 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<String> verifyCode(String phone, String code) async {
+  Future<({String token, bool isNewUser})> verifyCode(String phone, String code) async {
     final did = await _getDeviceId();
     final formattedPlatform = Platform.operatingSystem;
 
@@ -45,9 +45,10 @@ class AuthRepositoryImpl extends AuthRepository {
     );
     
     final token = response.data['token'] as String;
+    final isNewUser = response.data['new_user'] == true || response.data['new_user'] == 1;
     await saveToken(token);
     
-    return token;
+    return (token: token, isNewUser: isNewUser);
   }
 
   Future<String> _getDeviceId() async {

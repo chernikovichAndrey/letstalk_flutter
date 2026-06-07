@@ -200,6 +200,22 @@
   "deleteAccountSuccess": "Аккаунт успешно удален",
   "deleteAccountRequestingCode": "Запрос кода...",
   "deleteAccountDeleting": "Удаление аккаунта...",
+  "deleteContactConfirmTitle": "{count, plural, one{Удалить контакт?} few{Удалить {count} контакта?} many{Удалить {count} контактов?} other{Удалить {count} контактов?}}",
+  "@deleteContactConfirmTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteContactConfirmMessage": "{count, plural, one{Вы уверены, что хотите удалить этот контакт?} few{Вы уверены, что хотите удалить эти контакты?} many{Вы уверены, что хотите удалить эти контакты?} other{Вы уверены, что хотите удалить эти контакты?}}",
+  "@deleteContactConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "failedToLoadVideo": "Не удалось загрузить видео",
   "galleryPermissionDenied": "Нет разрешения на доступ к галерее",
   "galleryPermissionDescription": "Чтобы выбирать фото и видео, разрешите доступ к медиатеке в настройках приложения.",

@@ -9,6 +9,7 @@ import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/feature/contacts/domain/contacts_bloc/contacts_bloc.dart';
+import 'package:lets_talk/feature/contacts/view/widgets/delete_contact_dialog.dart';
 
 class ContactsAppBar extends StatelessWidget {
   const ContactsAppBar({super.key});
@@ -71,9 +72,10 @@ class ContactsAppBar extends StatelessWidget {
                                     IconButton(
                                       icon: const Icon(Icons.delete),
                                       color: baseColor,
-                                      onPressed: () => context
-                                          .read<ContactsBloc>()
-                                          .add(ContactsDeleteSelected()),
+                                      onPressed: () => showDeleteContactConfirmDialog(
+                                        context, 
+                                        state.selectedContactIds.length,
+                                      ),
                                     ),
                                 ],
                               );

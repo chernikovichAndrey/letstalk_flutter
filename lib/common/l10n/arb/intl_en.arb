@@ -242,6 +242,22 @@
   "deleteAccountSuccess": "Account deleted successfully",
   "deleteAccountRequestingCode": "Requesting code...",
   "deleteAccountDeleting": "Deleting account...",
+  "deleteContactConfirmTitle": "{count, plural, one{Delete contact?} other{Delete {count} contacts?}}",
+  "@deleteContactConfirmTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteContactConfirmMessage": "{count, plural, one{Are you sure you want to delete this contact?} other{Are you sure you want to delete these contacts?}}",
+  "@deleteContactConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "failedToLoadVideo": "Failed to load video",
   "galleryPermissionDenied": "No permission to access gallery",
   "galleryPermissionDescription": "To select photos and videos, please grant access to your media library in app settings.",

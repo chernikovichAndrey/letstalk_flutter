@@ -200,6 +200,22 @@
   "deleteAccountSuccess": "Аккаунт сәтті жойылды",
   "deleteAccountRequestingCode": "Код сұралуда...",
   "deleteAccountDeleting": "Аккаунт жойылуда...",
+  "deleteContactConfirmTitle": "{count, plural, one{Контактты жою?} other{{count} контактты жою?}}",
+  "@deleteContactConfirmTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteContactConfirmMessage": "{count, plural, one{Бұл контактты жойғыңыз келетініне сенімдісіз бе?} other{Бұл контактілерді жойғыңыз келетініне сенімдісіз бе?}}",
+  "@deleteContactConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "failedToLoadVideo": "Бейнені жүктеу мүмкін болмады",
   "galleryPermissionDenied": "Галереяға қол жеткізуге рұқсат жоқ",
   "galleryPermissionDescription": "Фото мен видеоларды таңдау үшін қолданба параметрлерінде медиатекаға рұқсат беріңіз.",

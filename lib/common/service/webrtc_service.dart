@@ -417,9 +417,27 @@ class WebRTCService {
       _pendingCandidates.clear();
       _remoteDescriptionSet = false;
 
+      // Release the audio session so the OS mic indicator turns off
+      await _releaseAudioSession();
+
       _logger.i('Call ended and resources cleaned up');
     } catch (e) {
       _logger.e('Error during cleanup: $e');
+    }
+  }
+
+  // WebRTC keeps the iOS audio session in playAndRecord (and the Android
+  // communication device active) after a call, which keeps the system
+  // microphone indicator on. Reset it back to a non-recording state.
+  Future<void> _releaseAudioSession() async {
+    try {
+      if (WebRTC.platformIsIOS) {
+        await Helper.setAppleAudioIOMode(AppleAudioIOMode.none);
+      } else if (WebRTC.platformIsAndroid) {
+        await Helper.clearAndroidCommunicationDevice();
+      }
+    } catch (e) {
+      _logger.e('Failed to release audio session: $e');
     }
   }
 

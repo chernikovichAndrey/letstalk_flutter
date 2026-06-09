@@ -223,6 +223,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
             Positioned.fill(
               child: LayoutBuilder(
                 builder: (context, constraints) {
+                  final bottomInset = MediaQuery.of(context).padding.bottom;
                   return SingleChildScrollView(
                     controller: _scrollController,
                     child: ConstrainedBox(
@@ -258,7 +259,7 @@ class _MessageActionsOverlayState extends State<MessageActionsOverlay> {
                                   ? _onDownloadMedia
                                   : null,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 52 + bottomInset),
                           ],
                         ),
                       ),

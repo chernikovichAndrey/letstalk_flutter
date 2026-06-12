@@ -193,6 +193,24 @@ class PushNotificationService {
     }
   }
 
+  Future<void> unregisterFromServer() async {
+    try {
+      final platform = Platform.isIOS ? 'ios' : 'android';
+      _logger.i('Unregistering FCM token from server');
+      await _apiService.post(
+        ApiConstants.updateFcmToken,
+        data: {'fcm_token': null, 'platform': platform},
+      );
+      _logger.i('FCM token unregistered from server');
+    } catch (e, stackTrace) {
+      _logger.e(
+        'Failed to unregister FCM token from server',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
   Future<void> deleteToken() async {
     try {
       _logger.i('Deleting FCM token');

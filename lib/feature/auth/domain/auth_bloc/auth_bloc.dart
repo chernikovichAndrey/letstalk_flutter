@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lets_talk/common/service/callkit_service.dart';
 import 'package:lets_talk/common/service/push_notification_service.dart';
 import 'package:lets_talk/common/service/reset_service.dart';
 import 'package:lets_talk/di/injection.dart';
@@ -17,8 +18,9 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
   final PushNotificationService pushNotificationService;
+  final CallKitService callKitService;
 
-  AuthBloc(this.authRepository, this.pushNotificationService)
+  AuthBloc(this.authRepository, this.pushNotificationService, this.callKitService)
     : super(AuthInitial()) {
     on<AuthCheckStatus>((event, emit) async {
       try {
@@ -94,6 +96,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthLogout>((event, emit) async {
+      await pushNotificationService.unregisterFromServer();
+      if (Platform.isIOS) {
+        await callKitService.unregisterFromServer();
+      }
+      await pushNotificationService.deleteToken();
       await authRepository.deleteToken();
       getIt<ResetService>().resetAll();
       emit(AuthUnauthenticated());

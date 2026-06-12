@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/common/service/phone_contacts_service.dart';
@@ -31,7 +32,11 @@ class AddContactBloc extends Bloc<AddContactEvent, AddContactState> {
       await _phoneContactsService.removeFromExclusionList(event.contact.phone);
       emit(AddContactSuccess());
     } catch (e) {
-      emit(AddContactError(e.toString()));
+      if ((e as DioException).response?.statusCode == 422) {
+        emit(AddContactAlreadyExists());
+      } else {
+        emit(AddContactError(e.toString()));
+      }
     }
   }
 }

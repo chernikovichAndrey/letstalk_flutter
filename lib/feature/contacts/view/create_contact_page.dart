@@ -58,12 +58,14 @@ class _CreateContactPageState extends State<CreateContactPage> {
     bloc.add(AddContactSubmitted(contact));
 
     final state = await bloc.stream.firstWhere(
-      (s) => s is AddContactSuccess || s is AddContactError,
+      (s) => s is AddContactSuccess || s is AddContactAlreadyExists || s is AddContactError,
     );
 
     if (!mounted) return;
     if (state is AddContactSuccess) {
       context.pop();
+    } else if (state is AddContactAlreadyExists) {
+      showErrorToast(context.s.contactAlreadyExists);
     }
   }
 

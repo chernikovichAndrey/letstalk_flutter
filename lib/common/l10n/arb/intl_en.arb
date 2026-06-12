@@ -306,5 +306,6 @@
   "authProfileTitle": "Fill in your profile",
   "authProfileFirstNameHint": "First name",
   "authProfileLastNameHint": "Last name",
-  "invalidConfirmationCode": "Invalid confirmation code"
+  "invalidConfirmationCode": "Invalid confirmation code",
+  "contactAlreadyExists": "Contact already exists"
 }

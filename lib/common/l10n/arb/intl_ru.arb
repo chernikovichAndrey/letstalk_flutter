@@ -264,5 +264,6 @@
   "authProfileTitle": "Заполните ваш профиль",
   "authProfileFirstNameHint": "Имя",
   "authProfileLastNameHint": "Фамилия",
-  "invalidConfirmationCode": "Неверный код подтверждения"
+  "invalidConfirmationCode": "Неверный код подтверждения",
+  "contactAlreadyExists": "Контакт уже существует"
 }

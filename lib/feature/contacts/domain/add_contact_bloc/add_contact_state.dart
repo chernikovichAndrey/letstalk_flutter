@@ -8,6 +8,8 @@ class AddContactInProgress extends AddContactState {}
 
 class AddContactSuccess extends AddContactState {}
 
+class AddContactAlreadyExists extends AddContactState {}
+
 class AddContactError extends AddContactState {
   final String message;
 

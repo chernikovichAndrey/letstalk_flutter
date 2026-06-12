@@ -264,5 +264,6 @@
   "authProfileTitle": "Профиліңізді толтырыңыз",
   "authProfileFirstNameHint": "Аты",
   "authProfileLastNameHint": "Тегі",
-  "invalidConfirmationCode": "Растау коды қате"
+  "invalidConfirmationCode": "Растау коды қате",
+  "contactAlreadyExists": "Контакт бұрыннан бар"
 }

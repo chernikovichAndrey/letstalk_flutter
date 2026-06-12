@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:image/image.dart' as img;
 import 'package:lets_talk/app/environment/environment.dart';
 
 import 'package:gal/gal.dart';
@@ -585,7 +586,11 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
 
         // Notify peers that media is being sent (shown while uploading)
         await _chatDetailsRepository.sendTyping(chatId, true);
-        
+
+        final fileToUpload = fileType == 'image'
+            ? await _normalizeImageOrientation(event.file!)
+            : event.file!;
+
         // Create temporary message
         final tempMessage = Message(
           id: 0,
@@ -601,7 +606,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           editCount: 0,
           tempMessageId: tempMessageId,
           isUploading: true,
-          localFilePath: event.file!.path,
+          localFilePath: fileToUpload.path,
           uploadProgress: 0.0,
           replyTo: state.replyMessage != null ? ReplyTo(
             messageId: state.replyMessage!.id,
@@ -626,7 +631,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         
         // Upload file in background
         final media = await _mediaRepository.uploadMedia(
-          file: event.file!,
+          file: fileToUpload,
           chatId: chatId,
           fileType: fileType,
           onSendProgress: (sent, total) {
@@ -708,6 +713,22 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
       return 'audio';
     }
     return 'document';
+  }
+
+  Future<File> _normalizeImageOrientation(File file) async {
+    try {
+      final bytes = await file.readAsBytes();
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) return file;
+      final oriented = img.bakeOrientation(decoded);
+      final tempDir = await getTemporaryDirectory();
+      final fileName = file.path.split('/').last;
+      final outFile = File('${tempDir.path}/oriented_$fileName');
+      await outFile.writeAsBytes(img.encodeJpg(oriented, quality: 92));
+      return outFile;
+    } catch (_) {
+      return file;
+    }
   }
 
   Future<void> _onLoad(

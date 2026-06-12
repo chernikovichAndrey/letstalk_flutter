@@ -95,10 +95,8 @@ class MessageBubble extends StatelessWidget {
           onImage: onImage,
         );
 
-    Widget buildTextSection() => Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            Column(
+    Widget buildTextSection({bool fillWidth = false}) {
+      final textColumn = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -139,10 +137,18 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-            buildInfo(),
-          ],
-        );
+            );
+
+      return Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          fillWidth
+              ? Align(alignment: Alignment.bottomLeft, child: textColumn)
+              : textColumn,
+          buildInfo(),
+        ],
+      );
+    }
 
     Widget buildContent() {
       if (message.isUploading) {
@@ -185,48 +191,70 @@ class MessageBubble extends StatelessWidget {
         }
 
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
             mediaWidget,
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-              child: buildTextSection(),
+              child: buildTextSection(fillWidth: true),
             ),
           ],
         );
       }
 
-      return Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (message.messageType == 'image' &&
+      final BorderRadius mediaTopRadius = isMediaOnly
+          ? const BorderRadius.all(Radius.circular(_outerRadius))
+          : const BorderRadius.only(
+              topLeft: Radius.circular(_outerRadius),
+              topRight: Radius.circular(_outerRadius),
+            );
+
+      final Widget? mediaWidget = (message.messageType == 'image' &&
               message.media?.thumbnailUrl != null)
-            MessageImageAttachThumbnail(
+          ? MessageImageAttachThumbnail(
               media: message.media!,
               messageId: message.id,
               message: message,
               isMe: isMe,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(_outerRadius),
-                topRight: Radius.circular(_outerRadius),
-              ),
-            ),
-          if (message.messageType == 'video' && message.media != null)
-            MessageVideoAttachThumbnail(
-              messageId: message.id,
-              message: message,
-              isMe: isMe,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(_outerRadius),
-                topRight: Radius.circular(_outerRadius),
-              ),
-            ),
+              borderRadius: mediaTopRadius,
+            )
+          : (message.messageType == 'video' && message.media != null)
+              ? MessageVideoAttachThumbnail(
+                  messageId: message.id,
+                  message: message,
+                  isMe: isMe,
+                  borderRadius: mediaTopRadius,
+                )
+              : null;
+
+      return Column(
+        crossAxisAlignment:
+            hasMedia ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (mediaWidget != null)
+            isMediaOnly
+                ? Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      mediaWidget,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8, right: 2),
+                        child: buildInfo(onImage: true),
+                      ),
+                    ],
+                  )
+                : mediaWidget,
           if (message.messageType == 'document')
             MessageDocumentAttach(message: message, isMe: isMe),
-          buildTextSection(),
+          if (!isMediaOnly)
+            hasMedia
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: buildTextSection(fillWidth: true),
+                  )
+                : buildTextSection(),
         ],
       );
     }
@@ -268,8 +296,7 @@ class MessageBubble extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         padding: bubblePadding,
         child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             if (message.replyTo != null)

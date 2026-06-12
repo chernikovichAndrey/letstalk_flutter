@@ -580,6 +580,9 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
         tempMessageId = 'temp_${DateTime.now().millisecondsSinceEpoch}_$chatId';
         final fileType = _getFileType(event.file!.path);
 
+        // Capture reply target before clearing reply state below
+        final replyToMessageId = state.replyMessage?.id;
+
         // Notify peers that media is being sent (shown while uploading)
         await _chatDetailsRepository.sendTyping(chatId, true);
         
@@ -653,7 +656,7 @@ class ChatDetailsBloc extends Bloc<ChatDetailsEvent, ChatDetailsState> {
           event.text,
           mediaId: media.id,
           messageType: fileType,
-          replyToMessageId: state.replyMessage?.id,
+          replyToMessageId: replyToMessageId,
           tempMessageId: tempMessageId,
         );
       } else {

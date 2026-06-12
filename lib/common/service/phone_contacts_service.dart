@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,18 +9,23 @@ import '../../feature/contacts/data/model/contact_model.dart';
 class PhoneContactsService {
   static const _deletedContactsKey = 'deleted_phone_contacts';
 
+  final Map<void Function(), StreamSubscription<dynamic>> _subscriptions = {};
+
   PhoneContactsService();
 
   void addListener(void Function() listener) {
-    fc.FlutterContacts.addListener(listener);
+    _subscriptions[listener] =
+        fc.FlutterContacts.onDatabaseChange.listen((_) => listener());
   }
 
   void removeListener(void Function() listener) {
-    fc.FlutterContacts.removeListener(listener);
+    _subscriptions.remove(listener)?.cancel();
   }
 
   Future<bool> requestPermission() async {
-    return await fc.FlutterContacts.requestPermission();
+    final status = await fc.FlutterContacts.permissions
+        .request(fc.PermissionType.readWrite);
+    return status == fc.PermissionStatus.granted;
   }
 
   String _normalizePhone(String phone) {
@@ -29,7 +36,7 @@ class PhoneContactsService {
     final prefs = await SharedPreferences.getInstance();
     final normalized = _normalizePhone(phone);
     if (normalized.isEmpty) return;
-    
+
     final list = prefs.getStringList(_deletedContactsKey) ?? [];
     if (!list.contains(normalized)) {
       list.add(normalized);
@@ -41,7 +48,7 @@ class PhoneContactsService {
     final prefs = await SharedPreferences.getInstance();
     final normalized = _normalizePhone(phone);
     if (normalized.isEmpty) return;
-    
+
     final list = prefs.getStringList(_deletedContactsKey) ?? [];
     if (list.contains(normalized)) {
       list.remove(normalized);
@@ -50,18 +57,22 @@ class PhoneContactsService {
   }
 
   Future<List<Contact>> getPhoneContacts() async {
-    if (!await fc.FlutterContacts.requestPermission()) {
-      return [];
-    }
+    final status = await fc.FlutterContacts.permissions
+        .request(fc.PermissionType.readWrite);
+    if (status != fc.PermissionStatus.granted) return [];
 
-    final contacts = await fc.FlutterContacts.getContacts(
-      withProperties: true,
-      withPhoto: false,
+    final contacts = await fc.FlutterContacts.getAll(
+      properties: {
+        fc.ContactProperty.name,
+        fc.ContactProperty.phone,
+        fc.ContactProperty.email,
+        fc.ContactProperty.address,
+      },
     );
 
     final prefs = await SharedPreferences.getInstance();
-    final excludedList = prefs.getStringList(_deletedContactsKey) ?? [];
-    final excludedSet = excludedList.toSet();
+    final excludedSet =
+        (prefs.getStringList(_deletedContactsKey) ?? []).toSet();
 
     return contacts
         .where((c) {
@@ -69,30 +80,33 @@ class PhoneContactsService {
           final normalized = _normalizePhone(c.phones.first.number);
           return !excludedSet.contains(normalized);
         })
-        .map((c) => _mapToContact(c))
+        .map(_mapToContact)
         .toList();
   }
 
   Contact _mapToContact(fc.Contact contact) {
     final phone = contact.phones.isNotEmpty ? contact.phones.first.number : '';
-    final email = contact.emails.isNotEmpty ? contact.emails.first.address : '';
-    final address =
-        contact.addresses.isNotEmpty ? contact.addresses.first.address : '';
-    
-    // Construct full name if display name is empty
-    String fullName = contact.displayName;
+    final email =
+        contact.emails.isNotEmpty ? contact.emails.first.address : '';
+    final address = contact.addresses.isNotEmpty
+        ? (contact.addresses.first.formatted ?? '')
+        : '';
+
+    String fullName = contact.displayName ?? '';
     if (fullName.isEmpty) {
-      fullName = [contact.name.first, contact.name.last].where((s) => s.isNotEmpty).join(' ');
+      final first = contact.name?.first ?? '';
+      final last = contact.name?.last ?? '';
+      fullName = [first, last].where((s) => s.isNotEmpty).join(' ');
     }
-    
+
     return Contact(
       phone: phone,
-      firstName: contact.name.first,
-      lastName: contact.name.last,
+      firstName: contact.name?.first ?? '',
+      lastName: contact.name?.last ?? '',
       fullName: fullName,
       email: email.isNotEmpty ? email : null,
       address: address.isNotEmpty ? address : null,
-      imageUrl: null, // Photo upload not implemented yet
+      imageUrl: null,
     );
   }
 }

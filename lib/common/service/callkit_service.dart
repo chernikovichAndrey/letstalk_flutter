@@ -29,6 +29,10 @@ class CallKitService {
 
   StreamSubscription? _eventSubscription;
 
+  /// Cached params from the last incoming call event — used to forward extra
+  /// data on accept/callback events which only carry the call id.
+  CallKitParams? _lastIncomingParams;
+
   /// Cached accept data for cold-start scenario where the event fires
   /// before any listener subscribes to the broadcast stream.
   Map<String, dynamic>? _pendingAcceptData;
@@ -52,7 +56,7 @@ class CallKitService {
     _logger.i('CallKitService initialized');
     if (Platform.isIOS) {
       final token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
-      _sendTokenToServer(token);
+      // if (token != null) _sendTokenToServer(token);
     }
 
     // Android cold-start: the accept event is lost because the EventChannel
@@ -61,19 +65,11 @@ class CallKitService {
     if (Platform.isAndroid) {
       final activeCalls = await FlutterCallkitIncoming.activeCalls();
       _logger.d('Active calls on init: $activeCalls');
-      if (activeCalls is List && activeCalls.isNotEmpty) {
-        for (final call in activeCalls) {
-          if (call is Map) {
-            final callMap = Map<String, dynamic>.from(call);
-            if (callMap['isAccepted'] == true && _pendingAcceptData == null) {
-              final extra = _extractExtra(callMap);
-              _pendingAcceptData = extra;
-              _logger.i(
-                'Recovered accepted call from activeCalls: ${callMap['id']}',
-              );
-              break;
-            }
-          }
+      for (final call in activeCalls) {
+        if (call.isAccepted && _pendingAcceptData == null) {
+          _pendingAcceptData = call.extra ?? {};
+          _logger.i('Recovered accepted call from activeCalls: ${call.id}');
+          break;
         }
       }
     }
@@ -110,49 +106,52 @@ class CallKitService {
   void _handleEvent(CallEvent? event) {
     if (event == null) return;
 
-    final body = event.body is Map
-        ? Map<String, dynamic>.from(event.body as Map)
-        : <String, dynamic>{};
+    _logger.d('CallKit event: ${event.eventName}');
 
-    _logger.d('CallKit event: ${event.event}, body: $body');
-
-    switch (event.event) {
-      case Event.actionCallIncoming:
-        callKitCallId = body['id'];
-      case Event.actionCallAccept:
-        callKitCallId = body['id'];
-        final extra = _extractExtra(body);
+    switch (event) {
+      case CallEventActionCallIncoming():
+        callKitCallId = event.callKitParams.id;
+        _lastIncomingParams = event.callKitParams;
+      case CallEventActionCallAccept():
+        callKitCallId = event.id;
+        final extra = _lastIncomingParams?.extra ?? {};
         _pendingAcceptData = extra;
         _acceptController.add(extra);
-      case Event.actionCallDecline:
+      case CallEventActionCallDecline():
         _pendingAcceptData = null;
-        final extra = _extractExtra(body);
-        _declineController.add(extra);
-      case Event.actionCallTimeout:
+        _declineController.add({'id': event.id});
+      case CallEventActionCallTimeout():
         _pendingAcceptData = null;
-        final extra = _extractExtra(body);
-        _declineController.add(extra);
-      case Event.actionCallEnded:
+        _declineController.add({'id': event.id});
+      case CallEventActionCallEnded():
         _pendingAcceptData = null;
-        final extra = _extractExtra(body);
-        _declineController.add(extra);
-
-      case Event.actionCallCallback:
-        callKitCallId = body['id'];
-        final extra = _extractExtra(body);
-        _initCallController.add(extra);
-
+        _declineController.add({'id': event.id});
+      case CallEventActionCallCallback():
+        callKitCallId = event.id;
+        _initCallController.add(_lastIncomingParams?.extra ?? {});
       default:
         break;
     }
   }
 
-  Map<String, dynamic> _extractExtra(Map<String, dynamic> body) {
-    final extra = body['extra'];
-    if (extra is Map) {
-      return Map<String, dynamic>.from(extra);
+  Future<void> unregisterFromServer() async {
+    try {
+      _logger.i('Unregistering VoIP token from server');
+      await _apiService.post(
+        ApiConstants.updateVoipToken,
+        data: {
+          'voip_token': null,
+          'apns_env': kReleaseMode ? 'prod' : 'sandbox',
+        },
+      );
+      _logger.i('VoIP token unregistered from server');
+    } catch (e, stackTrace) {
+      _logger.e(
+        'Failed to unregister VoIP token from server',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
-    return body;
   }
 
   Future<void> _sendTokenToServer(String token) async {

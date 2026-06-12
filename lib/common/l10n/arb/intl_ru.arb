@@ -263,5 +263,6 @@
   "authCodeConfirm": "Подтвердить номер",
   "authProfileTitle": "Заполните ваш профиль",
   "authProfileFirstNameHint": "Имя",
-  "authProfileLastNameHint": "Фамилия"
+  "authProfileLastNameHint": "Фамилия",
+  "invalidConfirmationCode": "Неверный код подтверждения"
 }

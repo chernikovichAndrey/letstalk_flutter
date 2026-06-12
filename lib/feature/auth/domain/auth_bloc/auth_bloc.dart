@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -65,7 +66,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             await _onSendToken();
           }
         } catch (e) {
-          emit(AuthError(e.toString()));
+          if ((e as DioException).response?.statusCode == 422) {
+            emit(AuthInvalidCode());
+          } else {
+            emit(AuthError(e.toString()));
+          }
           emit(currentState);
         }
       }

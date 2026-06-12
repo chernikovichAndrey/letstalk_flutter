@@ -6,6 +6,7 @@ import 'package:lets_talk/common/constants/app_colors.dart';
 import 'package:lets_talk/common/constants/app_typography.dart';
 import 'package:lets_talk/common/extension/build_context_style_ext.dart';
 import 'package:lets_talk/common/widget/c_button.dart';
+import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:lets_talk/feature/auth/domain/auth_bloc/auth_bloc.dart';
 import 'package:lets_talk/feature/auth/view/widgets/auth_back_button.dart';
 import 'package:lets_talk/feature/auth/view/widgets/code_pinput.dart';
@@ -96,10 +97,16 @@ class _AuthCodePageState extends State<AuthCodePage> {
 
     final isCodeComplete = _codeController.text.length == _codeLength;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Padding(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthInvalidCode) {
+          showErrorToast(context.s.invalidConfirmationCode);
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+          child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -151,6 +158,8 @@ class _AuthCodePageState extends State<AuthCodePage> {
           ),
         ),
       ),
+    ),
     );
   }
 }
+

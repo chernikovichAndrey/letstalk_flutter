@@ -1,14 +1,21 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:lets_talk/app/environment/environment.dart';
-import 'package:lets_talk/common/widget/toasts.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @singleton
 class ApiService {
   late final Dio _dio;
-  final Logger _logger = Logger();
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 0,
+      lineLength: 100,
+      printEmojis: true,
+      dateTimeFormat: DateTimeFormat.none,
+    ),
+  );
 
   ApiService() {
     _dio = Dio(
@@ -54,27 +61,27 @@ class ApiService {
             error: e.error,
             stackTrace: e.stackTrace,
           );
-          if (e.response != null) {
-            try {
-              final data = e.response?.data;
-              if (data is Map<String, dynamic>) {
-                final messages = data['messages'];
-                String? errorText;
-
-                if (messages is Map<String, dynamic>) {
-                  errorText = messages['error']?.toString();
-                } else if (messages is String) {
-                  errorText = messages;
-                }
-
-                if (errorText != null && errorText.isNotEmpty) {
-                  showErrorToast(errorText);
-                }
-              }
-            } catch (err) {
-              _logger.w('Не удалось распарсить ошибку API: $err');
-            }
-          }
+          // if (e.response != null) {
+          //   try {
+          //     final data = e.response?.data;
+          //     if (data is Map<String, dynamic>) {
+          //       final messages = data['messages'];
+          //       String? errorText;
+          //
+          //       if (messages is Map<String, dynamic>) {
+          //         errorText = messages['error']?.toString();
+          //       } else if (messages is String) {
+          //         errorText = messages;
+          //       }
+          //
+          //       if (errorText != null && errorText.isNotEmpty) {
+          //         showErrorToast(errorText);
+          //       }
+          //     }
+          //   } catch (err) {
+          //     _logger.w('Не удалось распарсить ошибку API: $err');
+          //   }
+          // }
           return handler.next(e);
         },
       ),

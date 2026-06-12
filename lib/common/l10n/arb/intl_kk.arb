@@ -263,5 +263,6 @@
   "authCodeConfirm": "Нөмірді растау",
   "authProfileTitle": "Профиліңізді толтырыңыз",
   "authProfileFirstNameHint": "Аты",
-  "authProfileLastNameHint": "Тегі"
+  "authProfileLastNameHint": "Тегі",
+  "invalidConfirmationCode": "Растау коды қате"
 }
